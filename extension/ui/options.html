@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>WA Reader – הגדרות</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .wrap { max-width: 720px; margin: 0 auto; padding: 28px 16px 60px; }
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+  section h3 { margin-bottom: 10px; font-size: 16px; }
+  .f { display: grid; grid-template-columns: 220px 1fr; gap: 10px; align-items: center; padding: 6px 0; }
+  .f .help { grid-column: 2; margin-top: -6px; }
+  footer { display: flex; gap: 8px; align-items: center; }
+  @media (max-width: 560px) { .f { grid-template-columns: 1fr; } .f .help { grid-column: 1; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 style="margin-bottom:4px">הגדרות WA Reader</h1>
+  <p class="muted" style="margin-top:0">התוסף קורא בלבד. כל ההודעות נשמרות בדפדפן הזה, ולא יוצאות ממנו אלא אם תגדיר webhook למטה.</p>
+
+  <section>
+    <h3>מה לקרוא</h3>
+    <label class="f"><span>לכלול קבוצות</span><input type="checkbox" id="includeGroups"></label>
+    <label class="f"><span>לכלול שיחות בארכיון</span><input type="checkbox" id="includeArchived"></label>
+    <label class="f"><span>לכלול ערוצים</span><input type="checkbox" id="includeChannels"></label>
+    <label class="f"><span>לדלג על שיחות מושתקות</span><input type="checkbox" id="skipMuted"></label>
+    <div class="f"><span>שיחות להחרגה</span><textarea id="excludeChats" placeholder="שם שיחה או מספר טלפון, אחד בכל שורה"></textarea>
+      <div class="help muted small">שיחות ברשימה לא נשמרות ולא מיוצאות בכלל (משפחה, רפואי וכו').</div></div>
+  </section>
+
+  <section>
+    <h3>סנכרון ושמירה</h3>
+    <label class="f"><span>סנכרון כל (דקות)</span><input type="number" id="syncEveryMin" min="5" max="720"></label>
+    <label class="f"><span>שמירה מקומית (ימים)</span><input type="number" id="retentionDays" min="1" max="365"></label>
+    <label class="f"><span>מקסימום הודעות לשיחה בסריקה</span><input type="number" id="perChat" min="20" max="2000"></label>
+    <label class="f"><span>מקסימום שיחות בסריקה</span><input type="number" id="maxChats" min="20" max="2000"></label>
+  </section>
+
+  <section>
+    <h3>ייצוא יומי אוטומטי</h3>
+    <label class="f"><span>לייצא קובץ ‎.md כל יום</span><input type="checkbox" id="autoExport"></label>
+    <label class="f"><span>בשעה</span><input type="time" id="exportTime"></label>
+    <div class="f"><span>תיקייה בתוך Downloads</span><input type="text" id="exportFolder">
+      <div class="help muted small">הקובץ נשמר כ-Downloads/&lt;תיקייה&gt;/whatsapp-YYYY-MM-DD.md – מכאן Claude יכול לקרוא אותו לבריף הבוקר.</div></div>
+    <div class="f"><span></span><button id="exportNow">ייצא את היום עכשיו</button></div>
+  </section>
+
+  <section>
+    <h3>Webhook (אופציונלי – כבוי כברירת מחדל)</h3>
+    <div class="f"><span>כתובת</span><input type="url" id="webhookUrl" placeholder="https://hook.eu1.make.com/…">
+      <div class="help muted small">כל הודעה חדשה תישלח ב-POST כ-JSON. זה הצעד היחיד שמוציא נתונים מהמחשב.</div></div>
+    <label class="f"><span>סוד (כותרת X-WA-Reader-Secret)</span><input type="text" id="webhookSecret"></label>
+  </section>
+
+  <footer>
+    <button class="primary" id="save">שמור</button>
+    <span id="msg" class="small muted"></span>
+    <span style="flex:1"></span>
+    <button class="danger" id="wipe">מחק את כל ההודעות השמורות</button>
+  </footer>
+
+  <section style="margin-top:22px">
+    <h3>הפסקת השימוש</h3>
+    <p class="small muted" style="margin-top:0">מנתק את התוסף מ-WhatsApp Web, מוחק את כל ההודעות השמורות ומבטל את ההסכמה. אפשר להפעיל מחדש בכל רגע.</p>
+    <button class="danger" id="revoke">כבה את התוסף ומחק הכל</button>
+  </section>
+  <p class="small muted">WA Reader הוא קוד פתוח ולא קשור ל-WhatsApp או ל-Meta. <a href="privacy.html" target="_blank">מדיניות פרטיות</a> · <a href="https://github.com/kobibest/wa-reader" target="_blank">GitHub</a></p>
+</div>
+<script type="module" src="options.js"></script>
+</body>
+</html>

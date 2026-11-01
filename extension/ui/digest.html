@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WA Reader – סיכום</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .wrap { max-width: 980px; margin: 0 auto; padding: 24px 16px 60px; }
+  header { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+  header h1 { font-size: 26px; }
+  .bar { position: sticky; top: 0; z-index: 2; background: var(--bg); padding: 10px 0; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+  .seg button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .summary { margin: 4px 0 14px; }
+  .chat { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+  .chat > summary { list-style: none; cursor: pointer; padding: 10px 14px; display: flex; gap: 10px; align-items: center; }
+  .chat > summary::-webkit-details-marker { display: none; }
+  .chat > summary .name { font-weight: 700; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .msgs { border-top: 1px solid var(--line); padding: 6px 14px 10px; }
+  .m { display: grid; grid-template-columns: 52px 1fr; gap: 8px; padding: 4px 0; }
+  .m .t { color: var(--muted); font-size: 12px; padding-top: 2px; font-variant-numeric: tabular-nums; }
+  .m.me .body { background: var(--mine); border-radius: 8px; padding: 2px 8px; }
+  .m .who { font-weight: 600; margin-inline-end: 6px; }
+  .m .q { display: block; color: var(--muted); font-size: 12px; border-inline-start: 3px solid var(--line); padding-inline-start: 6px; margin-bottom: 2px; }
+  .m .txt { white-space: pre-wrap; word-break: break-word; }
+  .empty { text-align: center; padding: 60px 0; }
+  #toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 8px 14px; border-radius: 8px; opacity: 0; transition: opacity .2s; pointer-events: none; }
+  #toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1 id="title">ווצאפ היום</h1>
+      <div class="muted small">נשמר מקומית במחשב הזה בלבד · <span class="badge-ro">קריאה בלבד</span></div>
+    </div>
+    <div class="row">
+      <button class="primary" id="copyPrompt" title="מעתיק את ההודעות יחד עם בקשת סיכום, להדבקה ב-Claude, ChatGPT או Gemini">העתק לסיכום ב-AI</button>
+      <button id="copyMd">העתק Markdown</button>
+      <button id="dlMd">הורד ‎.md</button>
+      <button id="dlJson">הורד ‎.json</button>
+    </div>
+  </header>
+
+  <div class="bar">
+    <div class="row">
+      <div class="row seg" id="seg">
+        <button data-r="today" class="on">היום</button>
+        <button data-r="yesterday">אתמול</button>
+        <button data-r="week">7 ימים</button>
+      </div>
+      <input type="date" id="day" title="יום מסוים">
+      <label class="row small"><input type="checkbox" id="groups" checked> קבוצות</label>
+      <label class="row small"><input type="checkbox" id="waiting"> רק ממתינות לי</label>
+      <input type="text" id="q" placeholder="סינון לפי שם שיחה…" style="flex:1;min-width:160px">
+    </div>
+  </div>
+
+  <div class="summary muted" id="sum"></div>
+  <div id="list"></div>
+  <footer class="small muted" style="margin-top:28px;border-top:1px solid var(--line);padding-top:12px">
+    WA Reader · קוד פתוח, חינם · נבנה על ידי קובי איתן.
+    רוצה שהסיכום יגיע אליך אוטומטית כל בוקר, או חיבור ל-CRM של העסק? <a href="https://digital.m-eitan.co.il/" target="_blank" rel="noopener">דברו איתי</a>
+  </footer>
+</div>
+<div id="toast"></div>
+<script type="module" src="digest.js"></script>
+</body>
+</html>

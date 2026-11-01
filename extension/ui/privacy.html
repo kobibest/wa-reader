@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WA Reader – מדיניות פרטיות</title>
+<style>
+  :root { --bg:#f6f5f1; --panel:#fff; --ink:#1d2320; --muted:#6b726e; --line:#e3e1da; --accent:#0f7a5c; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#141816; --panel:#1c211f; --ink:#e9ece9; --muted:#98a19c; --line:#2c3330; --accent:#35b48c; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font: 15px/1.65 "Assistant","Segoe UI","Rubik",system-ui,sans-serif; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 36px 16px 64px; }
+  h1 { font-size: 28px; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 28px 0 8px; }
+  a { color: var(--accent); }
+  .muted { color: var(--muted); }
+  .box { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; margin: 14px 0; }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 44px 0; }
+  [lang=en] { direction: ltr; text-align: left; }
+  ul { padding-inline-start: 22px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<section lang="he">
+  <h1>WA Reader – מדיניות פרטיות</h1>
+  <div class="muted">בתוקף מ-1 בנובמבר 2026 · <a href="#en">English below</a></div>
+
+  <div class="box"><b>בקצרה:</b> התוסף קורא את הודעות ה-WhatsApp Web שלך ושומר אותן רק בדפדפן שלך. הוא לא שולח אותן לשום מקום, אין בו מעקב או אנליטיקס, ואי אפשר לשלוח דרכו הודעות. החריג היחיד הוא webhook שאתה מגדיר בעצמך.</div>
+
+  <h2>איזה מידע התוסף קורא</h2>
+  <ul>
+    <li>תוכן הודעות (טקסט וכיתובים), שם השיחה, שם השולח, שעה, וסימונים כמו "קבוצה", "מושתק" ו"הועבר". את המידע הזה Chrome מגדיר כ"תקשורת אישית".</li>
+    <li>ממדיה (תמונות, קבצים, הודעות קוליות) נשמרת רק תווית טקסט, למשל "[תמונה]" או שם הקובץ. הקובץ עצמו לא נשמר.</li>
+    <li>הקריאה מתחילה רק אחרי שאישרת אותה במסך ההפעלה, ורק כשטאב של web.whatsapp.com פתוח.</li>
+  </ul>
+
+  <h2>איך המידע משמש</h2>
+  <ul>
+    <li>רק כדי להציג לך סיכום יומי של ההודעות, ולאפשר לך להעתיק או להוריד אותו (כ-Markdown או JSON) לשימושך.</li>
+    <li>אין שימוש אחר: לא פרסום, לא מכירה, לא פרופיילינג, לא אימון מודלים ולא דירוג אשראי.</li>
+  </ul>
+
+  <h2>איפה המידע נשמר</h2>
+  <ul>
+    <li>באחסון המקומי של התוסף (IndexedDB) בדפדפן שלך בלבד. למפתח אין גישה אליו.</li>
+    <li>ההודעות נמחקות אוטומטית אחרי 14 יום. אפשר לשנות את זה בהגדרות.</li>
+    <li>ייצוא יומי (אם הפעלת אותו) נשמר כקובץ בתיקיית ההורדות שלך.</li>
+  </ul>
+
+  <h2>שיתוף עם צד שלישי</h2>
+  <ul>
+    <li>התוסף לא מעביר מידע לאף צד שלישי, כולל המפתח.</li>
+    <li><b>Webhook (אופציונלי, כבוי כברירת מחדל):</b> אם תזין כתובת webhook, כל הודעה חדשה תישלח לכתובת שבחרת, ורק אליה (בחיבור HTTPS, או לשרת מקומי במחשב שלך). Chrome יבקש ממך הרשאה לכתובת הזו. האחריות על השרת שבחרת היא שלך.</li>
+    <li>כשאתה לוחץ "העתק לסיכום ב-AI" ומדביק את הטקסט בשירות AI, אתה זה שבוחר לשתף את המידע, וחלה עליו מדיניות הפרטיות של אותו שירות.</li>
+  </ul>
+
+  <h2>הרשאות</h2>
+  <ul>
+    <li><b>web.whatsapp.com:</b> כדי לקרוא את ההודעות.</li>
+    <li><b>scripting:</b> כדי להתחבר ל-WhatsApp Web רק אחרי שאישרת, ולהתנתק כשאתה מכבה את התוסף.</li>
+    <li><b>storage:</b> כדי לשמור הגדרות והודעות מקומית.</li>
+    <li><b>alarms:</b> לסנכרון תקופתי ולמחיקה אוטומטית של הודעות ישנות.</li>
+    <li><b>downloads:</b> לייצוא היומי לקובץ, רק אם הפעלת אותו.</li>
+    <li><b>גישה לאתרים (אופציונלית):</b> מתבקשת רק עבור כתובת ה-webhook שאתה מזין.</li>
+  </ul>
+
+  <h2>שליטה ומחיקה</h2>
+  <ul>
+    <li>בהגדרות אפשר להחריג שיחות, למחוק את כל ההודעות השמורות, או לכבות את התוסף. כיבוי מנתק אותו מ-WhatsApp Web ומוחק הכל.</li>
+    <li>הסרת התוסף מ-Chrome מוחקת את כל הנתונים שלו.</li>
+  </ul>
+
+  <h2>Limited Use</h2>
+  <p>השימוש של WA Reader במידע שמתקבל מ-WhatsApp Web ומ-Chrome עומד בדרישות <a href="https://developer.chrome.com/docs/webstore/program-policies/limited-use" target="_blank" rel="noopener">מדיניות הנתונים של Chrome Web Store</a>, כולל דרישות ה-Limited Use.</p>
+
+  <h2>אין קשר ל-WhatsApp</h2>
+  <p>WA Reader הוא פרויקט עצמאי בקוד פתוח, והוא לא קשור ל-WhatsApp או ל-Meta ולא מאושר על ידן. התוסף משתמש בספרייה הפתוחה <a href="https://github.com/wppconnect-team/wa-js" target="_blank" rel="noopener">WA-JS</a> (Apache 2.0) כדי לקרוא נתונים מתוך WhatsApp Web.</p>
+
+  <h2>שינויים ויצירת קשר</h2>
+  <p>אם המדיניות תשתנה באופן מהותי, התוסף יבקש ממך הסכמה מחדש. שאלות: <a href="mailto:kobi@eitan-m.co.il">kobi@eitan-m.co.il</a> · קוד המקור: <a href="https://github.com/kobibest/wa-reader" target="_blank" rel="noopener">github.com/kobibest/wa-reader</a></p>
+</section>
+
+<hr>
+
+<section lang="en" id="en">
+  <h1>WA Reader – Privacy Policy</h1>
+  <div class="muted">Effective November 1, 2026</div>
+
+  <div class="box"><b>Short version:</b> WA Reader reads your WhatsApp Web messages and stores them only in your browser. It never sends them anywhere, has no tracking or analytics, and cannot send messages. The only exception is a webhook that you configure yourself.</div>
+
+  <h2>Data the extension reads</h2>
+  <ul>
+    <li>Message content (text and captions), chat name, sender name, time, and flags such as group, muted and forwarded. Chrome classifies this as "personal communications".</li>
+    <li>For media (images, files, voice notes) only a text label is kept, such as "[image]" or the file name. Media files are never stored.</li>
+    <li>Reading starts only after you agree on the activation screen, and only while a web.whatsapp.com tab is open.</li>
+  </ul>
+
+  <h2>How it is used</h2>
+  <ul>
+    <li>Only to show you a daily digest of your messages, and to let you copy or download it (Markdown or JSON) for your own use.</li>
+    <li>No other use: no advertising, selling, profiling, model training or creditworthiness assessment.</li>
+  </ul>
+
+  <h2>Where it is stored</h2>
+  <ul>
+    <li>Only in the extension's local storage (IndexedDB) in your browser. The developer has no access to it.</li>
+    <li>Messages are deleted automatically after 14 days. You can change this in settings.</li>
+    <li>The daily export, if you enable it, is saved as a file in your Downloads folder.</li>
+  </ul>
+
+  <h2>Sharing</h2>
+  <ul>
+    <li>The extension does not transfer data to any third party, including the developer.</li>
+    <li><b>Webhook (optional, off by default):</b> if you enter a webhook URL, each new message is sent to that URL and nowhere else (over HTTPS, or to a local server on your own computer). Chrome asks for your permission for that address. You are responsible for the server you choose.</li>
+    <li>When you click "Copy for AI summary" and paste the text into an AI service, you are choosing to share that data, and that service's privacy policy applies.</li>
+  </ul>
+
+  <h2>Permissions</h2>
+  <ul>
+    <li><b>web.whatsapp.com:</b> to read your messages.</li>
+    <li><b>scripting:</b> to attach to WhatsApp Web only after you consent, and to detach when you turn the extension off.</li>
+    <li><b>storage:</b> to store settings and messages locally.</li>
+    <li><b>alarms:</b> for periodic sync and automatic deletion of old messages.</li>
+    <li><b>downloads:</b> for the optional daily export file.</li>
+    <li><b>Optional site access:</b> requested only for the webhook URL you enter.</li>
+  </ul>
+
+  <h2>Your control</h2>
+  <ul>
+    <li>In settings you can exclude chats, delete all stored messages, or turn the extension off. Turning it off detaches it from WhatsApp Web and deletes everything.</li>
+    <li>Uninstalling the extension removes all of its data.</li>
+  </ul>
+
+  <h2>Limited Use</h2>
+  <p>The use of information received from WhatsApp Web and Chrome by WA Reader complies with the <a href="https://developer.chrome.com/docs/webstore/program-policies/limited-use" target="_blank" rel="noopener">Chrome Web Store User Data Policy</a>, including the Limited Use requirements.</p>
+
+  <h2>Not affiliated with WhatsApp</h2>
+  <p>WA Reader is an independent open-source project. It is not affiliated with, endorsed by or sponsored by WhatsApp or Meta. It uses the open-source <a href="https://github.com/wppconnect-team/wa-js" target="_blank" rel="noopener">WA-JS</a> library (Apache 2.0) to read data inside WhatsApp Web.</p>
+
+  <h2>Changes and contact</h2>
+  <p>If this policy changes materially, the extension will ask for your consent again. Questions: <a href="mailto:kobi@eitan-m.co.il">kobi@eitan-m.co.il</a> · Source code: <a href="https://github.com/kobibest/wa-reader" target="_blank" rel="noopener">github.com/kobibest/wa-reader</a></p>
+</section>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WA Reader – הפעלה</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .wrap { max-width: 680px; margin: 0 auto; padding: 36px 16px 60px; }
+  .hero { display: flex; gap: 14px; align-items: center; margin-bottom: 18px; }
+  .hero img { width: 56px; height: 56px; }
+  h1 { font-size: 26px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; margin-bottom: 12px; }
+  .card h3 { font-size: 15px; margin-bottom: 6px; }
+  .card ul { margin: 0; padding-inline-start: 20px; }
+  .card li { margin: 3px 0; }
+  .agree { display: flex; gap: 10px; align-items: flex-start; margin: 18px 0 14px; }
+  .agree input { margin-top: 4px; width: 18px; height: 18px; }
+  #go { font-size: 16px; padding: 10px 20px; }
+  .done { display: none; }
+  .done.show { display: block; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <img src="../icons/128.png" alt="">
+    <div>
+      <h1>WA Reader</h1>
+      <div class="muted">סיכום יומי של הווצאפ שלך · <span class="badge-ro">קריאה בלבד</span></div>
+    </div>
+  </div>
+
+  <div id="ask">
+    <p>לפני שהתוסף מתחיל לעבוד, חשוב שתדע בדיוק מה הוא עושה. עד שתאשר, הוא לא נוגע ב-WhatsApp Web ולא קורא שום דבר.</p>
+
+    <div class="card">
+      <h3>מה התוסף קורא</h3>
+      <ul>
+        <li>את ההודעות בשיחות שלך ב-WhatsApp Web, מהיום הקודם ואילך, כל עוד הטאב פתוח בכרום.</li>
+        <li>טקסט, כיתובים, שם השולח ושעה. ממדיה נשמרת רק תווית (למשל "[תמונה]"), לא הקובץ.</li>
+        <li>אפשר להחריג שיחות בהגדרות, והן לא יישמרו בכלל.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>איפה הנתונים נשמרים</h3>
+      <ul>
+        <li>רק בדפדפן הזה, במחשב שלך. כברירת מחדל נמחקים אחרי 14 יום.</li>
+        <li>התוסף לא שולח נתונים לשום שרת, ואין בו אנליטיקס או מעקב.</li>
+        <li>החריג היחיד: אם תגדיר בעצמך כתובת webhook, ההודעות יישלחו לכתובת שבחרת, ורק אליה.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>מה התוסף לא עושה</h3>
+      <ul>
+        <li>לא שולח הודעות, לא מוחק, לא משנה ולא מסמן כנקרא. הפונקציות של שליחה, מחיקה וסימון מנותקות מהדף ברגע שהוא נטען.</li>
+        <li>לא שולח "וי כחול" על הודעות שהוא קורא.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>חשוב לדעת</h3>
+      <ul>
+        <li>התוסף לא קשור ל-WhatsApp או ל-Meta ולא מאושר על ידן. הוא קורא את הנתונים מתוך WhatsApp Web בדרך לא רשמית.</li>
+        <li>עדכונים של WhatsApp עלולים לשבור אותו זמנית עד שיוצא עדכון.</li>
+        <li>השימוש באחריותך. <a href="privacy.html" target="_blank">מדיניות הפרטיות המלאה</a> · <a href="https://github.com/kobibest/wa-reader" target="_blank">הקוד הפתוח</a></li>
+      </ul>
+    </div>
+
+    <label class="agree">
+      <input type="checkbox" id="ok">
+      <span>קראתי והבנתי, ואני מסכים שהתוסף יקרא את הודעות הווצאפ שלי וישמור אותן במחשב הזה.</span>
+    </label>
+    <button class="primary" id="go" disabled>הפעל את התוסף</button>
+  </div>
+
+  <div class="done card" id="done">
+    <h3>התוסף פעיל</h3>
+    <p>פתח (או רענן) את <a href="https://web.whatsapp.com" target="_blank">web.whatsapp.com</a>. אחרי כמה שניות לחץ על אייקון התוסף בסרגל – הנקודה תהיה ירוקה ותראה כמה הודעות נאספו.</p>
+    <p class="muted small">טיפ: נעץ את התוסף (אייקון הפאזל ← נעיצה) כדי שיהיה תמיד בהישג יד.</p>
+  </div>
+</div>
+<script type="module" src="welcome.js"></script>
+</body>
+</html>

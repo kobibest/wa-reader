@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WA Reader – סיכום יומי של הווצאפ</title>
+<meta name="description" content="תוסף כרום חינמי בקוד פתוח: סיכום יומי של WhatsApp Web, קריאה בלבד, הכול נשמר אצלך.">
+<link rel="icon" href="icon.png">
+<style>
+  :root { --bg:#f6f5f1; --panel:#fff; --ink:#1d2320; --muted:#6b726e; --line:#e3e1da; --accent:#0f7a5c; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#141816; --panel:#1c211f; --ink:#e9ece9; --muted:#98a19c; --line:#2c3330; --accent:#35b48c; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font: 16px/1.6 "Assistant","Segoe UI","Rubik",system-ui,sans-serif; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 40px 16px 64px; }
+  .hero { display:flex; gap:16px; align-items:center; }
+  .hero img { width:64px; height:64px; }
+  h1 { font-size: 34px; margin:0; }
+  .lead { font-size: 19px; color: var(--muted); margin: 14px 0 22px; }
+  .btns { display:flex; gap:10px; flex-wrap:wrap; }
+  .btn { display:inline-block; padding:10px 18px; border-radius:10px; border:1px solid var(--line); background:var(--panel); color:var(--ink); text-decoration:none; font-weight:600; }
+  .btn.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .shot { width:100%; border-radius:14px; margin:28px 0; box-shadow:0 18px 50px rgba(0,0,0,.15); }
+  .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:12px; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px 16px; }
+  .card b { display:block; margin-bottom:4px; }
+  footer { margin-top:36px; color:var(--muted); font-size:14px; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero"><img src="icon.png" alt=""><h1>WA Reader</h1></div>
+  <p class="lead">כל הווצאפ של היום, מסודר ומוכן לסיכום ב-AI. קריאה בלבד, חינם וקוד פתוח.</p>
+  <div class="btns">
+    <a class="btn primary" id="store" href="https://github.com/kobibest/wa-reader#התקנה">להתקנה</a>
+    <a class="btn" href="https://github.com/kobibest/wa-reader">הקוד ב-GitHub</a>
+    <a class="btn" href="privacy.html">מדיניות פרטיות</a>
+  </div>
+  <img class="shot" src="screenshot-1.png" alt="דף הסיכום היומי">
+  <div class="grid">
+    <div class="card"><b>קריאה בלבד</b>אי אפשר לשלוח, למחוק או לסמן כנקרא, ולא נשלח וי כחול.</div>
+    <div class="card"><b>הכול אצלך</b>ההודעות נשמרות רק בדפדפן שלך. אין שרת ואין מעקב.</div>
+    <div class="card"><b>סיכום עם כל AI</b>העתקה בלחיצה אחת ל-Claude, ל-ChatGPT או ל-Gemini, או ייצוא יומי לקובץ.</div>
+    <div class="card"><b>שליטה מלאה</b>אפשר להחריג שיחות, ולכבות את התוסף ולמחוק הכול בלחיצה.</div>
+  </div>
+  <footer>לא קשור ל-WhatsApp או ל-Meta. נבנה על ידי <a href="https://digital.m-eitan.co.il/">קובי איתן</a>.</footer>
+</div>
+</body>
+</html>
