@@ -101,8 +101,9 @@ Reads the user's WhatsApp Web messages (read-only) and presents them as a local 
 
 **Remote code:** `No, I am not using remote code`. כל הקוד נמצא בחבילה, כולל WA-JS שמוטמעת בתיקייה `page/`.
 
-**Data usage – סמנו רק את זה:**
-- ✅ **Personal communications**: התוסף קורא הודעות. אין לסמן שום קטגוריה אחרת.
+**Data usage – לסמן את שתי אלה בלבד:**
+- ✅ **Personally identifiable information**: שמות אנשי הקשר, ומזהי שיחה שכוללים מספרי טלפון
+- ✅ **Personal communications**: תוכן ההודעות
 
 **שלושת האישורים – לסמן את שלושתם:**
 - ✅ I do not sell or transfer user data to third parties, outside of the approved use cases
