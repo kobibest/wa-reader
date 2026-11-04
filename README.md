@@ -42,7 +42,12 @@
 ## חשוב לדעת
 התוסף לא קשור ל-WhatsApp או ל-Meta ולא מאושר על ידן. הוא משתמש בדרך לא רשמית כדי לקרוא נתונים מתוך WhatsApp Web. השימוש באחריותך. [מדיניות פרטיות](https://kobibest.github.io/wa-reader/privacy.html)
 
-נבנה על ידי [קובי איתן](https://digital.m-eitan.co.il/). צריכים סיכום שמגיע אוטומטית כל בוקר, או חיבור ל-CRM של העסק? אפשר לדבר איתי.
+## מי בנה את זה
+
+<a href="https://digital.m-eitan.co.il/?utm_source=github&utm_medium=readme&utm_campaign=wa-reader"><img src="docs/eitan-mark.svg" width="56" align="right" alt="איתן | דיגיטציה ארגונית"></a>
+
+**[איתן | דיגיטציה ארגונית](https://digital.m-eitan.co.il/?utm_source=github&utm_medium=readme&utm_campaign=wa-reader)** – קובי איתן.
+אני בונה לעסקים מערכות, אוטומציות וסוכני AI שחוסכים עבודה ידנית. צריכים סיכום שמגיע אוטומטית כל בוקר, חיבור של הווצאפ ל-CRM, או אוטומציה אחרת לעסק? [לשיחת ייעוץ ראשונית חינם](https://digital.m-eitan.co.il/?utm_source=github&utm_medium=readme&utm_campaign=wa-reader#contact)
 
 ---
 
@@ -57,4 +62,4 @@ WA Reader is a Chrome extension that reads your WhatsApp Web messages, groups th
 
 **Install from source:** `chrome://extensions` → Developer mode → Load unpacked → select the `extension` folder.
 
-Not affiliated with WhatsApp or Meta. Uses [WA-JS](https://github.com/wppconnect-team/wa-js) (Apache 2.0). Code is MIT-licensed. [Privacy policy](https://kobibest.github.io/wa-reader/privacy.html).
+Built by [Kobi Eitan – Eitan | Organizational Digitization](https://digital.m-eitan.co.il/?utm_source=github&utm_medium=readme&utm_campaign=wa-reader). Not affiliated with WhatsApp or Meta. Uses [WA-JS](https://github.com/wppconnect-team/wa-js) (Apache 2.0). Code is MIT-licensed. [Privacy policy](https://kobibest.github.io/wa-reader/privacy.html).

@@ -23,7 +23,14 @@
   .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:12px; }
   .card { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px 16px; }
   .card b { display:block; margin-bottom:4px; }
-  footer { margin-top:36px; color:var(--muted); font-size:14px; }
+  .maker { display:flex; align-items:center; gap:16px; margin-top:32px; padding:20px 22px; border-radius:16px; background:#171A2F; color:#F4F6F9; text-decoration:none; flex-wrap:wrap; }
+  .maker img { width:52px; height:52px; flex:none; }
+  .maker span { display:block; }
+  .maker small { display:block; color:#B7BDD0; font-size:13px; }
+  .maker b { display:block; font-size:20px; font-family:"Rubik","Assistant",sans-serif; }
+  .maker em { display:block; font-style:normal; color:#B7BDD0; font-size:14px; margin-top:2px; }
+  .maker .go { margin-inline-start:auto; background:#12B886; color:#0B1020; font-weight:700; padding:10px 16px; border-radius:10px; white-space:nowrap; }
+  footer { margin-top:20px; color:var(--muted); font-size:14px; }
   a { color: var(--accent); }
 </style>
 </head>
@@ -43,7 +50,12 @@
     <div class="card"><b>סיכום עם כל AI</b>העתקה בלחיצה אחת ל-Claude, ל-ChatGPT או ל-Gemini, או ייצוא יומי לקובץ.</div>
     <div class="card"><b>שליטה מלאה</b>אפשר להחריג שיחות, ולכבות את התוסף ולמחוק הכול בלחיצה.</div>
   </div>
-  <footer>לא קשור ל-WhatsApp או ל-Meta. נבנה על ידי <a href="https://digital.m-eitan.co.il/">קובי איתן</a>.</footer>
+  <a class="maker" href="https://digital.m-eitan.co.il/?utm_source=wa-reader&amp;utm_medium=landing" target="_blank" rel="noopener">
+    <img src="eitan-mark-light.svg" alt="">
+    <span><small>נבנה על ידי</small><b>איתן | דיגיטציה ארגונית</b><em>מערכות, אוטומציות וסוכני AI לעסקים. רוצים סיכום אוטומטי כל בוקר או חיבור ל-CRM?</em></span>
+    <span class="go">לשיחת ייעוץ חינם ←</span>
+  </a>
+  <footer>WA Reader לא קשור ל-WhatsApp או ל-Meta · <a href="privacy.html">מדיניות פרטיות</a> · <a href="https://github.com/kobibest/wa-reader">GitHub</a></footer>
 </div>
 </body>
 </html>
