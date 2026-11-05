@@ -74,7 +74,7 @@ document.querySelectorAll('#tabs button').forEach((b) => (b.onclick = () => {
   renderConfig();
 }));
 $('copyConn').onclick = async () => { await navigator.clipboard.writeText(state.connectorUrl); toast('הכתובת הועתקה'); };
-$('copyHdr').onclick = async () => { await navigator.clipboard.writeText('X-WA-Reader-Key'); toast('שם הכותרת הועתק'); };
+$('copyHdr').onclick = async () => { await navigator.clipboard.writeText('x-api-key'); toast('שם הכותרת הועתק'); };
 $('copyKey').onclick = async () => { await navigator.clipboard.writeText(state.connectorKey); toast('המפתח הועתק'); };
 $('newConn').onclick = async () => {
   if (!confirm('ליצור מפתח חיבור חדש? המפתח הנוכחי יפסיק לעבוד, וצריך לעדכן אותו ב-Claude.')) return;

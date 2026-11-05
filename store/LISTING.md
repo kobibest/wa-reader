@@ -115,7 +115,7 @@ Free · Public · All regions
 WA Reader lets the user's Claude read WhatsApp Web through a custom MCP connector. To test:
 1. Install the extension; the activation screen opens. Check the box and click "הפעל את התוסף" (Activate).
 2. Open https://web.whatsapp.com and log in with any account. The popup shows "WhatsApp Web: connected" and "Claude: ready".
-3. Open the extension settings ("חיבור ל-Claude והגדרות"). On claude.ai go to Customize → Connectors → Add custom connector, enter the URL shown, choose "No sign in", add the request header X-WA-Reader-Key with the key shown, and click Add.
+3. Open the extension settings ("חיבור ל-Claude והגדרות"). On claude.ai go to Customize → Connectors → Add custom connector, enter the URL shown, choose "No sign in", add the request header x-api-key with the key shown, and click Add.
 4. In a Claude chat, enable the WhatsApp connector and ask "What happened on WhatsApp today?".
 The extension only answers requests sealed with the user's personal key (AES-256-GCM) and only reads: it captures read functions from the bundled WA-JS library and deletes its global from the page (page/page.js). Neither the extension nor the relay (supabase/functions/wa-mcp in the open-source repo) stores messages.
 ```
