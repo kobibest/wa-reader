@@ -163,14 +163,40 @@ function ensureAlarm() { chrome.alarms.create('reconnect', { periodInMinutes: 0.
 chrome.alarms.onAlarm.addListener((a) => { if (a.name === 'reconnect') connect(); });
 
 async function boot() {
-  if (await hasConsent()) { await registerScripts(); ensureAlarm(); connect(); }
+  const migrated = await migrateFromV1();
+  if (await hasConsent()) { await registerScripts(); ensureAlarm(); connect(); return; }
+  await unregisterScripts();
+  if (migrated) chrome.tabs.create({ url: chrome.runtime.getURL('ui/welcome.html') }); // re-consent for the new purpose
+}
+
+// ---------- migration from 1.x (local digest version) ----------
+// 1.x stored messages in IndexedDB and had sync/prune/export alarms and webhook settings.
+// 2.x stores no messages, so everything left over is deleted on update.
+async function migrateFromV1() {
+  const { migratedV2, consent, settings: old } = await chrome.storage.local.get(['migratedV2', 'consent', 'settings']);
+  if (migratedV2) return false;
+  if (!consent && !old) { await chrome.storage.local.set({ migratedV2: true }); return false; } // fresh install
+  await new Promise((resolve) => {
+    try {
+      const req = indexedDB.deleteDatabase('wa-reader');
+      req.onsuccess = req.onerror = req.onblocked = () => resolve();
+    } catch { resolve(); }
+  });
+  for (const name of ['sync', 'prune', 'export']) await chrome.alarms.clear(name);
+  const { settings } = await chrome.storage.local.get('settings');
+  const keep = settings ? { port: settings.port, token: settings.token, excludeChats: settings.excludeChats } : null;
+  await chrome.storage.local.remove(['status', 'settings']);
+  if (keep && keep.token) await chrome.storage.local.set({ settings: { port: Number(keep.port) || DEFAULT_PORT, token: keep.token, excludeChats: keep.excludeChats || '' } });
+  else if (keep?.excludeChats) await chrome.storage.local.set({ settings: { port: DEFAULT_PORT, token: '', excludeChats: keep.excludeChats } });
+  await chrome.storage.local.set({ migratedV2: true });
+  return true;
 }
 
 chrome.runtime.onInstalled.addListener(async ({ reason }) => {
+  if (reason !== 'install') return; // updates are handled by boot() → migrateFromV1()
+  await chrome.storage.local.set({ migratedV2: true });
   await getSettings(); // creates the pairing token
-  if (await hasConsent()) { await boot(); return; }
-  await unregisterScripts();
-  if (reason === 'install' || reason === 'update') chrome.tabs.create({ url: chrome.runtime.getURL('ui/welcome.html') });
+  chrome.tabs.create({ url: chrome.runtime.getURL('ui/welcome.html') });
 });
 chrome.runtime.onStartup.addListener(boot);
 boot();
