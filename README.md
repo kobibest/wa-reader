@@ -9,7 +9,7 @@
 
 ```
 Claude (web / desktop / mobile)
-   │  MCP (HTTPS)
+   │  MCP (HTTPS) – https://wa.m-eitan.co.il (Vercel pass-through, see vercel/)
    ▼
 wa-mcp  – Supabase Edge Function, stateless, stores nothing
    │  Supabase Realtime – AES-256-GCM, end to end

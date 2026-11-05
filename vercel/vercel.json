@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "routes": [
+    { "src": "/", "methods": ["GET", "HEAD"], "has": [{ "type": "header", "key": "accept", "value": ".*text/html.*" }], "dest": "/home.html" },
+    { "src": "/icon.png", "dest": "https://kobibest.github.io/wa-reader/icon.png" },
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "https://igmqqdexoqwulvknvrnj.supabase.co/functions/v1/wa-mcp/$1?_via=wa" }
+  ]
+}

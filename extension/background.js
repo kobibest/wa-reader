@@ -13,7 +13,7 @@ const CLOUD = {
   url: 'https://igmqqdexoqwulvknvrnj.supabase.co',
   // public anon key – only allows joining Realtime broadcast channels; all traffic on them is encrypted
   key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlnbXFxZGV4b3F3dWx2a252cm5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2MjExOTYsImV4cCI6MjEwMDE5NzE5Nn0.Pp0IgD6hVK64GL457ZxCBz60G1SrhqXgETrFEyEKi8Q',
-  mcpUrl: 'https://igmqqdexoqwulvknvrnj.supabase.co/functions/v1/wa-mcp'
+  mcpUrl: 'https://wa.m-eitan.co.il'
 };
 const DEFAULT_PORT = 47821;
 const METHODS = new Set(['status', 'listChats', 'getMessages', 'recent', 'search']);

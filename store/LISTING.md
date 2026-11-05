@@ -1,7 +1,7 @@
-# Chrome Web Store – טקסטים להעתקה (גרסה 2.2.0)
+# Chrome Web Store – טקסטים להעתקה (גרסה 2.2.1)
 
 ## Package
-מעלים את `dist/wa-reader-2.2.0.zip`. בונים אותו עם `scripts/package.sh`.
+מעלים את `dist/wa-reader-2.2.1.zip`. בונים אותו עם `scripts/package.sh`.
 
 ## Store listing
 

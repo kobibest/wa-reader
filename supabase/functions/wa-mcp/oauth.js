@@ -6,6 +6,10 @@
 import { seal, open, b64uEncode, SECRET_RE } from './relay-crypto.js';
 
 export const FN_URL = (Deno.env.get('SUPABASE_URL') || 'https://igmqqdexoqwulvknvrnj.supabase.co') + '/functions/v1/wa-mcp';
+// Branded URL (Vercel proxy, see /vercel). It rewrites to this function with ?_via=wa, so we advertise our
+// OAuth URLs on whichever host the client actually connected to (RFC 9728 requires the resource to match).
+export const PUBLIC_URL = 'https://wa.m-eitan.co.il';
+export const baseUrl = (req) => new URL(req.url).searchParams.get('_via') === 'wa' ? PUBLIC_URL : FN_URL;
 export const CONNECT_PAGE = 'https://kobibest.github.io/wa-reader/connect.html';
 const PAGE_ORIGIN = new URL(CONNECT_PAGE).origin;
 const SCOPE = 'whatsapp.read';
@@ -54,21 +58,21 @@ const cors = { 'Access-Control-Allow-Origin': PAGE_ORIGIN, 'Access-Control-Allow
 const j = (status, obj, extra = {}) => new Response(JSON.stringify(obj), { status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...extra } });
 const oerr = (status, error, description) => j(status, { error, error_description: description });
 
-export function unauthorized() {
+export function unauthorized(base = FN_URL) {
   return new Response(JSON.stringify({ jsonrpc: '2.0', error: { code: -32001, message: 'Unauthorized' }, id: null }), {
     status: 401,
     headers: {
       'Content-Type': 'application/json',
-      'WWW-Authenticate': `Bearer resource_metadata="${FN_URL}/.well-known/oauth-protected-resource", scope="${SCOPE}"`,
+      'WWW-Authenticate': `Bearer resource_metadata="${base}/.well-known/oauth-protected-resource", scope="${SCOPE}"`,
     },
   });
 }
 
-const asMetadata = () => ({
-  issuer: FN_URL,
+const asMetadata = (base) => ({
+  issuer: base,
   authorization_endpoint: CONNECT_PAGE,
-  token_endpoint: `${FN_URL}/oauth/token`,
-  registration_endpoint: `${FN_URL}/oauth/register`,
+  token_endpoint: `${base}/oauth/token`,
+  registration_endpoint: `${base}/oauth/register`,
   response_types_supported: ['code'],
   grant_types_supported: ['authorization_code', 'refresh_token'],
   code_challenge_methods_supported: ['S256'],
@@ -76,7 +80,7 @@ const asMetadata = () => ({
   scopes_supported: [SCOPE],
   subject_types_supported: ['public'],
   // OIDC discovery fields some clients require (we issue no ID tokens)
-  jwks_uri: `${FN_URL}/.well-known/jwks.json`,
+  jwks_uri: `${base}/.well-known/jwks.json`,
   id_token_signing_alg_values_supported: ['RS256'],
   service_documentation: 'https://github.com/kobibest/wa-reader',
 });
@@ -98,11 +102,12 @@ async function tokens(s) {
 /** Handles the OAuth routes. `path` is the part after /wa-mcp. Returns a Response, or null if not an OAuth route. */
 export async function handleOAuth(req, path) {
   const method = req.method;
+  const base = baseUrl(req);
   if (method === 'GET' && (path === '/.well-known/oauth-protected-resource' || path === '/.well-known/oauth-protected-resource/')) {
-    return j(200, { resource: FN_URL, authorization_servers: [FN_URL], scopes_supported: [SCOPE], bearer_methods_supported: ['header'], resource_name: 'WA Reader (WhatsApp)' });
+    return j(200, { resource: base, authorization_servers: [base], scopes_supported: [SCOPE], bearer_methods_supported: ['header'], resource_name: 'WA Reader (WhatsApp)' });
   }
   if (method === 'GET' && (path === '/.well-known/openid-configuration' || path === '/.well-known/oauth-authorization-server')) {
-    return j(200, asMetadata());
+    return j(200, asMetadata(base));
   }
   if (method === 'GET' && path === '/.well-known/jwks.json') return j(200, { keys: [] });
 
