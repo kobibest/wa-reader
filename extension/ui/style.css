@@ -27,7 +27,7 @@ button, .btn {
   padding: 7px 12px; border-radius: 8px; cursor: pointer; white-space: nowrap;
 }
 button:hover { border-color: var(--accent); }
-button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+button.primary, .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
 button.danger { color: var(--warn); }
 button:disabled { opacity: .5; cursor: default; }
 input[type=text], input[type=number], input[type=url], input[type=time], input[type=date], textarea, select {

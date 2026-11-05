@@ -19,6 +19,9 @@ function serverEntry(s) {
 function renderConfig() {
   if (!state) return;
   const s = state.settings;
+  $('paneDesktop').style.display = tab === 'desktop' ? 'block' : 'none';
+  $('paneAdvanced').style.display = tab === 'desktop' ? 'none' : 'block';
+  $('tokFull').textContent = s.token;
   const entry = serverEntry(s);
   let how = '', cfg = '';
   if (tab === 'desktop') {
@@ -67,6 +70,7 @@ document.querySelectorAll('#tabs button').forEach((b) => (b.onclick = () => {
   document.querySelectorAll('#tabs button').forEach((x) => x.classList.toggle('on', x === b));
   renderConfig();
 }));
+$('copyTok').onclick = async () => { await navigator.clipboard.writeText(state.settings.token); toast('הטוקן הועתק'); };
 $('copyCfg').onclick = async () => { await navigator.clipboard.writeText($('cfg').textContent); toast('הועתק'); };
 $('saveEx').onclick = async () => { await saveSettings({ excludeChats: $('excludeChats').value }); toast('נשמר'); };
 $('savePort').onclick = async () => {

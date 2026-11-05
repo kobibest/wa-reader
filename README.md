@@ -11,14 +11,24 @@
 Claude / Cursor  ──MCP──▶  wa-reader-mcp (במחשב שלך)  ──127.0.0.1──▶  תוסף WA Reader  ──▶  WhatsApp Web
 ```
 
-## התקנה (5 דקות, פעם אחת)
+## התקנה
+
+### Claude לדסקטופ (מומלץ, בלי Node.js)
+1. מתקינים את התוסף [מחנות Chrome](https://chromewebstore.google.com/detail/pihiihgmfgefkneahjhmeamnmlfapmfp) ומאשרים במסך ההפעלה.
+2. בהגדרות התוסף לוחצים **"הורד את ההרחבה ל-Claude"**, או מורידים ישירות את [wa-reader.mcpb](https://kobibest.github.io/wa-reader/wa-reader.mcpb).
+3. לוחצים פעמיים על הקובץ, או ב-Claude: Settings ← Extensions וגוררים אליו את הקובץ. לוחצים Install.
+4. מדביקים את הטוקן מהגדרות התוסף, ומשאירים את web.whatsapp.com פתוח בכרום.
+
+> עובד רק באפליקציית Claude לדסקטופ (Windows / Mac). claude.ai בדפדפן ובטלפון לא יכולים להתחבר לתוסף.
+
+### Claude Code, Cursor וכלי MCP אחרים (דורש Node.js)
 1. **התוסף:** [מחנות Chrome](https://chromewebstore.google.com/detail/pihiihgmfgefkneahjhmeamnmlfapmfp), או מהקוד: `chrome://extensions` ← Developer mode ← Load unpacked ← התיקייה `extension`.
 2. **הפעלה:** במסך שנפתח מאשרים את ההסכמה.
 3. **Node.js:** אם אין לכם, מתקינים מ-[nodejs.org](https://nodejs.org/), גרסה 18 ומעלה.
 4. **חיבור לכלי AI:** בחלון התוסף לוחצים "חיבור לכלי AI והגדרות", בוחרים את הכלי (Claude לדסקטופ, Claude Code, Cursor) ומעתיקים את ההגדרה. הטוקן האישי כבר בפנים.
 5. **סוגרים ופותחים מחדש את כלי ה-AI**, ומשאירים את web.whatsapp.com פתוח בכרום.
 
-דוגמה להגדרה ל-Claude לדסקטופ (`claude_desktop_config.json`):
+דוגמה להגדרה ידנית (למשל `claude_desktop_config.json` או `~/.cursor/mcp.json`):
 ```json
 {
   "mcpServers": {
@@ -56,6 +66,7 @@ npm install
 WA_READER_TOKEN=<token> node mcp/server.js   # שרת ה-MCP (stdio)
 ./scripts/update-wa-js.sh                   # עדכון WA-JS כשווצאפ משתנה
 ./scripts/package.sh                        # ZIP לחנות
+./scripts/build-mcpb.sh                     # ההרחבה ל-Claude לדסקטופ (docs/wa-reader.mcpb)
 ```
 
 ## חשוב לדעת
@@ -75,7 +86,9 @@ WA_READER_TOKEN=<token> node mcp/server.js   # שרת ה-MCP (stdio)
 
 Ask Claude "what happened on WhatsApp today and what do I still need to reply to?". The AI calls WA Reader's MCP tools, the extension reads the answer live from your open WhatsApp Web tab, and nothing is stored.
 
-**Setup:** install the extension from the [Chrome Web Store](https://chromewebstore.google.com/detail/pihiihgmfgefkneahjhmeamnmlfapmfp) (or load the `extension/` folder), activate it, install Node.js 18+, then open the extension's settings and copy the ready-made MCP config (it includes your personal token) into Claude Desktop, Claude Code, Cursor or any MCP client. Restart the AI tool and keep web.whatsapp.com open.
+**Setup – Claude Desktop (no Node.js):** install the extension from the [Chrome Web Store](https://chromewebstore.google.com/detail/pihiihgmfgefkneahjhmeamnmlfapmfp), activate it, download [wa-reader.mcpb](https://kobibest.github.io/wa-reader/wa-reader.mcpb), double-click it and paste the token from the extension settings. Claude Desktop only; claude.ai on the web or mobile cannot reach the extension.
+
+**Setup – Claude Code, Cursor, other MCP clients (Node.js 18+):** copy the ready-made MCP config from the extension settings (it includes your token). Restart the AI tool and keep web.whatsapp.com open.
 
 **Tools:** `whatsapp_status`, `whatsapp_recent_messages`, `whatsapp_list_chats`, `whatsapp_get_messages`, `whatsapp_search`. All of them are read-only. None of them can send, delete or mark messages.
 

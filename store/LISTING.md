@@ -9,12 +9,16 @@
 
 ### Description (עברית)
 ```
-WA Reader מחבר את WhatsApp לכלי ה-AI שלך (Claude, Cursor ועוד) דרך MCP.
+WA Reader מחבר את הווצאפ שלך לאפליקציית Claude לדסקטופ, כך ש-Claude יכול לקרוא אותו כשאתה שואל.
 
-שואלים את ה-AI למשל "מה קרה היום בווצאפ ומה מחכה לתשובה ממני?", "מה דנה כתבה לי השבוע?" או "חפש בווצאפ את המילה חשבונית". הוא מבקש מהתוסף בדיוק את ההודעות שהוא צריך, ועונה.
+שואלים את Claude, למשל:
+• "מה קרה היום בווצאפ ומה מחכה לתשובה ממני?"
+• "מה דנה כתבה לי השבוע?"
+• "חפש בווצאפ את המילה חשבונית"
+והוא מבקש מהתוסף בדיוק את ההודעות שהוא צריך, ועונה.
 
-מה ה-AI יכול לעשות:
-• לקרוא הודעות מהשעות או הימים האחרונים, מסודרות לפי שיחה
+מה Claude יכול לעשות:
+• לקרוא את ההודעות מהשעות או מהימים האחרונים, מסודרות לפי שיחה
 • לראות אילו שיחות לא נקראו ואילו מחכות לתשובה ממך
 • לקרוא שיחה מסוימת לפי שם או לפי טווח תאריכים
 • לחפש טקסט בהודעות
@@ -22,27 +26,34 @@ WA Reader מחבר את WhatsApp לכלי ה-AI שלך (Claude, Cursor ועוד)
 פרטיות ובטיחות:
 • קריאה בלבד: אי אפשר לשלוח, למחוק או לסמן הודעות כנקראו. ברגע שהתוסף נטען, הוא מנתק מהדף את הפונקציות שעושות את זה.
 • שום דבר לא נשמר. כל בקשה נקראת ישירות מ-WhatsApp Web.
-• ההודעות עוברות רק בתוך המחשב שלך, לשרת MCP מקומי שמוגן בטוקן אישי, ומשם לכלי ה-AI שבחרת.
-• אפשר להחריג שיחות, ואז ה-AI לא יראה אותן לעולם.
-• אין אנליטיקס ואין מעקב. הקוד פתוח: github.com/kobibest/wa-reader
+• ההודעות עוברות רק בתוך המחשב שלך אל Claude, בחיבור מקומי שמוגן בטוקן אישי. אין שרת חיצוני, אין אנליטיקס ואין מעקב.
+• אפשר להחריג שיחות (משפחה, רפואי וכו'), ואז Claude לא יראה אותן לעולם.
+• שום דבר לא קורה לפני שאתה מאשר במסך ההפעלה.
+• קוד פתוח: github.com/kobibest/wa-reader
 
-התקנה (פעם אחת):
+איך מתחילים (פעם אחת, בלי התקנות נוספות):
 1. מתקינים את התוסף ומאשרים במסך ההפעלה
-2. מתקינים Node.js, אם הוא עוד לא מותקן
-3. בהגדרות התוסף מעתיקים את ההגדרה המוכנה לכלי ה-AI (Claude לדסקטופ, Claude Code או Cursor)
-4. מפעילים מחדש את כלי ה-AI, ומשאירים את web.whatsapp.com פתוח בכרום
+2. בהגדרות התוסף לוחצים "הורד את ההרחבה ל-Claude"
+3. לוחצים פעמיים על הקובץ, מאשרים ב-Claude ומדביקים את הטוקן מההגדרות
+4. משאירים את web.whatsapp.com פתוח בכרום
+
+חשוב: עובד רק עם אפליקציית Claude לדסקטופ (Windows / Mac). claude.ai בדפדפן ובטלפון לא יכולים להתחבר לתוסף. מפתחים יכולים לחבר גם את Claude Code, Cursor וכלי MCP אחרים (דורש Node.js).
 
 נבנה על ידי איתן | דיגיטציה ארגונית (digital.m-eitan.co.il). WA Reader הוא פרויקט עצמאי ולא קשור ל-WhatsApp או ל-Meta.
 ```
 
 ### Detailed description (English)
 ```
-WA Reader connects WhatsApp to your AI tools (Claude, Cursor and more) via MCP.
+WA Reader connects your WhatsApp to the Claude desktop app, so Claude can read it when you ask.
 
-Ask your AI "what happened on WhatsApp today and what do I still need to reply to?", "what did Dana send me this week?" or "search WhatsApp for invoice". It asks the extension for exactly the messages it needs, and answers.
+Ask Claude, for example:
+• "What happened on WhatsApp today and what do I still need to reply to?"
+• "What did Dana send me this week?"
+• "Search WhatsApp for invoice"
+It asks the extension for exactly the messages it needs, and answers.
 
-What the AI can do:
-• Read recent messages from the last hours or days, grouped by chat
+What Claude can do:
+• Read messages from the last hours or days, grouped by chat
 • See unread chats and chats waiting for your reply
 • Read one chat by name or date range
 • Search message text
@@ -50,15 +61,17 @@ What the AI can do:
 Privacy and safety:
 • Read-only: it cannot send, delete or mark messages as read. When it loads, it removes those functions from the page.
 • Nothing is stored. Every request is read live from WhatsApp Web.
-• Messages travel only inside your computer, to a local MCP server protected by a personal token, and from there to the AI tool you chose.
-• Exclude chats so the AI never sees them.
-• No analytics, no tracking. Open source: github.com/kobibest/wa-reader
+• Messages travel only inside your computer to Claude, over a local connection protected by a personal token. No external server, no analytics, no tracking.
+• Exclude chats so Claude never sees them.
+• Open source: github.com/kobibest/wa-reader
 
-Setup (once):
+Getting started (once, nothing else to install):
 1. Install the extension and agree on the activation screen
-2. Install Node.js if you don't have it
-3. In the extension settings, copy the ready-made config into your AI tool (Claude Desktop, Claude Code or Cursor)
-4. Restart the AI tool and keep web.whatsapp.com open in Chrome
+2. In the extension settings, click "Download the Claude extension"
+3. Double-click the file, confirm in Claude and paste the token from the settings
+4. Keep web.whatsapp.com open in Chrome
+
+Important: works only with the Claude desktop app (Windows / Mac). claude.ai on the web or mobile cannot reach the extension. Developers can also connect Claude Code, Cursor and other MCP clients (requires Node.js).
 
 Built by Eitan | Organizational Digitization (digital.m-eitan.co.il). WA Reader is an independent project, not affiliated with WhatsApp or Meta.
 ```
@@ -101,7 +114,7 @@ Free · Public · All regions
 WA Reader is a bridge between WhatsApp Web and the user's local MCP client. To test:
 1. Install the extension; the activation screen opens. Check the box and click "הפעל את התוסף" (Activate).
 2. Open https://web.whatsapp.com and log in with any account.
-3. Install Node.js 18+. Open the extension settings ("חיבור לכלי AI והגדרות"), choose "Claude Code" and run the shown command, or add the shown JSON to Claude Desktop's MCP config. The MCP server source is in the same open-source repo (github.com/kobibest/wa-reader, folder mcp/).
+3. Open the extension settings ("חיבור לכלי AI והגדרות"), download the Claude Desktop extension (wa-reader.mcpb), install it in Claude Desktop and paste the token shown there. (Alternatively with Node.js 18+: choose "Claude Code" and run the shown command.) The MCP server source is in the same open-source repo (github.com/kobibest/wa-reader, folder mcp/).
 4. Restart the MCP client and ask it: "What happened on WhatsApp today?". The popup shows both WhatsApp Web and the AI tool as connected.
 The extension only answers read requests from a local server on 127.0.0.1 that presents the per-install token; it captures only read functions from the bundled WA-JS library and deletes its global from the page (page/page.js). It stores no messages.
 ```
