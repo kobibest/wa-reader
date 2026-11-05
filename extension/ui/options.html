@@ -39,7 +39,7 @@
   </section>
 
   <section>
-    <h3>חיבור ל-Claude (פעם אחת, דקה)</h3>
+    <h3>חיבור ל-Claude (פעם אחת, חצי דקה)</h3>
     <p class="small muted" style="margin:0 0 6px">עובד ב-claude.ai, באפליקציית הדסקטופ ובטלפון. בלי להתקין שום דבר נוסף.</p>
     <div class="step"><div class="num">1</div><div>
       ב-<a href="https://claude.ai/settings/connectors" target="_blank" rel="noopener">claude.ai</a>: <b>Customize → Connectors → + Add → Add custom connector</b>.
@@ -50,11 +50,15 @@
       <div class="kv"><span>URL</span><code id="connUrl"></code><button id="copyConn">העתק</button></div>
     </div></div>
     <div class="step"><div class="num">3</div><div>
-      ב-Authentication בוחרים <b>No sign in</b>. ב-<b>Request headers</b> מוסיפים כותרת אחת, ולוחצים <b>Add</b>:
-      <div class="kv"><span>Header</span><code>x-api-key</code><button id="copyHdr">העתק</button></div>
-      <div class="kv"><span>Value</span><code id="connKey"></code><button class="primary" id="copyKey">העתק מפתח</button></div>
-      <div class="small" style="color:var(--warn);margin-top:6px">המפתח הוא כמו סיסמה: מי שמחזיק בו יכול לקרוא את הווצאפ שלך בזמן שהוא פתוח. לא לשתף אותו. אם הוא דלף, צור מפתח חדש בחלק "מתקדם".</div>
-      <div class="small muted" style="margin-top:4px">בחשבון Claude חינמי אפשר להוסיף חיבור מותאם אישית אחד.</div>
+      ב-Authentication <b>לא</b> בוחרים "No sign in". לוחצים <b>Add</b>, ואז <b>Connect</b>. נפתח דף אישור של WA Reader בדפדפן: לוחצים <b>אשר את החיבור</b>, וחוזרים ל-Claude אוטומטית.
+      <div class="small muted" style="margin-top:4px">הדף צריך להיפתח בכרום שבו מותקן התוסף. אם הוא נפתח בדפדפן אחר, מעתיקים את הכתובת שלו לכרום. בחשבון Claude חינמי אפשר להוסיף חיבור מותאם אישית אחד.</div>
+      <details style="margin-top:8px">
+        <summary class="small">לא מצליח? חיבור עם מפתח במקום אישור בדפדפן</summary>
+        <div class="small muted" style="margin:6px 0">בוחרים ב-Authentication את <b>No sign in</b>, וב-<b>Request headers</b> בוחרים מהרשימה <code>x-api-key</code> ומדביקים את המפתח:</div>
+        <div class="kv"><span>Header</span><code>x-api-key</code><button id="copyHdr">העתק</button></div>
+        <div class="kv"><span>Value</span><code id="connKey"></code><button id="copyKey">העתק מפתח</button></div>
+        <div class="small" style="color:var(--warn);margin-top:6px">המפתח הוא כמו סיסמה: מי שמחזיק בו יכול לקרוא את הווצאפ שלך בזמן שהוא פתוח. לא לשתף אותו.</div>
+      </details>
     </div></div>
     <div class="step"><div class="num">4</div><div>
       משאירים את <a href="https://web.whatsapp.com" target="_blank" rel="noopener">web.whatsapp.com</a> פתוח בכרום במחשב. בצ'אט עם Claude מפעילים את החיבור (כפתור <b>+</b> ← Connectors) ושואלים למשל:

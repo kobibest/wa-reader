@@ -2,7 +2,7 @@
 // (Supabase Edge Function). All tools are read-only. `call(method, params, timeoutMs)` reaches the extension.
 import { z } from 'zod';
 
-export const VERSION = '2.1.0';
+export const VERSION = '2.2.0';
 
 export const INSTRUCTIONS =
   'Read-only access to the user\'s WhatsApp (via WhatsApp Web open in their Chrome, through the WA Reader extension). ' +

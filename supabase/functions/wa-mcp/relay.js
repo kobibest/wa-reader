@@ -5,8 +5,8 @@ import { deriveRelay, seal, open, randomId } from './relay-crypto.js';
 
 export const EXT_OFFLINE =
   'WhatsApp is not reachable. Ask the user to: (1) open https://web.whatsapp.com in Chrome on their computer, ' +
-  '(2) make sure the WA Reader extension is installed and activated, and (3) check that the x-api-key header of this ' +
-  'connector matches the key shown in the extension settings (it changes if the user regenerates it).';
+  '(2) make sure the WA Reader extension is installed and activated, and (3) if they created a new key in the extension, ' +
+  'reconnect this connector in Claude (Customize → Connectors → WhatsApp → Disconnect, then Connect).';
 
 const REALTIME_URL = Deno.env.get('SUPABASE_URL') || 'https://igmqqdexoqwulvknvrnj.supabase.co';
 // public anon key (same one the extension uses); only lets clients join Realtime broadcast channels

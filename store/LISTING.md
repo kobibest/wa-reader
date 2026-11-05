@@ -1,7 +1,7 @@
-# Chrome Web Store – טקסטים להעתקה (גרסה 2.1.0)
+# Chrome Web Store – טקסטים להעתקה (גרסה 2.2.0)
 
 ## Package
-מעלים את `dist/wa-reader-2.1.0.zip`. בונים אותו עם `scripts/package.sh`.
+מעלים את `dist/wa-reader-2.2.0.zip`. בונים אותו עם `scripts/package.sh`.
 
 ## Store listing
 
@@ -31,10 +31,10 @@ WA Reader מחבר את הווצאפ שלך ל-Claude, כך ש-Claude יכול �
 • מעדיפים שההודעות לא יעברו בשום שרת? יש גם חיבור מקומי ל-Claude לדסקטופ.
 • אין אנליטיקס ואין מעקב. קוד פתוח: github.com/kobibest/wa-reader
 
-איך מתחילים (פעם אחת, דקה):
+איך מתחילים (פעם אחת, חצי דקה):
 1. מתקינים את התוסף ומאשרים במסך ההפעלה
 2. ב-claude.ai: Customize → Connectors → Add custom connector
-3. מדביקים את הכתובת ואת המפתח מהגדרות התוסף
+3. מדביקים את הכתובת מהגדרות התוסף, לוחצים Connect ומאשרים בדף שנפתח
 4. משאירים את web.whatsapp.com פתוח בכרום במחשב
 
 התוסף עובד כשטאב של WhatsApp Web פתוח בכרום במחשב. ב-Claude חינמי אפשר להוסיף חיבור מותאם אישית אחד.
@@ -66,10 +66,10 @@ Privacy and safety:
 • Prefer that messages never pass through any server? A local connection for Claude Desktop is available too.
 • No analytics, no tracking. Open source: github.com/kobibest/wa-reader
 
-Getting started (once, one minute):
+Getting started (once, 30 seconds):
 1. Install the extension and agree on the activation screen
 2. On claude.ai: Customize → Connectors → Add custom connector
-3. Paste the URL and key from the extension settings
+3. Paste the URL from the extension settings, click Connect and approve on the page that opens
 4. Keep web.whatsapp.com open in Chrome on your computer
 
 Works while a WhatsApp Web tab is open in Chrome on your computer. Claude's free plan allows one custom connector.
@@ -96,6 +96,7 @@ Gives the user's own AI assistant (Claude, via a custom connector the user adds)
 | `alarms` | Periodically re-establishes the encrypted relay connection (Supabase Realtime) or the local MCP connection after the browser or network restarts, so the user's AI assistant can reach WhatsApp Web. |
 | `scripting` | Registers the content scripts on web.whatsapp.com only after the user gives consent on the activation screen, and unregisters them when the user turns the extension off. |
 | Host permission `https://web.whatsapp.com/*` | Required to read the user's messages inside WhatsApp Web when the user's AI assistant requests them. This is the extension's single purpose. |
+| Content script on `https://kobibest.github.io/wa-reader/connect.html` | This is WA Reader's own sign-in page, opened by Claude when the user connects it. When the user clicks "Approve" there, the extension hands that page the user's personal connector key so the connection completes without copying anything. The script runs on that single page only and reads nothing from it. |
 
 **Remote code:** No. All code is in the package, including the WA-JS library in `page/`.
 
@@ -115,7 +116,7 @@ Free · Public · All regions
 WA Reader lets the user's Claude read WhatsApp Web through a custom MCP connector. To test:
 1. Install the extension; the activation screen opens. Check the box and click "הפעל את התוסף" (Activate).
 2. Open https://web.whatsapp.com and log in with any account. The popup shows "WhatsApp Web: connected" and "Claude: ready".
-3. Open the extension settings ("חיבור ל-Claude והגדרות"). On claude.ai go to Customize → Connectors → Add custom connector, enter the URL shown, choose "No sign in", add the request header x-api-key with the key shown, and click Add.
+3. Open the extension settings ("חיבור ל-Claude והגדרות"). On claude.ai go to Customize → Connectors → Add custom connector, enter the URL shown, click Add and then Connect. A WA Reader approval page opens in the browser; click "אשר את החיבור" (Approve) and the browser returns to Claude. (Alternative: choose "No sign in" and add the request header x-api-key with the key shown in the settings.)
 4. In a Claude chat, enable the WhatsApp connector and ask "What happened on WhatsApp today?".
 The extension only answers requests sealed with the user's personal key (AES-256-GCM) and only reads: it captures read functions from the bundled WA-JS library and deletes its global from the page (page/page.js). Neither the extension nor the relay (supabase/functions/wa-mcp in the open-source repo) stores messages.
 ```

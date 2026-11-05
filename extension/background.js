@@ -8,6 +8,7 @@ import { deriveRelay, seal, open, newSecret, SECRET_RE } from './lib/relay-crypt
 
 const WA_URL = 'https://web.whatsapp.com/*';
 const CONSENT_VERSION = 3;
+const CONNECT_PAGE = 'https://kobibest.github.io/wa-reader/connect.html';
 const CLOUD = {
   url: 'https://igmqqdexoqwulvknvrnj.supabase.co',
   // public anon key – only allows joining Realtime broadcast channels; all traffic on them is encrypted
@@ -302,7 +303,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   (async () => {
     const fromWa = sender.tab && sender.url?.startsWith('https://web.whatsapp.com/') && sender.id === chrome.runtime.id;
     const fromUi = !sender.tab || sender.url?.startsWith(chrome.runtime.getURL(''));
-    if (msg?.kind?.startsWith('wa_') ? !fromWa : !fromUi) return { ok: false, error: 'forbidden' };
+    const fromConnect = sender.tab && sender.id === chrome.runtime.id && sender.url?.startsWith(CONNECT_PAGE);
+    const allowed = msg?.kind?.startsWith('wa_') ? fromWa : msg?.kind?.startsWith('connect') ? fromConnect : fromUi;
+    if (!allowed) return { ok: false, error: 'forbidden' };
     switch (msg?.kind) {
       case 'wa_ready':
         await setStatus({ waReady: true, me: msg.payload?.me || '' });
@@ -336,6 +339,14 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         if (wa.whatsappReady) await setStatus({ waReady: true, me: wa.me || status.me });
         if (tab && consent && !cloud) cloudConnect();
         return { ok: true, consent, status: { ...status, waOpen: !!tab, waReady: !!wa.whatsappReady, chats: wa.chats || 0 }, settings: s, connectorUrl: CLOUD.mcpUrl, connectorKey: s.cloudSecret };
+      }
+      // Claude sign-in page (connect-cs.js): hand over the personal key after the user clicks Approve there
+      case 'connectInfo':
+        return { ok: true, consent: await hasConsent() };
+      case 'connectKey': {
+        if (!(await hasConsent())) return { ok: false, error: 'not_activated' };
+        const s = await getSettings();
+        return { ok: true, secret: s.cloudSecret };
       }
       case 'reconnect':
         disconnect(); connect();

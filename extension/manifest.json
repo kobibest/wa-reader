@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "__MSG_extName__",
   "short_name": "WA Reader",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "__MSG_extDescription__",
   "default_locale": "he",
   "homepage_url": "https://kobibest.github.io/wa-reader/",
@@ -32,5 +32,16 @@
     "https://web.whatsapp.com/*"
   ],
   "author": "Kobi Eitan – Eitan | Organizational Digitization",
-  "minimum_chrome_version": "116"
+  "minimum_chrome_version": "116",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://kobibest.github.io/wa-reader/connect.html*"
+      ],
+      "js": [
+        "connect-cs.js"
+      ],
+      "run_at": "document_end"
+    }
+  ]
 }

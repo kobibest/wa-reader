@@ -1,6 +1,6 @@
 {
   "name": "wa-reader-mcp",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "MCP server that lets AI tools (Claude, Cursor\u2026) read your WhatsApp Web messages on demand through the WA Reader Chrome extension. Read-only.",
   "type": "module",
   "bin": {
