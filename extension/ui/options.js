@@ -22,6 +22,8 @@ function renderConfig() {
   $('paneDesktop').style.display = tab === 'desktop' ? 'block' : 'none';
   $('paneAdvanced').style.display = tab === 'desktop' ? 'none' : 'block';
   $('tokFull').textContent = s.token;
+  $('connUrl').textContent = state.connectorUrl;
+  $('connKey').textContent = state.connectorKey;
   const entry = serverEntry(s);
   let how = '', cfg = '';
   if (tab === 'desktop') {
@@ -50,7 +52,8 @@ async function load() {
   const s = r.status;
   $('notActive').style.display = r.consent ? 'none' : 'block';
   $('wa').innerHTML = `<span class="dot ${s.waReady ? 'on' : ''}"></span>WhatsApp Web: ` + (s.waReady ? `מחובר (${s.chats} שיחות)` : s.waOpen ? 'נטען…' : 'לא פתוח');
-  $('ai').innerHTML = `<span class="dot ${s.ai === 'connected' ? 'on' : ''}"></span>כלי AI: ` + (s.ai === 'connected' ? 'מחובר' : s.aiError || 'ממתין');
+  $('ai').innerHTML = `<span class="dot ${s.cloud === 'connected' ? 'on' : ''}"></span>חיבור ל-Claude: ` + (s.cloud === 'connected' ? 'מוכן' : s.waOpen ? 'מתחבר…' : 'ממתין ל-WhatsApp Web') +
+    (s.ai === 'connected' ? ' · <span class="dot on"></span>חיבור מקומי: מחובר' : '');
   if (first) {
     $('excludeChats').value = r.settings.excludeChats || '';
     $('port').value = r.settings.port;
@@ -70,6 +73,13 @@ document.querySelectorAll('#tabs button').forEach((b) => (b.onclick = () => {
   document.querySelectorAll('#tabs button').forEach((x) => x.classList.toggle('on', x === b));
   renderConfig();
 }));
+$('copyConn').onclick = async () => { await navigator.clipboard.writeText(state.connectorUrl); toast('הכתובת הועתקה'); };
+$('copyHdr').onclick = async () => { await navigator.clipboard.writeText('X-WA-Reader-Key'); toast('שם הכותרת הועתק'); };
+$('copyKey').onclick = async () => { await navigator.clipboard.writeText(state.connectorKey); toast('המפתח הועתק'); };
+$('newConn').onclick = async () => {
+  if (!confirm('ליצור מפתח חיבור חדש? המפתח הנוכחי יפסיק לעבוד, וצריך לעדכן אותו ב-Claude.')) return;
+  await chrome.runtime.sendMessage({ kind: 'newCloudSecret' }); state = null; await load(); toast('נוצר מפתח חדש');
+};
 $('copyTok').onclick = async () => { await navigator.clipboard.writeText(state.settings.token); toast('הטוקן הועתק'); };
 $('copyCfg').onclick = async () => { await navigator.clipboard.writeText($('cfg').textContent); toast('הועתק'); };
 $('saveEx').onclick = async () => { await saveSettings({ excludeChats: $('excludeChats').value }); toast('נשמר'); };

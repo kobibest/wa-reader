@@ -16,6 +16,9 @@
   .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0 2px; }
   .tabs button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
   .row2 { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+  .kv { display: grid; grid-template-columns: 70px 1fr auto; gap: 8px; align-items: center; margin-top: 6px; }
+  .kv > span { font-size: 12px; color: var(--muted); }
+  .kv code { word-break: break-all; }
   code { direction: ltr; unicode-bidi: embed; background: var(--chip); border-radius: 5px; padding: 1px 5px; font-size: 12.5px; }
   #toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 8px 14px; border-radius: 8px; opacity: 0; transition: opacity .2s; pointer-events: none; }
   #toast.show { opacity: 1; }
@@ -23,8 +26,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1 style="margin-bottom:4px">חיבור WhatsApp לכלי AI</h1>
-  <p class="muted" style="margin-top:0">כלי ה-AI שואל, התוסף קורא מה-WhatsApp Web הפתוח ועונה. בלי לשמור כלום ובלי לשלוח לשום שרת. <span class="badge-ro">קריאה בלבד</span></p>
+  <h1 style="margin-bottom:4px">חיבור WhatsApp ל-Claude</h1>
+  <p class="muted" style="margin-top:0">Claude שואל, התוסף קורא מה-WhatsApp Web הפתוח ועונה. שום דבר לא נשמר. <span class="badge-ro">קריאה בלבד</span></p>
 
   <section>
     <h3>מצב</h3>
@@ -36,40 +39,58 @@
   </section>
 
   <section>
-    <h3>חיבור לכלי AI (פעם אחת)</h3>
-    <div class="tabs" id="tabs">
-      <button data-t="desktop" class="on">Claude לדסקטופ (מומלץ)</button>
-      <button data-t="code">Claude Code</button>
-      <button data-t="cursor">Cursor</button>
-      <button data-t="other">אחר</button>
-    </div>
-
-    <div id="paneDesktop">
-      <p class="small muted" style="margin:4px 0 0">התקנה בלחיצה, בלי Node.js ובלי לערוך קבצים. <b>מתאים רק לאפליקציית Claude לדסקטופ</b> (Windows / Mac). claude.ai בדפדפן ובטלפון לא יכולים להתחבר לתוסף.</p>
-      <div class="step"><div class="num">1</div><div>
-        <a class="btn primary" href="https://kobibest.github.io/wa-reader/wa-reader.mcpb" download style="display:inline-block;text-decoration:none">הורד את ההרחבה ל-Claude</a>
-        <span class="small muted">קובץ <code>wa-reader.mcpb</code></span>
-      </div></div>
-      <div class="step"><div class="num">2</div><div>
-        לוחצים פעמיים על הקובץ, או ב-Claude: <b>Settings ← Extensions</b> וגוררים אליו את הקובץ. לוחצים <b>Install</b>.
-      </div></div>
-      <div class="step"><div class="num">3</div><div>
-        Claude יבקש <b>WA Reader token</b>. מעתיקים ומדביקים:
-        <div class="row2"><code id="tokFull" style="font-size:13px"></code><button class="primary" id="copyTok">העתק טוקן</button></div>
-      </div></div>
-    </div>
-
-    <div id="paneAdvanced" style="display:none">
-      <p class="small muted" style="margin:4px 0 0">דורש <a href="https://nodejs.org/" target="_blank" rel="noopener">Node.js</a> 18 ומעלה במחשב. מעתיקים את ההגדרה. הטוקן האישי כבר בפנים.</p>
-      <div id="howto" class="small" style="margin-top:8px"></div>
-      <pre id="cfg"></pre>
-      <div class="row2"><button class="primary" id="copyCfg">העתק</button></div>
-    </div>
-
-    <div class="step"><div class="num">✓</div><div>
-      סוגרים ופותחים מחדש את כלי ה-AI, ומשאירים את <a href="https://web.whatsapp.com" target="_blank" rel="noopener">web.whatsapp.com</a> פתוח בכרום. כשהמצב למעלה ירוק, אפשר לשאול למשל:
+    <h3>חיבור ל-Claude (פעם אחת, דקה)</h3>
+    <p class="small muted" style="margin:0 0 6px">עובד ב-claude.ai, באפליקציית הדסקטופ ובטלפון. בלי להתקין שום דבר נוסף.</p>
+    <div class="step"><div class="num">1</div><div>
+      ב-<a href="https://claude.ai/settings/connectors" target="_blank" rel="noopener">claude.ai</a>: <b>Customize → Connectors → + Add → Add custom connector</b>.
+    </div></div>
+    <div class="step"><div class="num">2</div><div>
+      ממלאים ולוחצים <b>Continue</b>:
+      <div class="kv"><span>Name</span><code>WhatsApp</code></div>
+      <div class="kv"><span>URL</span><code id="connUrl"></code><button id="copyConn">העתק</button></div>
+    </div></div>
+    <div class="step"><div class="num">3</div><div>
+      ב-Authentication בוחרים <b>No sign in</b>. ב-<b>Request headers</b> מוסיפים כותרת אחת, ולוחצים <b>Add</b>:
+      <div class="kv"><span>Header</span><code>X-WA-Reader-Key</code><button id="copyHdr">העתק</button></div>
+      <div class="kv"><span>Value</span><code id="connKey"></code><button class="primary" id="copyKey">העתק מפתח</button></div>
+      <div class="small" style="color:var(--warn);margin-top:6px">המפתח הוא כמו סיסמה: מי שמחזיק בו יכול לקרוא את הווצאפ שלך בזמן שהוא פתוח. לא לשתף אותו. אם הוא דלף, צור מפתח חדש בחלק "מתקדם".</div>
+      <div class="small muted" style="margin-top:4px">בחשבון Claude חינמי אפשר להוסיף חיבור מותאם אישית אחד.</div>
+    </div></div>
+    <div class="step"><div class="num">4</div><div>
+      משאירים את <a href="https://web.whatsapp.com" target="_blank" rel="noopener">web.whatsapp.com</a> פתוח בכרום במחשב. בצ'אט עם Claude מפעילים את החיבור (כפתור <b>+</b> ← Connectors) ושואלים למשל:
       <div class="muted" style="margin-top:4px">"מה קרה היום בווצאפ ומה מחכה לתשובה ממני?" · "מה דנה כתבה לי השבוע?" · "חפש בווצאפ את המילה חשבונית"</div>
     </div></div>
+    <p class="small muted" style="margin:10px 0 0">איך זה עובד: Claude שולח בקשה לשרת ממסר של WA Reader, הוא מעביר אותה מוצפנת לתוסף, התוסף קורא מ-WhatsApp Web ומחזיר תשובה מוצפנת. השרת לא שומר כלום. <a href="privacy.html" target="_blank">פרטים</a></p>
+  </section>
+
+  <section>
+    <details>
+      <summary><b>חיבור מקומי (למתקדמים)</b> <span class="small muted">· ההודעות לא עוברות בשום שרת · Claude לדסקטופ, Claude Code, Cursor</span></summary>
+      <div class="tabs" id="tabs" style="margin-top:10px">
+        <button data-t="desktop" class="on">Claude לדסקטופ</button>
+        <button data-t="code">Claude Code</button>
+        <button data-t="cursor">Cursor</button>
+        <button data-t="other">אחר</button>
+      </div>
+      <div id="paneDesktop">
+        <p class="small muted" style="margin:4px 0 0">התקנה בלחיצה, בלי Node.js. <b>רק לאפליקציית Claude לדסקטופ</b>.</p>
+        <div class="step"><div class="num">1</div><div>
+          <a class="btn" href="https://kobibest.github.io/wa-reader/wa-reader.mcpb" download style="display:inline-block;text-decoration:none">הורד את ההרחבה ל-Claude</a>
+          <span class="small muted">קובץ <code>wa-reader.mcpb</code></span>
+        </div></div>
+        <div class="step"><div class="num">2</div><div>לוחצים פעמיים על הקובץ, או ב-Claude: <b>Settings ← Extensions</b> וגוררים אליו את הקובץ. לוחצים <b>Install</b>.</div></div>
+        <div class="step"><div class="num">3</div><div>
+          Claude יבקש <b>WA Reader token</b>:
+          <div class="row2"><code id="tokFull" style="font-size:13px"></code><button id="copyTok">העתק טוקן</button></div>
+        </div></div>
+      </div>
+      <div id="paneAdvanced" style="display:none">
+        <p class="small muted" style="margin:4px 0 0">דורש <a href="https://nodejs.org/" target="_blank" rel="noopener">Node.js</a> 18 ומעלה. הטוקן האישי כבר בתוך ההגדרה.</p>
+        <div id="howto" class="small" style="margin-top:8px"></div>
+        <pre id="cfg"></pre>
+        <div class="row2"><button id="copyCfg">העתק</button></div>
+      </div>
+    </details>
   </section>
 
   <section>
@@ -81,9 +102,13 @@
   <section>
     <h3>מתקדם</h3>
     <div class="row2">
-      <span class="small">טוקן: <code id="tok"></code></span>
+      <button id="newConn">צור מפתח חיבור חדש</button>
+      <span class="small muted">המפתח הישן יפסיק לעבוד מיד. צריך לעדכן את הכותרת ב-Claude.</span>
+    </div>
+    <div class="row2">
+      <span class="small">טוקן מקומי: <code id="tok"></code></span>
       <button id="newTok">צור טוקן חדש</button>
-      <span class="small muted">אחרי החלפה צריך להעתיק שוב את ההגדרה לכל כלי AI.</span>
+      <span class="small muted">לחיבור המקומי בלבד.</span>
     </div>
     <div class="row2">
       <label class="small">פורט מקומי <input type="number" id="port" min="1024" max="65535" style="width:110px"></label>

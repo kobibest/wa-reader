@@ -25,9 +25,9 @@
 
 <section lang="he">
   <h1>WA Reader – מדיניות פרטיות</h1>
-  <div class="muted">בתוקף מ-5 בנובמבר 2026 (גרסה 2) · <a href="#en">English below</a></div>
+  <div class="muted">בתוקף מ-5 בנובמבר 2026 (גרסה 3) · <a href="#en">English below</a></div>
 
-  <div class="box"><b>בקצרה:</b> התוסף מאפשר לכלי AI שאתה מחבר במחשב שלך לקרוא את הודעות ה-WhatsApp Web שלך כשהוא מבקש. ההודעות עוברות רק בתוך המחשב שלך, אל כלי ה-AI שבחרת. הן לא נשמרות בתוסף, לא נשלחות למפתח, ואי אפשר לשלוח דרך התוסף הודעות.</div>
+  <div class="box"><b>בקצרה:</b> התוסף מאפשר ל-Claude לקרוא את הודעות ה-WhatsApp Web שלך כשהוא מבקש. כל בקשה ותשובה עוברות <b>מוצפנות</b> דרך שרת ממסר של WA Reader, שמעביר אותן ל-Claude ומיד שוכח אותן. ההודעות לא נשמרות, לא בתוסף ולא בשרת, ואי אפשר לשלוח דרך התוסף הודעות. מי שמעדיף שההודעות לא יעברו בשום שרת יכול להשתמש בחיבור המקומי.</div>
 
   <h2>איזה מידע התוסף קורא</h2>
   <ul>
@@ -39,16 +39,19 @@
 
   <h2>לאן המידע עובר</h2>
   <ul>
-    <li>התוסף מעביר את תשובת הבקשה לשרת MCP מקומי (wa-reader-mcp) שרץ במחשב שלך ומאזין רק בכתובת 127.0.0.1. משם היא מועברת לכלי ה-AI שהפעיל אותו.</li>
-    <li>החיבור המקומי מוגן בטוקן אישי שנוצר בהתקנה. בקשות מדפי אינטרנט נחסמות.</li>
-    <li>כלי ה-AI (למשל Claude או Cursor) מעבד את מה שהוא מקבל לפי מדיניות הפרטיות שלו, ויכול לשלוח את המידע לשרתים של הספק שלו, כמו כל מידע אחר שאתה נותן לו. את הכלי בוחר ומחבר אתה.</li>
-    <li>התוסף ושרת ה-MCP לא שולחים מידע למפתח או לשום צד שלישי אחר, ואין בהם אנליטיקס או מעקב.</li>
+    <li><b>חיבור ל-Claude (ברירת המחדל):</b> Claude שולח את הבקשה לשרת הממסר של WA Reader (פונקציה ב-Supabase, ‏wa-mcp). השרת מעביר אותה לתוסף שלך דרך ערוץ Supabase Realtime, התוסף קורא את התשובה מ-WhatsApp Web ומחזיר אותה באותה דרך, והשרת מוסר אותה ל-Claude.</li>
+    <li>בדרך בין השרת לתוסף, הבקשה והתשובה מוצפנות (AES-256-GCM) במפתח שנגזר מהמפתח האישי שלך. Supabase Realtime רואה רק טקסט מוצפן. שרת הממסר מפענח את התשובה בזיכרון רק כדי למסור אותה ל-Claude, ולא כותב אותה לשום מסד נתונים, קובץ או יומן.</li>
+    <li>יומני השרת של Supabase שומרים רק מידע טכני על הבקשה (זמן, סטטוס, כתובת). המפתח האישי שלך נשלח בכותרת (header) ולכן לא מופיע ביומנים, ותוכן ההודעות לא נרשם אף פעם.</li>
+    <li>רק מי שמחזיק במפתח האישי שלך יכול לבקש נתונים, וגם זה רק בזמן ש-WhatsApp Web פתוח אצלך. אפשר ליצור מפתח חדש בהגדרות בכל רגע, והישן מפסיק לעבוד מיד.</li>
+    <li><b>חיבור מקומי (אופציונלי):</b> אם אתה משתמש בהרחבה ל-Claude לדסקטופ או בשרת MCP מקומי, ההודעות עוברות רק בתוך המחשב שלך (127.0.0.1), ולא בשום שרת.</li>
+    <li>Claude (או כלי AI אחר שחיברת) מעבד את מה שהוא מקבל לפי מדיניות הפרטיות שלו, ושולח את המידע לשרתים של הספק שלו, כמו כל מידע אחר שאתה נותן לו.</li>
+    <li>המפתח לא מעביר מידע לשום צד שלישי אחר, ואין בתוסף או בשרת אנליטיקס או מעקב.</li>
   </ul>
 
   <h2>שמירה</h2>
   <ul>
     <li>התוסף לא שומר הודעות. כל בקשה נקראת ישירות מ-WhatsApp Web ונמחקת מהזיכרון אחרי שהיא נמסרת.</li>
-    <li>באחסון המקומי של התוסף נשמרים רק ההגדרות שלך: הטוקן, הפורט, רשימת השיחות המוחרגות, ואם הסכמת.</li>
+    <li>באחסון המקומי של התוסף נשמרים רק ההגדרות שלך: המפתח האישי, הטוקן המקומי, הפורט, רשימת השיחות המוחרגות, ואם הסכמת.</li>
   </ul>
 
   <h2>איך המידע משמש</h2>
@@ -62,13 +65,13 @@
     <li><b>web.whatsapp.com:</b> כדי לקרוא את ההודעות.</li>
     <li><b>scripting:</b> כדי להתחבר ל-WhatsApp Web רק אחרי שאישרת, ולהתנתק כשאתה מכבה את התוסף.</li>
     <li><b>storage:</b> כדי לשמור את ההגדרות.</li>
-    <li><b>alarms:</b> כדי לחדש את החיבור לשרת ה-MCP המקומי כשכלי ה-AI נפתח.</li>
+    <li><b>alarms:</b> כדי לחדש את החיבור לשרת הממסר או לשרת המקומי כשהוא נקטע.</li>
   </ul>
 
   <h2>שליטה</h2>
   <ul>
-    <li>בהגדרות אפשר להחריג שיחות, ואז הן לא נמסרות לכלי AI לעולם. אפשר גם להחליף טוקן, או לכבות את התוסף ולנתק אותו מ-WhatsApp Web ומכלי ה-AI.</li>
-    <li>הסרת התוסף מוחקת את כל ההגדרות שלו. כדי לנתק כלי AI, מוחקים את ההגדרה "whatsapp" מקובץ ההגדרות של אותו כלי.</li>
+    <li>בהגדרות אפשר להחריג שיחות, ואז הן לא נמסרות לכלי AI לעולם. אפשר גם ליצור מפתח חדש, או לכבות את התוסף ולנתק אותו מ-WhatsApp Web ומכלי ה-AI.</li>
+    <li>הסרת התוסף מוחקת את כל ההגדרות שלו, ואחריה שרת הממסר לא יכול להגיע לשום דבר. כדי לנתק את Claude, מוחקים את החיבור WhatsApp ב-Claude (Customize ← Connectors).</li>
   </ul>
 
   <h2>Limited Use</h2>
@@ -88,9 +91,9 @@
 
 <section lang="en" id="en">
   <h1>WA Reader – Privacy Policy</h1>
-  <div class="muted">Effective November 5, 2026 (version 2)</div>
+  <div class="muted">Effective November 5, 2026 (version 3)</div>
 
-  <div class="box"><b>Short version:</b> WA Reader lets AI tools that you connect on your own computer read your WhatsApp Web messages when they ask. Messages travel only inside your computer, to the AI tool you chose. They are not stored by the extension or sent to the developer, and the extension cannot send messages.</div>
+  <div class="box"><b>Short version:</b> WA Reader lets Claude read your WhatsApp Web messages when it asks. Each request and answer travels <b>encrypted</b> through a WA Reader relay server, which hands it to Claude and immediately forgets it. Messages are never stored, neither in the extension nor on the server, and the extension cannot send messages. If you prefer that messages never pass through any server, use the local connection.</div>
 
   <h2>Data the extension reads</h2>
   <ul>
@@ -102,16 +105,19 @@
 
   <h2>Where the data goes</h2>
   <ul>
-    <li>The extension passes each answer to a local MCP server (wa-reader-mcp) running on your computer and listening only on 127.0.0.1. That server passes it to the AI tool that started it.</li>
-    <li>The local connection is protected by a per-install token. Requests from web pages are rejected.</li>
-    <li>The AI tool (for example Claude or Cursor) processes what it receives under its own privacy policy, and may send that data to its provider's servers, like anything else you give it. You choose and connect that tool.</li>
-    <li>Neither the extension nor the MCP server sends data to the developer or any other third party. There is no analytics or tracking.</li>
+    <li><b>Claude connector (default):</b> Claude sends the request to the WA Reader relay (a Supabase Edge Function, wa-mcp). The relay passes it to your extension over a Supabase Realtime channel; the extension reads the answer from WhatsApp Web and returns it the same way; the relay hands it to Claude.</li>
+    <li>Between the relay and the extension, requests and answers are encrypted (AES-256-GCM) with a key derived from your personal key. Supabase Realtime only sees ciphertext. The relay decrypts the answer in memory only to hand it to Claude, and never writes it to any database, file or log.</li>
+    <li>Supabase request logs keep only technical metadata (time, status, URL). Your personal key is sent in a request header, so it is not in those logs, and message content is never logged.</li>
+    <li>Only someone holding your personal key can request data, and only while your WhatsApp Web is open. You can create a new key in settings at any time; the old one stops working immediately.</li>
+    <li><b>Local connection (optional):</b> with the Claude Desktop extension or a local MCP server, messages travel only inside your computer (127.0.0.1) and never through any server.</li>
+    <li>Claude (or another AI tool you connect) processes what it receives under its own privacy policy and sends it to its provider's servers, like anything else you give it.</li>
+    <li>The developer does not pass data to any other third party. There is no analytics or tracking in the extension or the relay.</li>
   </ul>
 
   <h2>Storage</h2>
   <ul>
     <li>The extension does not store messages. Each request is read live from WhatsApp Web and released from memory once delivered.</li>
-    <li>Only your settings are kept in the extension's local storage: the token, the port, the excluded-chats list, and your consent.</li>
+    <li>Only your settings are kept in the extension's local storage: your personal key, the local token, the port, the excluded-chats list, and your consent.</li>
   </ul>
 
   <h2>How it is used</h2>
@@ -125,13 +131,13 @@
     <li><b>web.whatsapp.com:</b> to read your messages.</li>
     <li><b>scripting:</b> to attach to WhatsApp Web only after you consent, and to detach when you turn the extension off.</li>
     <li><b>storage:</b> to keep your settings.</li>
-    <li><b>alarms:</b> to re-establish the connection to the local MCP server when your AI tool starts.</li>
+    <li><b>alarms:</b> to re-establish the connection to the relay or the local server when it drops.</li>
   </ul>
 
   <h2>Your control</h2>
   <ul>
-    <li>In settings you can exclude chats (never returned to any AI tool), regenerate the token, or turn the extension off, which detaches it from WhatsApp Web and from AI tools.</li>
-    <li>Uninstalling removes all of its settings. To disconnect an AI tool, delete the "whatsapp" entry from that tool's MCP configuration.</li>
+    <li>In settings you can exclude chats (never returned to any AI tool), create a new key, or turn the extension off, which detaches it from WhatsApp Web and from AI tools.</li>
+    <li>Uninstalling removes all of its settings, after which the relay cannot reach anything. To disconnect Claude, remove the WhatsApp connector in Claude (Customize → Connectors).</li>
   </ul>
 
   <h2>Limited Use</h2>

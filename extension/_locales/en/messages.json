@@ -1,8 +1,8 @@
 {
   "extName": {
-    "message": "WA Reader – WhatsApp for Claude Desktop, read-only"
+    "message": "WA Reader – WhatsApp for Claude, read-only"
   },
   "extDescription": {
-    "message": "Lets the Claude desktop app read your WhatsApp Web on demand (MCP). Read-only, never sends. Data stays on your computer."
+    "message": "Lets Claude (web, desktop, mobile) read your WhatsApp Web on demand. Read-only, encrypted, nothing stored."
   }
 }

@@ -17,7 +17,8 @@ async function refresh() {
   if (!r.consent) return;
   const s = r.status;
   $('wa').innerHTML = dot(s.waReady) + (s.waReady ? `מחובר · ${s.chats} שיחות` : s.waOpen ? 'הטאב פתוח, ממתין שייטען…' : 'לא פתוח בכרום');
-  $('ai').innerHTML = dot(s.ai === 'connected') + (s.ai === 'connected' ? 'מחובר' : s.aiError ? s.aiError : 'ממתין לכלי AI (עוד לא הוגדר, או שהכלי סגור)');
+  const ok = s.cloud === 'connected' || s.ai === 'connected';
+  $('ai').innerHTML = dot(ok) + (s.cloud === 'connected' ? 'מוכן – Claude יכול לקרוא' : s.ai === 'connected' ? 'מחובר (מקומי)' : s.waOpen ? 'מתחבר…' : 'ממתין ל-WhatsApp Web');
   $('last').textContent = s.lastQueryAt ? `בקשה אחרונה מה-AI: ${ago(s.lastQueryAt)}` : '';
 }
 

@@ -2,24 +2,40 @@
   "$schema": "https://raw.githubusercontent.com/anthropics/mcpb/main/dist/mcpb-manifest-v0.3.schema.json",
   "manifest_version": "0.3",
   "name": "wa-reader",
-  "display_name": "WA Reader – WhatsApp (read-only)",
+  "display_name": "WA Reader – WhatsApp (read-only, local)",
   "version": "2.0.0",
   "description": "Read-only access to your WhatsApp Web through the WA Reader Chrome extension: recent messages, unread and awaiting-reply chats, one chat, and search.",
   "long_description": "WA Reader lets Claude read your WhatsApp on demand. It works together with the free WA Reader Chrome extension: keep web.whatsapp.com open in Chrome, and Claude can read recent messages, see which chats are unread or waiting for your reply, read one chat, or search. It cannot send, delete or mark messages. Nothing is stored, and messages travel only inside your computer (127.0.0.1) to Claude. Paste the token from the extension's settings when installing.",
-  "author": { "name": "Kobi Eitan – Eitan | Organizational Digitization", "email": "kobi@eitan-m.co.il", "url": "https://digital.m-eitan.co.il/" },
-  "repository": { "type": "git", "url": "https://github.com/kobibest/wa-reader" },
+  "author": {
+    "name": "Kobi Eitan – Eitan | Organizational Digitization",
+    "email": "kobi@eitan-m.co.il",
+    "url": "https://digital.m-eitan.co.il/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kobibest/wa-reader"
+  },
   "homepage": "https://kobibest.github.io/wa-reader/",
   "support": "https://github.com/kobibest/wa-reader/issues",
   "icon": "icon.png",
   "license": "MIT",
-  "keywords": ["whatsapp", "messages", "read-only", "chrome-extension"],
-  "privacy_policies": ["https://kobibest.github.io/wa-reader/privacy.html"],
+  "keywords": [
+    "whatsapp",
+    "messages",
+    "read-only",
+    "chrome-extension"
+  ],
+  "privacy_policies": [
+    "https://kobibest.github.io/wa-reader/privacy.html"
+  ],
   "server": {
     "type": "node",
     "entry_point": "server/index.js",
     "mcp_config": {
       "command": "node",
-      "args": ["${__dirname}/server/index.js"],
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
       "env": {
         "WA_READER_TOKEN": "${user_config.token}",
         "WA_READER_PORT": "${user_config.port}"
@@ -45,14 +61,35 @@
     }
   },
   "tools": [
-    { "name": "whatsapp_status", "description": "Check whether WhatsApp Web is connected" },
-    { "name": "whatsapp_recent_messages", "description": "Messages from the last N hours across chats, grouped by chat" },
-    { "name": "whatsapp_list_chats", "description": "List chats: unread, awaiting my reply, direct, groups" },
-    { "name": "whatsapp_get_messages", "description": "Messages from one chat by name or id, optionally by date range" },
-    { "name": "whatsapp_search", "description": "Search recent message text" }
+    {
+      "name": "whatsapp_status",
+      "description": "Check whether WhatsApp Web is connected"
+    },
+    {
+      "name": "whatsapp_recent_messages",
+      "description": "Messages from the last N hours across chats, grouped by chat"
+    },
+    {
+      "name": "whatsapp_list_chats",
+      "description": "List chats: unread, awaiting my reply, direct, groups"
+    },
+    {
+      "name": "whatsapp_get_messages",
+      "description": "Messages from one chat by name or id, optionally by date range"
+    },
+    {
+      "name": "whatsapp_search",
+      "description": "Search recent message text"
+    }
   ],
   "compatibility": {
-    "platforms": ["win32", "darwin", "linux"],
-    "runtimes": { "node": ">=18.0.0" }
+    "platforms": [
+      "win32",
+      "darwin",
+      "linux"
+    ],
+    "runtimes": {
+      "node": ">=18.0.0"
+    }
   }
 }

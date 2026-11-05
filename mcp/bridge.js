@@ -116,7 +116,6 @@ export class Bridge {
   }
 
   #callExtension(method, params, timeoutMs = 60000) {
-    if (method === '__bridge_status') return Promise.resolve({ extensionConnected: !!this.ext, ext: this.extInfo });
     if (!this.ext) return Promise.reject(new Error(EXT_OFFLINE));
     const id = ++this.seq;
     return new Promise((resolve, reject) => {

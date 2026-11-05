@@ -154,6 +154,15 @@
     return {};
   }
 
+  // "2026-11-05" or "2026-11-05T08:00" in the user's local time (the browser's timezone)
+  function localTime(v) {
+    if (typeof v === 'number') return v;
+    const m = /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2}))?/.exec(String(v).trim());
+    if (m) return new Date(+m[1], +m[2] - 1, +m[3], +(m[4] || 0), +(m[5] || 0)).getTime();
+    const t = Date.parse(v);
+    return Number.isFinite(t) ? t : 0;
+  }
+
   const publicChat = (meta, extra = {}) => ({ id: meta.id, name: meta.name, isGroup: meta.isGroup, archived: meta.archived, muted: meta.muted, unread: meta.unread, ...extra });
 
   const METHODS = {
@@ -175,7 +184,7 @@
         if (filter === 'awaiting_reply' && (!last || last.fromMe)) continue;
         out.push(publicChat(meta, { lastTime: last?.t || meta.t, lastFromMe: !!last?.fromMe, lastSender: last?.sender || '', lastPreview: last?.text || '', awaitingReply: !!last && !last.fromMe && !meta.isGroup }));
       }
-      return out;
+      return { chats: out };
     },
 
     async getMessages({ chat, limit = 50, since, until, exclude }) {
@@ -183,8 +192,8 @@
       if (r.candidates) return { candidates: r.candidates };
       if (!r.found) return { chat: null };
       const { meta } = r.found;
-      const sinceSec = since ? Math.floor(since / 1000) : 0;
-      const untilSec = until ? Math.floor(until / 1000) : Infinity;
+      const sinceSec = since ? Math.floor(localTime(since) / 1000) || 0 : 0;
+      const untilSec = until ? Math.floor(localTime(until) / 1000) || Infinity : Infinity;
       const fetchN = sinceSec ? Math.max(limit * 3, 300) : limit + 20;
       const raw = await R.getMessages(meta.id, { count: Math.min(fetchN, 2000) });
       const out = [];

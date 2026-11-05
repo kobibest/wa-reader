@@ -1,46 +1,36 @@
 # WA Reader
 
-**מחבר את WhatsApp לכלי ה-AI שלך (Claude, Cursor ועוד) דרך MCP. קריאה בלבד, חינם, קוד פתוח.**
-**Give your AI tools read-only, on-demand access to WhatsApp Web via MCP.** [English ↓](#english)
+**מחבר את WhatsApp ל-Claude: באתר, בדסקטופ ובטלפון. קריאה בלבד, מוצפן, שום דבר לא נשמר. חינם וקוד פתוח.**
+**Lets Claude read your WhatsApp Web on demand – read-only, encrypted, nothing stored.** [English ↓](#english)
 
 [![Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-להתקנה-0f7a5c?logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/pihiihgmfgefkneahjhmeamnmlfapmfp)
 
-שואלים את Claude למשל "מה קרה היום בווצאפ ומה מחכה לתשובה ממני?". הוא מבקש מ-WA Reader את ההודעות הרלוונטיות, מקבל אותן ועונה. ההודעות לא נשמרות בשום מקום, והתוסף לא יכול לשלוח שום דבר.
+שואלים את Claude, למשל: "מה קרה היום בווצאפ ומה מחכה לתשובה ממני?". הוא מבקש מ-WA Reader את ההודעות הרלוונטיות, מקבל אותן ועונה. ההודעות לא נשמרות בשום מקום, והתוסף לא יכול לשלוח שום דבר.
 
 ```
-Claude / Cursor  ──MCP──▶  wa-reader-mcp (במחשב שלך)  ──127.0.0.1──▶  תוסף WA Reader  ──▶  WhatsApp Web
+Claude (web / desktop / mobile)
+   │  MCP (HTTPS)
+   ▼
+wa-mcp  – Supabase Edge Function, stateless, stores nothing
+   │  Supabase Realtime – AES-256-GCM, end to end
+   ▼
+WA Reader extension (Chrome)  ──▶  WhatsApp Web
 ```
 
-## התקנה
-
-### Claude לדסקטופ (מומלץ, בלי Node.js)
+## התקנה (דקה, פעם אחת)
 1. מתקינים את התוסף [מחנות Chrome](https://chromewebstore.google.com/detail/pihiihgmfgefkneahjhmeamnmlfapmfp) ומאשרים במסך ההפעלה.
-2. בהגדרות התוסף לוחצים **"הורד את ההרחבה ל-Claude"**, או מורידים ישירות את [wa-reader.mcpb](https://kobibest.github.io/wa-reader/wa-reader.mcpb).
-3. לוחצים פעמיים על הקובץ, או ב-Claude: Settings ← Extensions וגוררים אליו את הקובץ. לוחצים Install.
-4. מדביקים את הטוקן מהגדרות התוסף, ומשאירים את web.whatsapp.com פתוח בכרום.
+2. בהגדרות התוסף ("חיבור ל-Claude והגדרות") מופיעים כתובת ומפתח אישי.
+3. ב-[claude.ai](https://claude.ai/settings/connectors): **Customize → Connectors → + Add → Add custom connector**.
+   - Name: `WhatsApp` · URL: הכתובת מההגדרות ← Continue
+   - Authentication: **No sign in** · Request headers: `X-WA-Reader-Key` = המפתח מההגדרות ← Add
+4. משאירים את web.whatsapp.com פתוח בכרום במחשב, מפעילים את החיבור בצ'אט ושואלים.
 
-> עובד רק באפליקציית Claude לדסקטופ (Windows / Mac). claude.ai בדפדפן ובטלפון לא יכולים להתחבר לתוסף.
+> ב-Claude חינמי אפשר להוסיף חיבור מותאם אישית אחד. החיבור עובד רק בזמן ש-WhatsApp Web פתוח בכרום במחשב.
 
-### Claude Code, Cursor וכלי MCP אחרים (דורש Node.js)
-1. **התוסף:** [מחנות Chrome](https://chromewebstore.google.com/detail/pihiihgmfgefkneahjhmeamnmlfapmfp), או מהקוד: `chrome://extensions` ← Developer mode ← Load unpacked ← התיקייה `extension`.
-2. **הפעלה:** במסך שנפתח מאשרים את ההסכמה.
-3. **Node.js:** אם אין לכם, מתקינים מ-[nodejs.org](https://nodejs.org/), גרסה 18 ומעלה.
-4. **חיבור לכלי AI:** בחלון התוסף לוחצים "חיבור לכלי AI והגדרות", בוחרים את הכלי (Claude לדסקטופ, Claude Code, Cursor) ומעתיקים את ההגדרה. הטוקן האישי כבר בפנים.
-5. **סוגרים ופותחים מחדש את כלי ה-AI**, ומשאירים את web.whatsapp.com פתוח בכרום.
-
-דוגמה להגדרה ידנית (למשל `claude_desktop_config.json` או `~/.cursor/mcp.json`):
-```json
-{
-  "mcpServers": {
-    "whatsapp": {
-      "command": "npx",
-      "args": ["-y", "github:kobibest/wa-reader"],
-      "env": { "WA_READER_TOKEN": "<הטוקן מהגדרות התוסף>" }
-    }
-  }
-}
-```
-ב-Windows: `"command": "cmd"`, `"args": ["/c", "npx", "-y", "github:kobibest/wa-reader"]`. מסך ההגדרות של התוסף מכין את זה אוטומטית.
+### חיבור מקומי (מתקדם, בלי שרת)
+מי שמעדיף שההודעות לא יעברו בשום שרת יכול להתחבר מקומית:
+- **Claude לדסקטופ:** מורידים את [wa-reader.mcpb](https://kobibest.github.io/wa-reader/wa-reader.mcpb), לוחצים עליו פעמיים, ומדביקים את הטוקן המקומי מהגדרות התוסף.
+- **Claude Code, Cursor ואחרים (דורש Node.js 18+):** ההגדרה המוכנה נמצאת בהגדרות התוסף, בחלק "חיבור מקומי".
 
 ## הכלים שה-AI מקבל
 | כלי | מה הוא עושה |
@@ -55,10 +45,11 @@ Claude / Cursor  ──MCP──▶  wa-reader-mcp (במחשב שלך)  ──12
 
 ## למה אפשר לסמוך עליו
 - **קריאה בלבד.** ברגע שהתוסף מתחבר, הוא לוקח רק פונקציות קריאה ומוחק מהדף את כל ממשק הספרייה, כולל שליחה, מחיקה וסימון כנקרא. ראו [`extension/page/page.js`](extension/page/page.js).
-- **שום דבר לא נשמר.** כל בקשה נקראת ישירות מה-WhatsApp Web הפתוח. בתוסף אין מסד נתונים, אין שרת, אין אנליטיקס ואין מעקב.
-- **החיבור המקומי סגור לאחרים.** השרת מאזין רק ל-127.0.0.1. הוא מקבל רק את התוסף, ורק עם הטוקן האישי. בקשות מדפי אינטרנט נחסמות. ראו [`mcp/bridge.js`](mcp/bridge.js).
-- **החרגת שיחות.** שיחות שמוסיפים בהגדרות לא נמסרות ל-AI אף פעם.
-- **שימו לב:** את מה שכלי ה-AI מקבל הוא מעבד לפי מדיניות הפרטיות שלו. למשל Claude שולח את זה לשרתים של Anthropic, כמו כל שאלה אחרת שתשאלו אותו.
+- **שום דבר לא נשמר.** התוסף לא שומר הודעות. שרת הממסר ([`supabase/functions/wa-mcp`](supabase/functions/wa-mcp)) לא כותב לשום מסד נתונים, קובץ או יומן, ומחזיק את התשובה בזיכרון רק עד שהוא מוסר אותה ל-Claude.
+- **מוצפן מקצה לקצה.** מהמפתח האישי נגזרים שם ערוץ שאי אפשר לנחש ומפתח AES-256-GCM. Supabase Realtime רואה רק טקסט מוצפן, והתוסף מתעלם מכל בקשה שלא הוצפנה במפתח שלך או שהיא ישנה או חוזרת. ראו [`shared/relay-crypto.js`](shared/relay-crypto.js).
+- **המפתח לא ביומנים.** הוא נשלח בכותרת `X-WA-Reader-Key` ולא בכתובת, כי Supabase שומר ביומנים את הכתובת המלאה.
+- **החרגת שיחות.** שיחות שמוסיפים בהגדרות לא נמסרות ל-Claude אף פעם.
+- **שימו לב:** את מה ש-Claude מקבל הוא מעבד לפי מדיניות הפרטיות של Anthropic, כמו כל שאלה אחרת שתשאלו אותו.
 
 ## פיתוח
 ```bash
@@ -66,7 +57,8 @@ npm install
 WA_READER_TOKEN=<token> node mcp/server.js   # שרת ה-MCP (stdio)
 ./scripts/update-wa-js.sh                   # עדכון WA-JS כשווצאפ משתנה
 ./scripts/package.sh                        # ZIP לחנות
-./scripts/build-mcpb.sh                     # ההרחבה ל-Claude לדסקטופ (docs/wa-reader.mcpb)
+./scripts/build-mcpb.sh                     # ההרחבה המקומית ל-Claude לדסקטופ (docs/wa-reader.mcpb)
+./scripts/sync-shared.sh                    # מעתיק את shared/ לתוסף ולפונקציה
 ```
 
 ## חשוב לדעת
@@ -84,14 +76,14 @@ WA_READER_TOKEN=<token> node mcp/server.js   # שרת ה-MCP (stdio)
 <a id="english"></a>
 ## English
 
-Ask Claude "what happened on WhatsApp today and what do I still need to reply to?". The AI calls WA Reader's MCP tools, the extension reads the answer live from your open WhatsApp Web tab, and nothing is stored.
+Ask Claude "what happened on WhatsApp today and what do I still need to reply to?". Claude calls the WA Reader connector, the relay forwards the encrypted request to your extension, the extension reads the answer live from your open WhatsApp Web tab, and nothing is stored anywhere.
 
-**Setup – Claude Desktop (no Node.js):** install the extension from the [Chrome Web Store](https://chromewebstore.google.com/detail/pihiihgmfgefkneahjhmeamnmlfapmfp), activate it, download [wa-reader.mcpb](https://kobibest.github.io/wa-reader/wa-reader.mcpb), double-click it and paste the token from the extension settings. Claude Desktop only; claude.ai on the web or mobile cannot reach the extension.
+**Setup:** install the extension from the [Chrome Web Store](https://chromewebstore.google.com/detail/pihiihgmfgefkneahjhmeamnmlfapmfp) and activate it. On claude.ai go to Customize → Connectors → Add custom connector, paste the URL from the extension settings, choose "No sign in", add the request header `X-WA-Reader-Key` with your personal key, and keep web.whatsapp.com open in Chrome. Works on claude.ai, Claude Desktop and mobile.
 
-**Setup – Claude Code, Cursor, other MCP clients (Node.js 18+):** copy the ready-made MCP config from the extension settings (it includes your token). Restart the AI tool and keep web.whatsapp.com open.
+**Local option (no server):** the Claude Desktop extension [wa-reader.mcpb](https://kobibest.github.io/wa-reader/wa-reader.mcpb) or `npx -y github:kobibest/wa-reader` for Claude Code / Cursor talk to the extension over 127.0.0.1 only.
 
-**Tools:** `whatsapp_status`, `whatsapp_recent_messages`, `whatsapp_list_chats`, `whatsapp_get_messages`, `whatsapp_search`. All of them are read-only. None of them can send, delete or mark messages.
+**Tools:** `whatsapp_status`, `whatsapp_recent_messages`, `whatsapp_list_chats`, `whatsapp_get_messages`, `whatsapp_search`. All of them are read-only.
 
-**Security:** read functions are captured and the WA-JS global is deleted from the page. The local bridge listens on 127.0.0.1 only, requires a per-install token, accepts WebSocket connections only from `chrome-extension://` origins, and rejects any HTTP request that carries a browser `Origin`. Excluded chats are never returned. Data you give an AI tool is processed under that tool's privacy policy.
+**Security:** read functions are captured and the WA-JS global is deleted from the page. The relay is a stateless Supabase Edge Function. Relay ↔ extension traffic goes over Supabase Realtime, sealed with AES-256-GCM using a key derived from the per-install secret, with replay protection, so Realtime only sees ciphertext. The secret travels in a request header, never in the URL, so it is not in request logs. Excluded chats are never returned.
 
 Built by [Kobi Eitan – Eitan | Organizational Digitization](https://digital.m-eitan.co.il/?utm_source=github&utm_medium=readme&utm_campaign=wa-reader). Not affiliated with WhatsApp or Meta. Uses [WA-JS](https://github.com/wppconnect-team/wa-js) (Apache 2.0). Code is MIT-licensed. [Privacy policy](https://kobibest.github.io/wa-reader/privacy.html).

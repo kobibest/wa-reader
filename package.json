@@ -1,13 +1,14 @@
 {
   "name": "wa-reader-mcp",
-  "version": "2.0.0",
-  "description": "MCP server that lets AI tools (Claude, Cursor…) read your WhatsApp Web messages on demand through the WA Reader Chrome extension. Read-only.",
+  "version": "2.1.0",
+  "description": "MCP server that lets AI tools (Claude, Cursor\u2026) read your WhatsApp Web messages on demand through the WA Reader Chrome extension. Read-only.",
   "type": "module",
   "bin": {
     "wa-reader-mcp": "mcp/server.js"
   },
   "files": [
     "mcp/",
+    "shared/",
     "README.md",
     "LICENSE"
   ],
@@ -15,7 +16,7 @@
     "node": ">=18"
   },
   "license": "MIT",
-  "author": "Kobi Eitan – Eitan | Organizational Digitization (https://digital.m-eitan.co.il)",
+  "author": "Kobi Eitan \u2013 Eitan | Organizational Digitization (https://digital.m-eitan.co.il)",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kobibest/wa-reader.git"
