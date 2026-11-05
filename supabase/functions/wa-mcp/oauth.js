@@ -75,6 +75,9 @@ const asMetadata = () => ({
   token_endpoint_auth_methods_supported: ['none'],
   scopes_supported: [SCOPE],
   subject_types_supported: ['public'],
+  // OIDC discovery fields some clients require (we issue no ID tokens)
+  jwks_uri: `${FN_URL}/.well-known/jwks.json`,
+  id_token_signing_alg_values_supported: ['RS256'],
   service_documentation: 'https://github.com/kobibest/wa-reader',
 });
 
@@ -101,6 +104,7 @@ export async function handleOAuth(req, path) {
   if (method === 'GET' && (path === '/.well-known/openid-configuration' || path === '/.well-known/oauth-authorization-server')) {
     return j(200, asMetadata());
   }
+  if (method === 'GET' && path === '/.well-known/jwks.json') return j(200, { keys: [] });
 
   if (path === '/oauth/register' && method === 'POST') {
     let body; try { body = await req.json(); } catch { return oerr(400, 'invalid_client_metadata', 'JSON body required'); }
