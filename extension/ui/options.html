@@ -2,72 +2,91 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8">
-<title>WA Reader – הגדרות</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WA Reader – חיבור לכלי AI</title>
 <link rel="stylesheet" href="style.css">
 <style>
-  .wrap { max-width: 720px; margin: 0 auto; padding: 28px 16px 60px; }
-  section { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-bottom: 14px; }
-  section h3 { margin-bottom: 10px; font-size: 16px; }
-  .f { display: grid; grid-template-columns: 220px 1fr; gap: 10px; align-items: center; padding: 6px 0; }
-  .f .help { grid-column: 2; margin-top: -6px; }
-  footer { display: flex; gap: 8px; align-items: center; }
-  @media (max-width: 560px) { .f { grid-template-columns: 1fr; } .f .help { grid-column: 1; } }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 28px 16px 60px; }
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; margin-bottom: 14px; }
+  section h3 { margin-bottom: 8px; font-size: 16px; }
+  .status { display: flex; gap: 18px; flex-wrap: wrap; }
+  .step { display: grid; grid-template-columns: 28px 1fr; gap: 10px; margin: 12px 0; }
+  .num { width: 26px; height: 26px; border-radius: 8px; background: #171A2F; color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 13px; }
+  pre { direction: ltr; text-align: left; background: #0f1412; color: #d8efe6; border-radius: 10px; padding: 12px 14px; overflow-x: auto; font: 12.5px/1.5 ui-monospace, Consolas, monospace; margin: 8px 0 0; white-space: pre; }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0 2px; }
+  .tabs button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .row2 { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+  code { direction: ltr; unicode-bidi: embed; background: var(--chip); border-radius: 5px; padding: 1px 5px; font-size: 12.5px; }
+  #toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 8px 14px; border-radius: 8px; opacity: 0; transition: opacity .2s; pointer-events: none; }
+  #toast.show { opacity: 1; }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1 style="margin-bottom:4px">הגדרות WA Reader</h1>
-  <p class="muted" style="margin-top:0">התוסף קורא בלבד. כל ההודעות נשמרות בדפדפן הזה, ולא יוצאות ממנו אלא אם תגדיר webhook למטה.</p>
+  <h1 style="margin-bottom:4px">חיבור WhatsApp לכלי AI</h1>
+  <p class="muted" style="margin-top:0">כלי ה-AI שואל, התוסף קורא מה-WhatsApp Web הפתוח ועונה. בלי לשמור כלום ובלי לשלוח לשום שרת. <span class="badge-ro">קריאה בלבד</span></p>
 
   <section>
-    <h3>מה לקרוא</h3>
-    <label class="f"><span>לכלול קבוצות</span><input type="checkbox" id="includeGroups"></label>
-    <label class="f"><span>לכלול שיחות בארכיון</span><input type="checkbox" id="includeArchived"></label>
-    <label class="f"><span>לכלול ערוצים</span><input type="checkbox" id="includeChannels"></label>
-    <label class="f"><span>לדלג על שיחות מושתקות</span><input type="checkbox" id="skipMuted"></label>
-    <div class="f"><span>שיחות להחרגה</span><textarea id="excludeChats" placeholder="שם שיחה או מספר טלפון, אחד בכל שורה"></textarea>
-      <div class="help muted small">שיחות ברשימה לא נשמרות ולא מיוצאות בכלל (משפחה, רפואי וכו').</div></div>
+    <h3>מצב</h3>
+    <div class="status">
+      <div id="wa"><span class="dot"></span>WhatsApp Web…</div>
+      <div id="ai"><span class="dot"></span>כלי AI…</div>
+    </div>
+    <p class="small muted" id="notActive" style="display:none">התוסף עוד לא הופעל. <a href="welcome.html">להפעלה</a></p>
   </section>
 
   <section>
-    <h3>סנכרון ושמירה</h3>
-    <label class="f"><span>סנכרון כל (דקות)</span><input type="number" id="syncEveryMin" min="5" max="720"></label>
-    <label class="f"><span>שמירה מקומית (ימים)</span><input type="number" id="retentionDays" min="1" max="365"></label>
-    <label class="f"><span>מקסימום הודעות לשיחה בסריקה</span><input type="number" id="perChat" min="20" max="2000"></label>
-    <label class="f"><span>מקסימום שיחות בסריקה</span><input type="number" id="maxChats" min="20" max="2000"></label>
+    <h3>הגדרה חד-פעמית</h3>
+    <div class="step"><div class="num">1</div><div>
+      צריך <a href="https://nodejs.org/" target="_blank" rel="noopener">Node.js</a> מותקן במחשב (גרסה 18 ומעלה). אם לא בטוחים, מתקינים את גרסת LTS.
+    </div></div>
+    <div class="step"><div class="num">2</div><div>
+      בוחרים את כלי ה-AI ומעתיקים את ההגדרה. הטוקן האישי שלך כבר בפנים.
+      <div class="tabs" id="tabs">
+        <button data-t="desktop" class="on">Claude לדסקטופ</button>
+        <button data-t="code">Claude Code</button>
+        <button data-t="cursor">Cursor</button>
+        <button data-t="other">אחר</button>
+      </div>
+      <div id="howto" class="small"></div>
+      <pre id="cfg"></pre>
+      <div class="row2"><button class="primary" id="copyCfg">העתק</button></div>
+    </div></div>
+    <div class="step"><div class="num">3</div><div>
+      סוגרים ופותחים מחדש את כלי ה-AI, ומשאירים את <a href="https://web.whatsapp.com" target="_blank" rel="noopener">web.whatsapp.com</a> פתוח בכרום. כשהמצב למעלה ירוק, אפשר לשאול למשל:
+      <div class="muted" style="margin-top:4px">"מה קרה היום בווצאפ ומה מחכה לתשובה ממני?" · "מה דנה כתבה לי השבוע?" · "חפש בווצאפ את המילה חשבונית"</div>
+    </div></div>
   </section>
 
   <section>
-    <h3>ייצוא יומי אוטומטי</h3>
-    <label class="f"><span>לייצא קובץ ‎.md כל יום</span><input type="checkbox" id="autoExport"></label>
-    <label class="f"><span>בשעה</span><input type="time" id="exportTime"></label>
-    <div class="f"><span>תיקייה בתוך Downloads</span><input type="text" id="exportFolder">
-      <div class="help muted small">הקובץ נשמר כ-Downloads/&lt;תיקייה&gt;/whatsapp-YYYY-MM-DD.md – מכאן Claude יכול לקרוא אותו לבריף הבוקר.</div></div>
-    <div class="f"><span></span><button id="exportNow">ייצא את היום עכשיו</button></div>
+    <h3>שיחות שה-AI לא יראה</h3>
+    <textarea id="excludeChats" placeholder="שם שיחה או מספר טלפון, אחד בכל שורה (למשל: משפחה, 972501234567)"></textarea>
+    <div class="row2"><button class="primary" id="saveEx">שמור</button><span class="small muted">שיחות ברשימה לא נשלחות לכלי ה-AI בשום בקשה.</span></div>
   </section>
 
   <section>
-    <h3>Webhook (אופציונלי – כבוי כברירת מחדל)</h3>
-    <div class="f"><span>כתובת</span><input type="url" id="webhookUrl" placeholder="https://hook.eu1.make.com/…">
-      <div class="help muted small">כל הודעה חדשה תישלח ב-POST כ-JSON. זה הצעד היחיד שמוציא נתונים מהמחשב.</div></div>
-    <label class="f"><span>סוד (כותרת X-WA-Reader-Secret)</span><input type="text" id="webhookSecret"></label>
+    <h3>מתקדם</h3>
+    <div class="row2">
+      <span class="small">טוקן: <code id="tok"></code></span>
+      <button id="newTok">צור טוקן חדש</button>
+      <span class="small muted">אחרי החלפה צריך להעתיק שוב את ההגדרה לכל כלי AI.</span>
+    </div>
+    <div class="row2">
+      <label class="small">פורט מקומי <input type="number" id="port" min="1024" max="65535" style="width:110px"></label>
+      <button id="savePort">שמור</button>
+    </div>
   </section>
 
-  <footer>
-    <button class="primary" id="save">שמור</button>
-    <span id="msg" class="small muted"></span>
-    <span style="flex:1"></span>
-    <button class="danger" id="wipe">מחק את כל ההודעות השמורות</button>
-  </footer>
-
-  <section style="margin-top:22px">
+  <section>
     <h3>הפסקת השימוש</h3>
-    <p class="small muted" style="margin-top:0">מנתק את התוסף מ-WhatsApp Web, מוחק את כל ההודעות השמורות ומבטל את ההסכמה. אפשר להפעיל מחדש בכל רגע.</p>
-    <button class="danger" id="revoke">כבה את התוסף ומחק הכל</button>
+    <p class="small muted" style="margin-top:0">מנתק את התוסף מ-WhatsApp Web ומכלי ה-AI ומבטל את ההסכמה. אפשר להפעיל מחדש בכל רגע.</p>
+    <button class="danger" id="revoke">כבה את התוסף</button>
   </section>
-  <div style="margin:14px 0 8px"><a class="byline" href="https://digital.m-eitan.co.il/?utm_source=wa-reader&amp;utm_medium=extension&amp;utm_campaign=options" target="_blank" rel="noopener"><img class="mark-light" src="eitan-mark.svg" alt=""><img class="mark-dark" src="eitan-mark-light.svg" alt=""><span><small>נבנה על ידי</small><b>איתן | דיגיטציה ארגונית</b></span><span class="cta">לאתר ←</span></a></div>
+
+  <div id="by" style="margin:14px 0 8px"></div>
   <p class="small muted">WA Reader הוא קוד פתוח ולא קשור ל-WhatsApp או ל-Meta. <a href="privacy.html" target="_blank">מדיניות פרטיות</a> · <a href="https://github.com/kobibest/wa-reader" target="_blank">GitHub</a></p>
 </div>
+<div id="toast"></div>
 <script type="module" src="options.js"></script>
 </body>
 </html>

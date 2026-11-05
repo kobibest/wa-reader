@@ -1,131 +1,107 @@
-# Chrome Web Store – טקסטים להעתקה
+# Chrome Web Store – טקסטים להעתקה (גרסה 2.0.0)
 
-כל השדות שהדשבורד מבקש, לפי הלשוניות שלו. את הקבצים מעלים מהתיקייה `store/`, ואת ה-ZIP בונים עם `scripts/package.sh`.
+## Package
+מעלים את `dist/wa-reader-2.0.0.zip`. בונים אותו עם `scripts/package.sh`.
 
----
+## Store listing
 
-## לשונית Package
-מעלים את `dist/wa-reader-<version>.zip`.
+**Category:** Productivity → Developer Tools. אם הקטגוריה הזו לא מופיעה, בוחרים Workflow & Planning.
 
-## לשונית Store listing
-
-**Category:** Productivity → Communication. אם הקטגוריה הזו לא מופיעה, בוחרים Workflow & Planning.
-**Language:** Hebrew. אחר כך מוסיפים English עם הטקסט האנגלי מלמטה.
-
-### תיאור מפורט (עברית)
+### Description (עברית)
 ```
-WA Reader מרכז את כל הודעות הווצאפ של היום במקום אחד, ומאפשר לסכם אותן ב-AI בלחיצה אחת.
+WA Reader מחבר את WhatsApp לכלי ה-AI שלך (Claude, Cursor ועוד) דרך MCP.
 
-מה מקבלים:
-• דף סיכום יומי, מסודר לפי שיחה, עם סימון "ממתין לך" בשיחות שבהן ההודעה האחרונה לא ממך
-• סינון: היום, אתמול, 7 ימים או תאריך מסוים · רק פרטיות או גם קבוצות · חיפוש לפי שם שיחה
-• "העתק לסיכום ב-AI": מעתיק את ההודעות יחד עם בקשת סיכום מוכנה, להדבקה ב-Claude, ב-ChatGPT או ב-Gemini
-• ייצוא ל-Markdown ול-JSON, וייצוא יומי אוטומטי לקובץ
-• החרגת שיחות (משפחה, רפואי וכו'), כך שהן לא נשמרות בכלל
-• Webhook אופציונלי לחיבור לאוטומציות (Make, n8n, Supabase)
+שואלים את ה-AI למשל "מה קרה היום בווצאפ ומה מחכה לתשובה ממני?", "מה דנה כתבה לי השבוע?" או "חפש בווצאפ את המילה חשבונית". הוא מבקש מהתוסף בדיוק את ההודעות שהוא צריך, ועונה.
+
+מה ה-AI יכול לעשות:
+• לקרוא הודעות מהשעות או הימים האחרונים, מסודרות לפי שיחה
+• לראות אילו שיחות לא נקראו ואילו מחכות לתשובה ממך
+• לקרוא שיחה מסוימת לפי שם או לפי טווח תאריכים
+• לחפש טקסט בהודעות
 
 פרטיות ובטיחות:
-• קריאה בלבד: התוסף לא יכול לשלוח, למחוק או לסמן הודעות כנקראו. ברגע שהוא נטען, הוא מנתק מהדף את הפונקציות שעושות את זה.
-• בלי וי כחול על הודעות שהוא קורא
-• הכול נשמר רק בדפדפן שלך. אין שרת, אין אנליטיקס ואין מעקב.
-• שום דבר לא קורה לפני שאתה מאשר במסך ההפעלה. כיבוי בהגדרות מוחק את כל הנתונים.
-• קוד פתוח: github.com/kobibest/wa-reader
+• קריאה בלבד: אי אפשר לשלוח, למחוק או לסמן הודעות כנקראו. ברגע שהתוסף נטען, הוא מנתק מהדף את הפונקציות שעושות את זה.
+• שום דבר לא נשמר. כל בקשה נקראת ישירות מ-WhatsApp Web.
+• ההודעות עוברות רק בתוך המחשב שלך, לשרת MCP מקומי שמוגן בטוקן אישי, ומשם לכלי ה-AI שבחרת.
+• אפשר להחריג שיחות, ואז ה-AI לא יראה אותן לעולם.
+• אין אנליטיקס ואין מעקב. הקוד פתוח: github.com/kobibest/wa-reader
 
-איך מתחילים:
-1. מתקינים ומאשרים במסך ההפעלה
-2. פותחים את web.whatsapp.com
-3. לוחצים על אייקון התוסף, ואז "פתח סיכום יומי"
+התקנה (פעם אחת):
+1. מתקינים את התוסף ומאשרים במסך ההפעלה
+2. מתקינים Node.js, אם הוא עוד לא מותקן
+3. בהגדרות התוסף מעתיקים את ההגדרה המוכנה לכלי ה-AI (Claude לדסקטופ, Claude Code או Cursor)
+4. מפעילים מחדש את כלי ה-AI, ומשאירים את web.whatsapp.com פתוח בכרום
 
-התוסף עובד כשטאב של WhatsApp Web פתוח בכרום.
-
-WA Reader הוא פרויקט עצמאי ולא קשור ל-WhatsApp או ל-Meta.
+נבנה על ידי איתן | דיגיטציה ארגונית (digital.m-eitan.co.il). WA Reader הוא פרויקט עצמאי ולא קשור ל-WhatsApp או ל-Meta.
 ```
 
 ### Detailed description (English)
 ```
-WA Reader collects today's WhatsApp messages in one place and lets you summarize them with any AI in one click.
+WA Reader connects WhatsApp to your AI tools (Claude, Cursor and more) via MCP.
 
-What you get:
-• A daily digest grouped by chat, with "waiting for you" flags on chats where the last message isn't yours
-• Filters: today, yesterday, last 7 days or a specific date · direct chats only or groups too · search by chat name
-• "Copy for AI summary": copies the messages with a ready-made summary prompt for Claude, ChatGPT or Gemini
-• Export to Markdown and JSON, plus an optional automatic daily export file
-• Exclude chats (family, medical, etc.) so they are never stored
-• Optional webhook for your automations (Make, n8n, Supabase)
+Ask your AI "what happened on WhatsApp today and what do I still need to reply to?", "what did Dana send me this week?" or "search WhatsApp for invoice". It asks the extension for exactly the messages it needs, and answers.
+
+What the AI can do:
+• Read recent messages from the last hours or days, grouped by chat
+• See unread chats and chats waiting for your reply
+• Read one chat by name or date range
+• Search message text
 
 Privacy and safety:
-• Read-only: the extension cannot send, delete or mark messages as read. When it loads, it removes those functions from the page.
-• No blue ticks for messages it reads
-• Everything stays in your browser. No server, no analytics, no tracking.
-• Nothing happens until you agree on the activation screen. Turning it off in settings deletes all data.
-• Open source: github.com/kobibest/wa-reader
+• Read-only: it cannot send, delete or mark messages as read. When it loads, it removes those functions from the page.
+• Nothing is stored. Every request is read live from WhatsApp Web.
+• Messages travel only inside your computer, to a local MCP server protected by a personal token, and from there to the AI tool you chose.
+• Exclude chats so the AI never sees them.
+• No analytics, no tracking. Open source: github.com/kobibest/wa-reader
 
-Getting started:
-1. Install and agree on the activation screen
-2. Open web.whatsapp.com
-3. Click the extension icon, then "Open daily digest"
+Setup (once):
+1. Install the extension and agree on the activation screen
+2. Install Node.js if you don't have it
+3. In the extension settings, copy the ready-made config into your AI tool (Claude Desktop, Claude Code or Cursor)
+4. Restart the AI tool and keep web.whatsapp.com open in Chrome
 
-Works while a WhatsApp Web tab is open in Chrome.
-
-WA Reader is an independent project, not affiliated with WhatsApp or Meta.
+Built by Eitan | Organizational Digitization (digital.m-eitan.co.il). WA Reader is an independent project, not affiliated with WhatsApp or Meta.
 ```
 
-**Graphic assets:**
-- Store icon: `store/icon-128.png`
-- Screenshots: `store/screenshot-1.png`, `store/screenshot-2.png`, `store/screenshot-3.png` (1280×800)
-- Small promo tile: `store/promo-tile-440x280.png`
-
-**Official URL:** אפשר להשאיר ריק.
+**התמונות:** `store/icon-128.png`, `store/screenshot-1.png`, `store/screenshot-2.png`, `store/screenshot-3.png`, `store/promo-tile-440x280.png`
 **Homepage URL:** `https://github.com/kobibest/wa-reader`
 **Support URL:** `https://github.com/kobibest/wa-reader/issues`
 
 ---
 
-## לשונית Privacy
+## Privacy
 
-**Single purpose description:**
+**Single purpose:**
 ```
-Reads the user's WhatsApp Web messages (read-only) and presents them as a local daily digest that the user can review, export, or copy into an AI assistant for summarization.
+Gives the user's own local AI tools (MCP clients such as Claude Desktop or Cursor) read-only, on-demand access to the user's WhatsApp Web messages, through a local MCP server on the user's computer.
 ```
-
-**Permission justification:**
 
 | Permission | Justification |
 |---|---|
-| `storage` | Stores the user's settings and the collected messages locally in the browser so the daily digest can be shown. |
-| `alarms` | Runs a periodic sync while WhatsApp Web is open, deletes messages older than the user's retention period, and triggers the optional daily export. |
-| `downloads` | Saves the optional daily digest export as a Markdown file in the user's Downloads folder. Only used if the user enables daily export or clicks export. |
+| `storage` | Stores the user's settings only: the pairing token for the local MCP server, the port, the list of excluded chats and the consent flag. No messages are stored. |
+| `alarms` | Periodically re-establishes the connection to the local MCP server (127.0.0.1) so the AI tool can reach WhatsApp after the browser or the AI tool restarts. |
 | `scripting` | Registers the content scripts on web.whatsapp.com only after the user gives consent on the activation screen, and unregisters them when the user turns the extension off. |
-| Host permission `https://web.whatsapp.com/*` | Required to read the user's messages inside WhatsApp Web. This is the extension's single purpose. |
-| Optional host permissions (`https://*/*`, localhost) | Requested at runtime only for the single webhook URL the user types in settings, so new messages can be forwarded to the user's own automation. Never requested otherwise. |
+| Host permission `https://web.whatsapp.com/*` | Required to read the user's messages inside WhatsApp Web when the user's AI tool requests them. This is the extension's single purpose. |
 
-**Remote code:** `No, I am not using remote code`. כל הקוד נמצא בחבילה, כולל WA-JS שמוטמעת בתיקייה `page/`.
+**Remote code:** No. All code is in the package, including the WA-JS library in `page/`.
 
-**Data usage – לסמן את שתי אלה בלבד:**
-- ✅ **Personally identifiable information**: שמות אנשי הקשר, ומזהי שיחה שכוללים מספרי טלפון
-- ✅ **Personal communications**: תוכן ההודעות
+**Data usage – מסמנים את שתי אלה:**
+- ✅ Personally identifiable information: שמות אנשי קשר, ומזהי שיחה שכוללים מספרי טלפון
+- ✅ Personal communications: תוכן ההודעות
 
-**שלושת האישורים – לסמן את שלושתם:**
-- ✅ I do not sell or transfer user data to third parties, outside of the approved use cases
-- ✅ I do not use or transfer user data for purposes that are unrelated to my item's single purpose
-- ✅ I do not use or transfer user data to determine creditworthiness or for lending purposes
+ומסמנים גם את **שלושת** האישורים.
 
 **Privacy policy URL:** `https://kobibest.github.io/wa-reader/privacy.html`
 
----
+## Distribution
+Free · Public · All regions
 
-## לשונית Distribution
-- **Payments:** Free of charge
-- **Visibility:** Public
-- **Regions:** All regions. אפשר לצמצם לישראל אם רוצים להתחיל בקטן.
-
----
-
-## הערה לבודק (Test instructions)
-אם הדשבורד מציג שדה להוראות בדיקה, מדביקים שם:
+## Test instructions (לבודק)
 ```
-1. After install, the activation (consent) screen opens. Check the box and click "הפעל את התוסף" (Activate).
-2. Open https://web.whatsapp.com and log in with any WhatsApp account (QR code).
-3. Wait ~10 seconds, click the extension icon → "פתח סיכום יומי" (Open daily digest) to see today's messages.
-The extension is read-only: it captures only read functions from the bundled WA-JS library and deletes the library's global object from the page (see page/page.js).
+WA Reader is a bridge between WhatsApp Web and the user's local MCP client. To test:
+1. Install the extension; the activation screen opens. Check the box and click "הפעל את התוסף" (Activate).
+2. Open https://web.whatsapp.com and log in with any account.
+3. Install Node.js 18+. Open the extension settings ("חיבור לכלי AI והגדרות"), choose "Claude Code" and run the shown command, or add the shown JSON to Claude Desktop's MCP config. The MCP server source is in the same open-source repo (github.com/kobibest/wa-reader, folder mcp/).
+4. Restart the MCP client and ask it: "What happened on WhatsApp today?". The popup shows both WhatsApp Web and the AI tool as connected.
+The extension only answers read requests from a local server on 127.0.0.1 that presents the per-install token; it captures only read functions from the bundled WA-JS library and deletes its global from the page (page/page.js). It stores no messages.
 ```

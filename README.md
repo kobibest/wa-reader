@@ -1,65 +1,82 @@
 # WA Reader
 
-**סיכום יומי של WhatsApp Web – קריאה בלבד, חינם, קוד פתוח.**
-**A read-only daily digest of WhatsApp Web – free and open source.** [English ↓](#english)
+**מחבר את WhatsApp לכלי ה-AI שלך (Claude, Cursor ועוד) דרך MCP. קריאה בלבד, חינם, קוד פתוח.**
+**Give your AI tools read-only, on-demand access to WhatsApp Web via MCP.** [English ↓](#english)
 
-תוסף כרום שקורא את ההודעות שלך ב-WhatsApp Web, מסדר אותן לפי שיחה, ומסמן מה מחכה לתשובה ממך. בלחיצה אחת אפשר להעתיק את הכול לסיכום ב-Claude, ב-ChatGPT או ב-Gemini.
+שואלים את Claude למשל "מה קרה היום בווצאפ ומה מחכה לתשובה ממני?". הוא מבקש מ-WA Reader את ההודעות הרלוונטיות, מקבל אותן ועונה. ההודעות לא נשמרות בשום מקום, והתוסף לא יכול לשלוח שום דבר.
 
-![צילום מסך](store/screenshot-1.png)
+```
+Claude / Cursor  ──MCP──▶  wa-reader-mcp (במחשב שלך)  ──127.0.0.1──▶  תוסף WA Reader  ──▶  WhatsApp Web
+```
+
+## התקנה (5 דקות, פעם אחת)
+1. **התוסף:** מחנות Chrome (הקישור יתווסף אחרי האישור), או מהקוד: `chrome://extensions` ← Developer mode ← Load unpacked ← התיקייה `extension`.
+2. **הפעלה:** במסך שנפתח מאשרים את ההסכמה.
+3. **Node.js:** אם אין לכם, מתקינים מ-[nodejs.org](https://nodejs.org/), גרסה 18 ומעלה.
+4. **חיבור לכלי AI:** בחלון התוסף לוחצים "חיבור לכלי AI והגדרות", בוחרים את הכלי (Claude לדסקטופ, Claude Code, Cursor) ומעתיקים את ההגדרה. הטוקן האישי כבר בפנים.
+5. **סוגרים ופותחים מחדש את כלי ה-AI**, ומשאירים את web.whatsapp.com פתוח בכרום.
+
+דוגמה להגדרה ל-Claude לדסקטופ (`claude_desktop_config.json`):
+```json
+{
+  "mcpServers": {
+    "whatsapp": {
+      "command": "npx",
+      "args": ["-y", "github:kobibest/wa-reader"],
+      "env": { "WA_READER_TOKEN": "<הטוקן מהגדרות התוסף>" }
+    }
+  }
+}
+```
+ב-Windows: `"command": "cmd"`, `"args": ["/c", "npx", "-y", "github:kobibest/wa-reader"]`. מסך ההגדרות של התוסף מכין את זה אוטומטית.
+
+## הכלים שה-AI מקבל
+| כלי | מה הוא עושה |
+|---|---|
+| `whatsapp_status` | האם WhatsApp מחובר |
+| `whatsapp_recent_messages` | כל ההודעות מ-N השעות האחרונות, לפי שיחה. מתאים לשאלות כמו "מה קרה היום" |
+| `whatsapp_list_chats` | רשימת שיחות: לא נקראו, ממתינות לתשובה ממני, פרטיות, קבוצות |
+| `whatsapp_get_messages` | הודעות משיחה אחת, לפי שם או מזהה, בטווח תאריכים |
+| `whatsapp_search` | חיפוש טקסט בהודעות האחרונות |
+
+אין כלי ששולח, מוחק או מסמן הודעות.
 
 ## למה אפשר לסמוך עליו
-- **קריאה בלבד.** ברגע שהתוסף מתחבר, הוא לוקח רק 6 פונקציות קריאה ומוחק מהדף את כל הממשק של הספרייה, כולל שליחה, מחיקה וסימון כנקרא. אין בקוד אף קריאה שכותבת ל-WhatsApp. ראו [`extension/page/page.js`](extension/page/page.js).
-- **הכול נשאר אצלך.** ההודעות נשמרות ב-IndexedDB בדפדפן שלך בלבד. אין שרת, אין אנליטיקס ואין מעקב. ה-Google Analytics ש-WA-JS מפעילה כברירת מחדל כבוי ([`config.js`](extension/page/config.js)).
-- **שום דבר לא קורה בלי הסכמה.** עד שמאשרים במסך ההפעלה, התוסף לא מזריק שום קוד ל-WhatsApp Web. כיבוי בהגדרות מנתק אותו ומוחק את כל הנתונים.
-- **בלי וי כחול.** הקריאה נעשית מהזיכרון של הדף ולא מסמנת הודעות כנקראו.
+- **קריאה בלבד.** ברגע שהתוסף מתחבר, הוא לוקח רק פונקציות קריאה ומוחק מהדף את כל ממשק הספרייה, כולל שליחה, מחיקה וסימון כנקרא. ראו [`extension/page/page.js`](extension/page/page.js).
+- **שום דבר לא נשמר.** כל בקשה נקראת ישירות מה-WhatsApp Web הפתוח. בתוסף אין מסד נתונים, אין שרת, אין אנליטיקס ואין מעקב.
+- **החיבור המקומי סגור לאחרים.** השרת מאזין רק ל-127.0.0.1. הוא מקבל רק את התוסף, ורק עם הטוקן האישי. בקשות מדפי אינטרנט נחסמות. ראו [`mcp/bridge.js`](mcp/bridge.js).
+- **החרגת שיחות.** שיחות שמוסיפים בהגדרות לא נמסרות ל-AI אף פעם.
+- **שימו לב:** את מה שכלי ה-AI מקבל הוא מעבד לפי מדיניות הפרטיות שלו. למשל Claude שולח את זה לשרתים של Anthropic, כמו כל שאלה אחרת שתשאלו אותו.
 
-## התקנה
-- **מחנות Chrome:** הקישור יתווסף כאן אחרי אישור החנות.
-- **מהקוד:** מורידים את הריפו, פותחים `chrome://extensions`, מפעילים Developer mode, לוחצים Load unpacked ובוחרים את התיקייה `extension`.
-
-## אפשרויות
-- סינון לפי היום, אתמול, 7 ימים או תאריך מסוים, לפי קבוצות, ולפי "רק ממתינות לי".
-- העתקה לסיכום ב-AI, או ייצוא ל-Markdown ול-JSON.
-- ייצוא יומי אוטומטי לקובץ בתיקיית ההורדות.
-- החרגת שיחות, כך שהן לא נשמרות בכלל.
-- Webhook אופציונלי, למשל ל-Make, n8n או Supabase, לחיבור לאוטומציות שלך.
-
-## איך זה עובד
-| קובץ | תפקיד |
-|---|---|
-| `background.js` | הסכמה, רישום הסקריפטים רק אחרי אישור, סנכרון, שמירה, ייצוא ו-webhook |
-| `bridge.js` | גשר בין הדף לתוסף |
-| `page/page.js` | קורא הודעות דרך [WA-JS](https://github.com/wppconnect-team/wa-js) ונועל את פונקציות השינוי |
-| `page/wppconnect-wa.js` | WA-JS (Apache 2.0), מוטמע בתוסף כמו שהוא, בלי קוד שנטען מרחוק |
-| `ui/` | מסך הפעלה, חלון קופץ, דף סיכום, הגדרות ומדיניות פרטיות |
-
-## כשווצאפ מתעדכן ומשהו נשבר
+## פיתוח
 ```bash
-./scripts/update-wa-js.sh   # מושך את WA-JS העדכני מ-npm
-./scripts/package.sh        # בונה ZIP להעלאה לחנות
+npm install
+WA_READER_TOKEN=<token> node mcp/server.js   # שרת ה-MCP (stdio)
+./scripts/update-wa-js.sh                   # עדכון WA-JS כשווצאפ משתנה
+./scripts/package.sh                        # ZIP לחנות
 ```
 
 ## חשוב לדעת
-התוסף לא קשור ל-WhatsApp או ל-Meta ולא מאושר על ידן. הוא משתמש בדרך לא רשמית כדי לקרוא נתונים מתוך WhatsApp Web. השימוש באחריותך. [מדיניות פרטיות](https://kobibest.github.io/wa-reader/privacy.html)
+התוסף לא קשור ל-WhatsApp או ל-Meta ולא מאושר על ידן. הוא קורא נתונים מתוך WhatsApp Web בדרך לא רשמית, ועדכונים של WhatsApp עלולים לשבור אותו זמנית. השימוש באחריותכם. [מדיניות פרטיות](https://kobibest.github.io/wa-reader/privacy.html)
 
 ## מי בנה את זה
 
 <a href="https://digital.m-eitan.co.il/?utm_source=github&utm_medium=readme&utm_campaign=wa-reader"><img src="docs/eitan-mark.svg" width="56" align="right" alt="איתן | דיגיטציה ארגונית"></a>
 
-**[איתן | דיגיטציה ארגונית](https://digital.m-eitan.co.il/?utm_source=github&utm_medium=readme&utm_campaign=wa-reader)** – קובי איתן.
-אני בונה לעסקים מערכות, אוטומציות וסוכני AI שחוסכים עבודה ידנית. צריכים סיכום שמגיע אוטומטית כל בוקר, חיבור של הווצאפ ל-CRM, או אוטומציה אחרת לעסק? [לשיחת ייעוץ ראשונית חינם](https://digital.m-eitan.co.il/?utm_source=github&utm_medium=readme&utm_campaign=wa-reader#contact)
+**[איתן | דיגיטציה ארגונית](https://digital.m-eitan.co.il/?utm_source=github&utm_medium=readme&utm_campaign=wa-reader)**, קובי איתן.
+אני בונה לעסקים מערכות, אוטומציות וסוכני AI שחוסכים עבודה ידנית. רוצים לחבר את הווצאפ ל-CRM, או לבנות סוכן AI לעסק? [לשיחת ייעוץ ראשונית חינם](https://digital.m-eitan.co.il/?utm_source=github&utm_medium=readme&utm_campaign=wa-reader#contact)
 
 ---
 
 <a id="english"></a>
 ## English
 
-WA Reader is a Chrome extension that reads your WhatsApp Web messages, groups them by chat, flags what is waiting for your reply, and lets you copy everything into any AI for a summary.
+Ask Claude "what happened on WhatsApp today and what do I still need to reply to?". The AI calls WA Reader's MCP tools, the extension reads the answer live from your open WhatsApp Web tab, and nothing is stored.
 
-- **Read-only by construction.** Once WhatsApp loads, the extension captures six read functions and deletes the WA-JS global from the page, so nothing on the page can send, delete or mark messages as read.
-- **Local-only.** Messages are stored in your browser's IndexedDB. There is no server, analytics or tracking. An optional webhook sends data only to an address you choose.
-- **Consent first.** Nothing is injected into WhatsApp Web until you agree on the welcome screen. Turning the extension off detaches it and wipes all data.
+**Setup:** install the extension (`extension/` folder, or the Chrome Web Store), activate it, install Node.js 18+, then open the extension's settings and copy the ready-made MCP config (it includes your personal token) into Claude Desktop, Claude Code, Cursor or any MCP client. Restart the AI tool and keep web.whatsapp.com open.
 
-**Install from source:** `chrome://extensions` → Developer mode → Load unpacked → select the `extension` folder.
+**Tools:** `whatsapp_status`, `whatsapp_recent_messages`, `whatsapp_list_chats`, `whatsapp_get_messages`, `whatsapp_search`. All of them are read-only. None of them can send, delete or mark messages.
+
+**Security:** read functions are captured and the WA-JS global is deleted from the page. The local bridge listens on 127.0.0.1 only, requires a per-install token, accepts WebSocket connections only from `chrome-extension://` origins, and rejects any HTTP request that carries a browser `Origin`. Excluded chats are never returned. Data you give an AI tool is processed under that tool's privacy policy.
 
 Built by [Kobi Eitan – Eitan | Organizational Digitization](https://digital.m-eitan.co.il/?utm_source=github&utm_medium=readme&utm_campaign=wa-reader). Not affiliated with WhatsApp or Meta. Uses [WA-JS](https://github.com/wppconnect-team/wa-js) (Apache 2.0). Code is MIT-licensed. [Privacy policy](https://kobibest.github.io/wa-reader/privacy.html).

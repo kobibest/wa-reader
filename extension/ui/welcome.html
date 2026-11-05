@@ -6,7 +6,7 @@
 <title>WA Reader – הפעלה</title>
 <link rel="stylesheet" href="style.css">
 <style>
-  .wrap { max-width: 680px; margin: 0 auto; padding: 36px 16px 60px; }
+  .wrap { max-width: 680px; margin: 0 auto; padding: 36px 16px 40px; }
   .hero { display: flex; gap: 14px; align-items: center; margin-bottom: 18px; }
   .hero img { width: 56px; height: 56px; }
   h1 { font-size: 26px; }
@@ -27,28 +27,19 @@
     <img src="../icons/128.png" alt="">
     <div>
       <h1>WA Reader</h1>
-      <div class="muted">סיכום יומי של הווצאפ שלך · <span class="badge-ro">קריאה בלבד</span></div>
+      <div class="muted">הווצאפ שלך, זמין לכלי ה-AI שלך · <span class="badge-ro">קריאה בלבד</span></div>
     </div>
   </div>
 
   <div id="ask">
-    <p>לפני שהתוסף מתחיל לעבוד, חשוב שתדע בדיוק מה הוא עושה. עד שתאשר, הוא לא נוגע ב-WhatsApp Web ולא קורא שום דבר.</p>
+    <p>התוסף מחבר את WhatsApp Web לכלי AI במחשב שלך (Claude, Cursor ועוד) דרך MCP. כשתשאל את ה-AI משהו על הווצאפ, הוא יבקש מהתוסף את ההודעות הרלוונטיות ויקבל אותן. עד שתאשר כאן, התוסף לא נוגע ב-WhatsApp Web.</p>
 
     <div class="card">
-      <h3>מה התוסף קורא</h3>
+      <h3>מה קורה בפועל</h3>
       <ul>
-        <li>את ההודעות בשיחות שלך ב-WhatsApp Web, מהיום הקודם ואילך, כל עוד הטאב פתוח בכרום.</li>
-        <li>טקסט, כיתובים, שם השולח ושעה. ממדיה נשמרת רק תווית (למשל "[תמונה]"), לא הקובץ.</li>
-        <li>אפשר להחריג שיחות בהגדרות, והן לא יישמרו בכלל.</li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <h3>איפה הנתונים נשמרים</h3>
-      <ul>
-        <li>רק בדפדפן הזה, במחשב שלך. כברירת מחדל נמחקים אחרי 14 יום.</li>
-        <li>התוסף לא שולח נתונים לשום שרת, ואין בו אנליטיקס או מעקב.</li>
-        <li>החריג היחיד: אם תגדיר בעצמך כתובת webhook, ההודעות יישלחו לכתובת שבחרת, ורק אליה.</li>
+        <li>התוסף קורא הודעות רק כשכלי AI שחיברת מבקש, ורק בזמן ש-web.whatsapp.com פתוח בכרום.</li>
+        <li>הוא מעביר את ההודעות לשרת MCP קטן שרץ אצלך במחשב (בכתובת 127.0.0.1), ומשם לכלי ה-AI.</li>
+        <li>כלי ה-AI מעבד את מה שהוא קיבל לפי מדיניות הפרטיות שלו. למשל Claude שולח את זה לשרתים של Anthropic, כמו כל שאלה אחרת שאתה שואל אותו.</li>
       </ul>
     </div>
 
@@ -56,7 +47,8 @@
       <h3>מה התוסף לא עושה</h3>
       <ul>
         <li>לא שולח הודעות, לא מוחק, לא משנה ולא מסמן כנקרא. הפונקציות של שליחה, מחיקה וסימון מנותקות מהדף ברגע שהוא נטען.</li>
-        <li>לא שולח "וי כחול" על הודעות שהוא קורא.</li>
+        <li>לא שומר הודעות, ולא שולח נתונים לשום שרת חוץ מהמחשב שלך. אין בו אנליטיקס או מעקב.</li>
+        <li>לא מאפשר לאתרים אחרים לגשת לנתונים: החיבור המקומי מוגן בטוקן אישי.</li>
       </ul>
     </div>
 
@@ -64,25 +56,26 @@
       <h3>חשוב לדעת</h3>
       <ul>
         <li>התוסף לא קשור ל-WhatsApp או ל-Meta ולא מאושר על ידן. הוא קורא את הנתונים מתוך WhatsApp Web בדרך לא רשמית.</li>
-        <li>עדכונים של WhatsApp עלולים לשבור אותו זמנית עד שיוצא עדכון.</li>
-        <li>השימוש באחריותך. <a href="privacy.html" target="_blank">מדיניות הפרטיות המלאה</a> · <a href="https://github.com/kobibest/wa-reader" target="_blank">הקוד הפתוח</a></li>
+        <li>אפשר להחריג שיחות בהגדרות, ואז ה-AI לא יראה אותן לעולם.</li>
+        <li>עדכונים של WhatsApp עלולים לשבור את התוסף זמנית עד שיוצא עדכון. השימוש באחריותך. <a href="privacy.html" target="_blank">מדיניות הפרטיות</a> · <a href="https://github.com/kobibest/wa-reader" target="_blank">הקוד הפתוח</a></li>
       </ul>
     </div>
 
     <label class="agree">
       <input type="checkbox" id="ok">
-      <span>קראתי והבנתי, ואני מסכים שהתוסף יקרא את הודעות הווצאפ שלי וישמור אותן במחשב הזה.</span>
+      <span>קראתי והבנתי, ואני מסכים שהתוסף יקרא את הודעות הווצאפ שלי וימסור אותן לכלי ה-AI שאני מחבר אליו.</span>
     </label>
     <button class="primary" id="go" disabled>הפעל את התוסף</button>
   </div>
 
   <div class="done card" id="done">
-    <h3>התוסף פעיל</h3>
-    <p>פתח (או רענן) את <a href="https://web.whatsapp.com" target="_blank">web.whatsapp.com</a>. אחרי כמה שניות לחץ על אייקון התוסף בסרגל – הנקודה תהיה ירוקה ותראה כמה הודעות נאספו.</p>
-    <p class="muted small">טיפ: נעץ את התוסף (אייקון הפאזל ← נעיצה) כדי שיהיה תמיד בהישג יד.</p>
+    <h3>התוסף פעיל. נשאר לחבר כלי AI</h3>
+    <p>עוד שלב חד-פעמי: מעתיקים הגדרה קצרה לכלי ה-AI שלך.</p>
+    <button class="primary" id="toSetup">לחיבור כלי AI ←</button>
   </div>
+
+  <div id="by" style="margin-top:22px"></div>
 </div>
-<div class="wrap" style="padding-top:0"><a class="byline" href="https://digital.m-eitan.co.il/?utm_source=wa-reader&amp;utm_medium=extension&amp;utm_campaign=welcome" target="_blank" rel="noopener"><img class="mark-light" src="eitan-mark.svg" alt=""><img class="mark-dark" src="eitan-mark-light.svg" alt=""><span><small>נבנה על ידי</small><b>איתן | דיגיטציה ארגונית</b></span><span class="cta">לאתר ←</span></a></div>
 <script type="module" src="welcome.js"></script>
 </body>
 </html>

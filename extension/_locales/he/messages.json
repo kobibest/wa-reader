@@ -1,4 +1,8 @@
 {
-  "extName": { "message": "WA Reader – סיכום ווצאפ, קריאה בלבד" },
-  "extDescription": { "message": "קורא את ההודעות שלך ב-WhatsApp Web ומרכז אותן לסיכום יומי. קריאה בלבד – בלי שליחה. הכול נשמר במחשב שלך." }
+  "extName": {
+    "message": "WA Reader – ווצאפ לכלי AI (MCP), קריאה בלבד"
+  },
+  "extDescription": {
+    "message": "מחבר את WhatsApp Web ל-Claude, Cursor וכלי AI נוספים דרך MCP מקומי. קריאה בלבד, בלי שליחה. הנתונים לא יוצאים מהמחשב."
+  }
 }

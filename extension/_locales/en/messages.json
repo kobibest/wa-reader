@@ -1,4 +1,8 @@
 {
-  "extName": { "message": "WA Reader – read-only daily digest" },
-  "extDescription": { "message": "Turns your WhatsApp Web messages into a daily digest for any AI. Read-only, never sends. Data stays on your computer." }
+  "extName": {
+    "message": "WA Reader – WhatsApp for AI tools (MCP), read-only"
+  },
+  "extDescription": {
+    "message": "Lets Claude, Cursor and other AI tools read your WhatsApp Web on demand via a local MCP server. Read-only. Data stays on your PC."
+  }
 }

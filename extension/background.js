@@ -1,13 +1,31 @@
 // WA Reader – service worker.
-import { putMessages, getRange, count, pruneOlderThan, clearAll } from './lib/db.js';
-import { getSettings, excludeMatcher, startOfDay, ymd, toMarkdown } from './lib/shared.js';
-
+// Connects to the local wa-reader-mcp server (ws://127.0.0.1:<port>/ext) and answers its read-only
+// queries by asking the open WhatsApp Web tab. Nothing is stored and nothing is sent anywhere else.
 const WA_URL = 'https://web.whatsapp.com/*';
-export const CONSENT_VERSION = 1;
+const CONSENT_VERSION = 2;
+const DEFAULT_PORT = 47821;
+const METHODS = new Set(['status', 'listChats', 'getMessages', 'recent', 'search']);
+
+// ---------- settings & status ----------
+function newToken() {
+  const b = crypto.getRandomValues(new Uint8Array(24));
+  return btoa(String.fromCharCode(...b)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+async function getSettings() {
+  const { settings } = await chrome.storage.local.get('settings');
+  const s = { port: DEFAULT_PORT, token: '', excludeChats: '', ...(settings || {}) };
+  if (!s.token) { s.token = newToken(); await chrome.storage.local.set({ settings: s }); }
+  return s;
+}
+
+const status = { ai: 'disconnected', aiError: '', waReady: false, me: '', lastQueryAt: 0, lastQuery: '' };
+async function setStatus(patch) {
+  Object.assign(status, patch);
+  try { await chrome.storage.session.set({ status }); } catch { /* ignore */ }
+}
 
 // ---------- consent ----------
-// Nothing is injected into WhatsApp Web and nothing is read until the user explicitly agrees
-// on the welcome page. The scripts are registered only after consent and removed on revoke.
 const SCRIPTS = [
   { id: 'wa-bridge', matches: [WA_URL], js: ['bridge.js'], runAt: 'document_start', world: 'ISOLATED' },
   { id: 'wa-page', matches: [WA_URL], js: ['page/config.js', 'page/wppconnect-wa.js', 'page/page.js'], runAt: 'document_idle', world: 'MAIN' }
@@ -25,8 +43,8 @@ async function registerScripts() {
 }
 
 async function unregisterScripts() {
-  const existing = (await chrome.scripting.getRegisteredContentScripts()).map((s) => s.id);
-  if (existing.length) await chrome.scripting.unregisterContentScripts({ ids: existing });
+  const ids = (await chrome.scripting.getRegisteredContentScripts()).map((s) => s.id);
+  if (ids.length) await chrome.scripting.unregisterContentScripts({ ids });
 }
 
 async function reloadWaTabs() {
@@ -36,200 +54,167 @@ async function reloadWaTabs() {
 async function grantConsent() {
   await chrome.storage.local.set({ consent: { version: CONSENT_VERSION, at: Date.now() } });
   await registerScripts();
-  await scheduleAlarms();
   await reloadWaTabs();
+  ensureAlarm();
+  connect();
 }
 
 async function revokeConsent() {
-  await unregisterScripts();
+  disconnect();
   await chrome.alarms.clearAll();
-  await clearAll();
-  await chrome.storage.local.remove(['consent', 'status']);
+  await unregisterScripts();
+  await chrome.storage.local.remove('consent');
+  await setStatus({ waReady: false, me: '' });
   await reloadWaTabs();
 }
 
-// ---------- status ----------
-async function setStatus(patch) {
-  const { status } = await chrome.storage.local.get('status');
-  const next = { ...(status || {}), ...patch };
-  await chrome.storage.local.set({ status: next });
-  return next;
-}
-
-async function filterIncoming(msgs, s) {
-  const excluded = excludeMatcher(s.excludeChats);
-  return msgs.filter((m) => !excluded(m)
-    && !(m.isGroup && !s.includeGroups)
-    && !(m.archived && !s.includeArchived)
-    && !(m.muted && s.skipMuted));
-}
-
-async function ingest(msgs) {
-  if (!(await hasConsent())) return 0;
-  const s = await getSettings();
-  const clean = await filterIncoming(msgs, s);
-  const fresh = await putMessages(clean);
-  if (fresh.length && s.webhookUrl) pushWebhook(fresh, s).catch(() => {});
-  return fresh.length;
-}
-
-// ---------- optional webhook (off unless a URL is set) ----------
-async function pushWebhook(messages, s) {
-  const granted = await chrome.permissions.contains({ origins: [new URL(s.webhookUrl).origin + '/*'] });
-  if (!granted) { await setStatus({ webhookError: 'אין הרשאה לכתובת ה-webhook' }); return; }
-  const headers = { 'Content-Type': 'application/json' };
-  if (s.webhookSecret) headers['X-WA-Reader-Secret'] = s.webhookSecret;
-  for (let i = 0; i < messages.length; i += 200) {
-    const res = await fetch(s.webhookUrl, { method: 'POST', headers, body: JSON.stringify({ source: 'wa-reader', messages: messages.slice(i, i + 200) }) });
-    if (!res.ok) { await setStatus({ webhookError: `HTTP ${res.status}` }); return; }
-  }
-  await setStatus({ webhookError: '', webhookAt: Date.now() });
-}
-
-// ---------- sync ----------
+// ---------- WhatsApp tab ----------
 async function findWaTab() {
   const tabs = await chrome.tabs.query({ url: WA_URL });
   return tabs[0] || null;
 }
 
-let syncing = false;
-async function sync(reason = 'alarm') {
-  if (!(await hasConsent())) return { ok: false, error: 'התוסף עוד לא הופעל – פתח את מסך ההפעלה' };
-  if (syncing) return { ok: false, error: 'כבר מסנכרן' };
-  syncing = true;
+function excludeList(text) {
+  return (text || '').split('\n').map((s) => s.trim()).filter(Boolean);
+}
+
+async function queryWhatsApp(method, params) {
+  if (!METHODS.has(method)) throw new Error('unknown method');
+  if (!(await hasConsent())) throw new Error('The WA Reader extension is installed but not activated. Ask the user to open the extension and click "Activate".');
+  const tab = await findWaTab();
+  if (!tab) {
+    if (method === 'status') return { whatsappReady: false };
+    throw new Error('WhatsApp Web is not open. Ask the user to open https://web.whatsapp.com in Chrome.');
+  }
+  const s = await getSettings();
+  let res;
   try {
-    const tab = await findWaTab();
-    if (!tab) { await setStatus({ connected: false, lastError: 'WhatsApp Web לא פתוח' }); return { ok: false, error: 'פתח את web.whatsapp.com בכרום' }; }
-    const s = await getSettings();
-    const { status } = await chrome.storage.local.get('status');
-    // first run: from yesterday 00:00. Later: from the last sync with a 10-minute overlap.
-    const since = status?.lastSyncAt ? status.lastSyncAt - 10 * 60 * 1000 : startOfDay() - 86400000;
-    const startedAt = Date.now();
-    let res;
-    try {
-      res = await chrome.tabs.sendMessage(tab.id, {
-        kind: 'collect', since,
-        opts: { includeGroups: s.includeGroups, includeArchived: s.includeArchived, includeChannels: s.includeChannels, perChat: s.perChat, maxChats: s.maxChats }
-      });
-    } catch (e) {
-      await setStatus({ connected: false, lastError: 'הטאב של ווצאפ לא מגיב – רענן אותו' });
-      return { ok: false, error: 'רענן את טאב הווצאפ' };
-    }
-    if (!res?.ok) { await setStatus({ lastError: res?.error || 'שגיאה לא ידועה' }); return { ok: false, error: res?.error }; }
-    const added = await ingest(res.messages || []);
-    await setStatus({ connected: true, lastSyncAt: startedAt, lastError: '', lastAdded: added, lastScanned: res.chatsScanned, lastReason: reason });
-    return { ok: true, added, scanned: res.chatsScanned };
-  } finally {
-    syncing = false;
+    res = await chrome.tabs.sendMessage(tab.id, { kind: 'query', method, params: { ...params, exclude: excludeList(s.excludeChats) } });
+  } catch {
+    if (method === 'status') return { whatsappReady: false };
+    throw new Error('The WhatsApp Web tab is not responding. Ask the user to refresh it (F5).');
   }
+  if (!res?.ok) {
+    if (method === 'status') return { whatsappReady: false };
+    throw new Error(res?.error || 'WhatsApp Web error');
+  }
+  return method === 'status' ? { ...res.result, version: chrome.runtime.getManifest().version } : res.result;
 }
 
-// ---------- daily export to Downloads ----------
-function toBase64(str) {
-  const bytes = new TextEncoder().encode(str);
-  let bin = '';
-  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
-  return btoa(bin);
+// ---------- connection to the local MCP server ----------
+let ws = null;
+let pingTimer = null;
+let retryTimer = null;
+let backoff = 1000;
+
+function disconnect() {
+  clearInterval(pingTimer); clearTimeout(retryTimer);
+  pingTimer = retryTimer = null;
+  if (ws) { try { ws.onclose = null; ws.close(); } catch { /* ignore */ } }
+  ws = null;
+  setStatus({ ai: 'disconnected' });
 }
 
-async function exportDay(dayMs = Date.now()) {
-  const s = await getSettings();
-  const from = startOfDay(new Date(dayMs));
-  const to = from + 86400000;
-  const msgs = await getRange(from, to);
-  const md = toMarkdown(msgs, { fromMs: from, toMs: to, withPrompt: false });
-  const folder = (s.exportFolder || 'WhatsApp-Digest').replace(/[^\w\-א-ת ]/g, '').trim() || 'WhatsApp-Digest';
-  await chrome.downloads.download({
-    url: 'data:text/markdown;charset=utf-8;base64,' + toBase64('﻿' + md),
-    filename: `${folder}/whatsapp-${ymd(from)}.md`,
-    conflictAction: 'overwrite',
-    saveAs: false
-  });
-  await setStatus({ lastExportAt: Date.now() });
-  return msgs.length;
+function scheduleRetry() {
+  clearTimeout(retryTimer);
+  retryTimer = setTimeout(connect, backoff);
+  backoff = Math.min(backoff * 2, 30000);
 }
 
-// ---------- alarms ----------
-function nextAt(hhmm) {
-  const [h, m] = (hhmm || '23:30').split(':').map(Number);
-  const d = new Date(); d.setHours(h || 0, m || 0, 0, 0);
-  if (d.getTime() <= Date.now()) d.setDate(d.getDate() + 1);
-  return d.getTime();
-}
-
-async function scheduleAlarms() {
-  await chrome.alarms.clearAll();
+async function connect() {
   if (!(await hasConsent())) return;
+  if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) return;
   const s = await getSettings();
-  chrome.alarms.create('sync', { periodInMinutes: Math.max(5, Number(s.syncEveryMin) || 30), delayInMinutes: 1 });
-  chrome.alarms.create('prune', { periodInMinutes: 24 * 60, delayInMinutes: 5 });
-  if (s.autoExport) chrome.alarms.create('export', { when: nextAt(s.exportTime), periodInMinutes: 24 * 60 });
+  let sock;
+  try { sock = new WebSocket(`ws://127.0.0.1:${Number(s.port) || DEFAULT_PORT}/ext`); }
+  catch { scheduleRetry(); return; }
+  ws = sock;
+  setStatus({ ai: 'connecting' });
+  sock.onopen = () => sock.send(JSON.stringify({ type: 'hello', token: s.token, version: chrome.runtime.getManifest().version }));
+  sock.onmessage = async (ev) => {
+    let msg;
+    try { msg = JSON.parse(ev.data); } catch { return; }
+    if (msg.type === 'welcome') {
+      backoff = 1000;
+      setStatus({ ai: 'connected', aiError: '' });
+      clearInterval(pingTimer);
+      // keeps the connection – and this service worker – alive while an AI tool is running
+      pingTimer = setInterval(() => { try { sock.send('{"type":"ping"}'); } catch { /* ignore */ } }, 20000);
+    } else if (msg.type === 'request') {
+      let reply;
+      setStatus({ lastQueryAt: Date.now(), lastQuery: msg.method });
+      try { reply = { type: 'response', id: msg.id, ok: true, result: await queryWhatsApp(msg.method, msg.params || {}) }; }
+      catch (e) { reply = { type: 'response', id: msg.id, ok: false, error: String(e?.message || e) }; }
+      try { sock.send(JSON.stringify(reply)); } catch { /* ignore */ }
+    }
+  };
+  sock.onclose = (ev) => {
+    clearInterval(pingTimer); pingTimer = null;
+    if (ws === sock) ws = null;
+    const aiError = ev.code === 4003 ? 'הטוקן לא תואם להגדרת ה-MCP' : '';
+    setStatus({ ai: 'disconnected', aiError });
+    scheduleRetry();
+  };
+  sock.onerror = () => { /* onclose follows */ };
 }
 
-chrome.alarms.onAlarm.addListener(async (a) => {
-  if (a.name === 'sync') sync('alarm');
-  else if (a.name === 'prune') {
-    const s = await getSettings();
-    await pruneOlderThan(Date.now() - (Number(s.retentionDays) || 14) * 86400000);
-  } else if (a.name === 'export') {
-    await sync('export').catch(() => {});
-    await exportDay();
-  }
-});
+// Wakes the service worker to reconnect when no AI tool was running before.
+function ensureAlarm() { chrome.alarms.create('reconnect', { periodInMinutes: 0.5 }); }
+chrome.alarms.onAlarm.addListener((a) => { if (a.name === 'reconnect') connect(); });
+
+async function boot() {
+  if (await hasConsent()) { await registerScripts(); ensureAlarm(); connect(); }
+}
 
 chrome.runtime.onInstalled.addListener(async ({ reason }) => {
-  if (await hasConsent()) { await registerScripts(); await scheduleAlarms(); }
-  else {
-    await unregisterScripts();
-    if (reason === 'install') chrome.tabs.create({ url: chrome.runtime.getURL('ui/welcome.html') });
-  }
+  await getSettings(); // creates the pairing token
+  if (await hasConsent()) { await boot(); return; }
+  await unregisterScripts();
+  if (reason === 'install' || reason === 'update') chrome.tabs.create({ url: chrome.runtime.getURL('ui/welcome.html') });
 });
-chrome.runtime.onStartup.addListener(scheduleAlarms);
-chrome.storage.onChanged.addListener((ch) => { if (ch.settings) scheduleAlarms(); });
+chrome.runtime.onStartup.addListener(boot);
+boot();
 
-// ---------- messages ----------
+// settings changes (port/token) → reconnect
+chrome.storage.onChanged.addListener((ch, area) => {
+  if (area === 'local' && ch.settings) { disconnect(); connect(); }
+});
+
+// ---------- messages from our pages and content script ----------
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   (async () => {
-    // Messages from the WhatsApp tab are only accepted from our own content script on web.whatsapp.com;
-    // UI commands are only accepted from the extension's own pages.
     const fromWa = sender.tab && sender.url?.startsWith('https://web.whatsapp.com/') && sender.id === chrome.runtime.id;
     const fromUi = !sender.tab || sender.url?.startsWith(chrome.runtime.getURL(''));
     if (msg?.kind?.startsWith('wa_') ? !fromWa : !fromUi) return { ok: false, error: 'forbidden' };
     switch (msg?.kind) {
+      case 'wa_ready':
+        await setStatus({ waReady: true, me: msg.payload?.me || '' });
+        return { ok: true };
+      case 'wa_error':
+        await setStatus({ waReady: false });
+        return { ok: true };
       case 'consent':
         await grantConsent();
         return { ok: true };
       case 'revoke':
         await revokeConsent();
         return { ok: true };
-      case 'wa_ready':
-        await setStatus({ connected: true, readyAt: Date.now(), waHidden: !!msg.payload?.lock?.hidden, readFns: msg.payload?.lock?.readFns ?? 0, me: msg.payload?.me || '', waJs: msg.payload?.version || '', lastError: '' });
-        setTimeout(() => sync('ready'), 4000);
-        return { ok: true };
-      case 'wa_message':
-        await ingest([msg.payload]);
-        return { ok: true };
-      case 'wa_error':
-        await setStatus({ connected: false, lastError: msg.payload?.error || 'WA-JS error' });
-        return { ok: true };
-      case 'syncNow':
-        return sync('manual');
-      case 'getRange': {
+      case 'newToken': {
         const s = await getSettings();
-        const excluded = excludeMatcher(s.excludeChats);
-        const rows = (await getRange(msg.from, msg.to)).filter((m) => !excluded(m));
-        return { ok: true, messages: rows };
+        await chrome.storage.local.set({ settings: { ...s, token: newToken() } });
+        return { ok: true };
       }
-      case 'exportNow':
-        return { ok: true, count: await exportDay(msg.day || Date.now()) };
-      case 'stats': {
-        const { status } = await chrome.storage.local.get('status');
-        const today = await getRange(startOfDay(), Date.now() + 60000);
-        return { ok: true, consent: await hasConsent(), status: status || {}, total: await count(), today: today.length, tabOpen: !!(await findWaTab()) };
+      case 'state': {
+        const tab = await findWaTab();
+        const s = await getSettings();
+        const consent = await hasConsent();
+        let wa = { whatsappReady: false };
+        if (tab && consent) wa = await Promise.race([queryWhatsApp('status', {}).catch(() => ({ whatsappReady: false })), new Promise((r) => setTimeout(() => r({ whatsappReady: false }), 4000))]);
+        if (wa.whatsappReady) await setStatus({ waReady: true, me: wa.me || status.me });
+        return { ok: true, consent, status: { ...status, waOpen: !!tab, waReady: !!wa.whatsappReady, chats: wa.chats || 0 }, settings: s };
       }
-      case 'wipe':
-        await clearAll();
-        await chrome.storage.local.remove('status');
+      case 'reconnect':
+        disconnect(); connect();
         return { ok: true };
       default:
         return { ok: false, error: 'unknown' };

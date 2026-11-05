@@ -7,12 +7,11 @@
 <style>
   body { width: 320px; padding: 14px; }
   header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0 12px; }
-  .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
-  .stat b { display: block; font-size: 20px; }
-  .actions { display: grid; gap: 6px; }
+  .st { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; margin-bottom: 8px; }
+  .st .k { font-size: 12px; color: var(--muted); }
+  .st .v { font-weight: 600; }
+  .actions { display: grid; gap: 6px; margin-top: 10px; }
   .actions button { width: 100%; }
-  #msg { min-height: 18px; margin-top: 8px; }
 </style>
 </head>
 <body>
@@ -20,24 +19,23 @@
     <h2>WA Reader</h2>
     <span class="badge-ro">קריאה בלבד</span>
   </header>
-  <div id="conn" class="small"><span class="dot"></span>בודק…</div>
-  <div class="stats">
-    <div class="stat"><b id="today">–</b><span class="muted small">הודעות היום</span></div>
-    <div class="stat"><b id="total">–</b><span class="muted small">שמורות מקומית</span></div>
-  </div>
-  <div class="small muted" id="last"></div>
-  <div class="small muted" id="lock"></div>
-  <div id="setup" style="display:none;margin-top:12px">
-    <p class="small">התוסף עוד לא הופעל. הוא לא קורא כלום עד שתאשר.</p>
+
+  <div id="setup" style="display:none">
+    <p class="small">התוסף עוד לא הופעל. הוא לא נוגע בווצאפ עד שתאשר.</p>
     <button class="primary" id="activate" style="width:100%">להפעלה</button>
   </div>
-  <div class="actions" id="main" style="margin-top:12px">
-    <button class="primary" id="open">פתח סיכום יומי</button>
-    <button id="sync">סנכרן עכשיו</button>
-    <button id="opts">הגדרות</button>
+
+  <div id="main" style="display:none">
+    <div class="st"><div class="k">WhatsApp Web</div><div class="v" id="wa"><span class="dot"></span>בודק…</div></div>
+    <div class="st"><div class="k">כלי AI (MCP)</div><div class="v" id="ai"><span class="dot"></span>בודק…</div></div>
+    <div class="small muted" id="last"></div>
+    <div class="actions">
+      <button class="primary" id="opts">חיבור לכלי AI והגדרות</button>
+      <button id="openWa">פתח את WhatsApp Web</button>
+    </div>
   </div>
-  <div id="msg" class="small"></div>
-  <div style="margin-top:10px"><a class="byline compact" href="https://digital.m-eitan.co.il/?utm_source=wa-reader&amp;utm_medium=extension&amp;utm_campaign=popup" target="_blank" rel="noopener"><img class="mark-light" src="eitan-mark.svg" alt=""><img class="mark-dark" src="eitan-mark-light.svg" alt=""><span><small>נבנה על ידי</small><b>איתן | דיגיטציה ארגונית</b></span><span class="cta">לאתר ←</span></a></div>
+
+  <div style="margin-top:12px" id="by"></div>
   <script type="module" src="popup.js"></script>
 </body>
 </html>
