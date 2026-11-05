@@ -77,16 +77,17 @@
         <button data-t="other">אחר</button>
       </div>
       <div id="paneDesktop">
-        <p class="small muted" style="margin:4px 0 0">התקנה בלחיצה, בלי Node.js. <b>רק לאפליקציית Claude לדסקטופ</b>.</p>
+        <p class="small muted" style="margin:4px 0 0">רק לאפליקציית <b>Claude לדסקטופ</b> (לא לאתר claude.ai). לא צריך את זה אם כבר חיברת את Claude למעלה. ההבדל: כאן ההודעות עוברות רק בתוך המחשב, בלי שרת ממסר.</p>
         <div class="step"><div class="num">1</div><div>
-          <a class="btn" href="https://kobibest.github.io/wa-reader/wa-reader.mcpb" download style="display:inline-block;text-decoration:none">הורד את ההרחבה ל-Claude</a>
-          <span class="small muted">קובץ <code>wa-reader.mcpb</code></span>
+          <a class="btn" href="https://kobibest.github.io/wa-reader/wa-reader.mcpb" download style="display:inline-block;text-decoration:none">הורד את הקובץ wa-reader.mcpb</a>
         </div></div>
-        <div class="step"><div class="num">2</div><div>לוחצים פעמיים על הקובץ, או ב-Claude: <b>Settings ← Extensions</b> וגוררים אליו את הקובץ. לוחצים <b>Install</b>.</div></div>
-        <div class="step"><div class="num">3</div><div>
-          Claude יבקש <b>WA Reader token</b>:
+        <div class="step"><div class="num">2</div><div>פותחים את אפליקציית Claude לדסקטופ ← <b>Settings</b> (הגדרות) ← <b>Extensions</b>.</div></div>
+        <div class="step"><div class="num">3</div><div>גוררים את הקובץ שהורדת לתוך החלון של Extensions, ולוחצים <b>Install</b>. (אפשר גם ללחוץ פעמיים על הקובץ בתיקיית ההורדות.)</div></div>
+        <div class="step"><div class="num">4</div><div>
+          Claude יבקש <b>WA Reader token</b>. מעתיקים את הטוקן הזה, מדביקים ולוחצים <b>Save</b>:
           <div class="row2"><code id="tokFull" style="font-size:13px"></code><button id="copyTok">העתק טוקן</button></div>
         </div></div>
+        <div class="step"><div class="num">5</div><div>מוודאים שההרחבה WA Reader <b>מופעלת</b> (Enabled), סוגרים ופותחים מחדש את Claude, ושואלים "מה קרה היום בווצאפ?". web.whatsapp.com צריך להיות פתוח בכרום.</div></div>
       </div>
       <div id="paneAdvanced" style="display:none">
         <p class="small muted" style="margin:4px 0 0">דורש <a href="https://nodejs.org/" target="_blank" rel="noopener">Node.js</a> 18 ומעלה. הטוקן האישי כבר בתוך ההגדרה.</p>
