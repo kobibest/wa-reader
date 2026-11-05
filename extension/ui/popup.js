@@ -1,25 +1,23 @@
 import { byline } from './byline.js';
 
 const $ = (id) => document.getElementById(id);
-const dot = (on) => `<span class="dot ${on ? 'on' : ''}"></span>`;
-
-function ago(ms) {
-  if (!ms) return '';
-  const min = Math.round((Date.now() - ms) / 60000);
-  return min < 1 ? 'עכשיו' : min < 60 ? `לפני ${min} דק׳` : `לפני ${Math.round(min / 60)} שע׳`;
-}
+const light = (n, on, note) => { $('d' + n).classList.toggle('on', on); $('k' + n).textContent = note; };
 
 async function refresh() {
-  const r = await chrome.runtime.sendMessage({ kind: 'state' });
+  const r = await chrome.runtime.sendMessage({ kind: 'state' }).catch(() => null);
   if (!r?.ok) return;
   $('setup').style.display = r.consent ? 'none' : 'block';
   $('main').style.display = r.consent ? 'block' : 'none';
   if (!r.consent) return;
   const s = r.status;
-  $('wa').innerHTML = dot(s.waReady) + (s.waReady ? `מחובר · ${s.chats} שיחות` : s.waOpen ? 'הטאב פתוח, ממתין שייטען…' : 'לא פתוח בכרום');
-  const ok = s.cloud === 'connected' || s.ai === 'connected';
-  $('ai').innerHTML = dot(ok) + (s.cloud === 'connected' ? 'מוכן – Claude יכול לקרוא' : s.ai === 'connected' ? 'מחובר (מקומי)' : s.waOpen ? 'מתחבר…' : 'ממתין ל-WhatsApp Web');
-  $('last').textContent = s.lastQueryAt ? `בקשה אחרונה מה-AI: ${ago(s.lastQueryAt)}` : '';
+  const wa = s.waOpen && s.waReady;
+  const bridge = s.bridge === 'connected';
+  light(1, wa, wa ? `${s.chats} שיחות` : s.waOpen ? 'נטען…' : 'לא פתוח');
+  light(2, bridge, bridge ? 'מחובר' : s.bridge === 'connecting' ? 'מתחבר…' : 'לא מחובר');
+  light(3, wa && bridge, wa && bridge ? 'Claude יכול לקרוא' : '');
+  $('hint').textContent = !s.waOpen ? 'פתח את web.whatsapp.com בכרום.'
+    : !bridge ? 'פתח את Claude Desktop ובדוק שההרחבה WA Reader מותקנת ופעילה (Settings ← Extensions).'
+    : '';
 }
 
 $('activate').onclick = () => chrome.tabs.create({ url: chrome.runtime.getURL('ui/welcome.html') });
@@ -27,4 +25,4 @@ $('opts').onclick = () => chrome.runtime.openOptionsPage();
 $('openWa').onclick = () => chrome.tabs.create({ url: 'https://web.whatsapp.com/' });
 $('by').append(byline('popup', { compact: true }));
 refresh();
-setInterval(refresh, 3000);
+setInterval(refresh, 2000);

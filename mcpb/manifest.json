@@ -2,12 +2,12 @@
   "$schema": "https://raw.githubusercontent.com/anthropics/mcpb/main/dist/mcpb-manifest-v0.3.schema.json",
   "manifest_version": "0.3",
   "name": "wa-reader",
-  "display_name": "WA Reader – WhatsApp (read-only, local)",
+  "display_name": "WA Reader – וואטסאפ (קריאה בלבד, מקומי)",
   "version": "2.0.0",
-  "description": "Read-only access to your WhatsApp Web through the WA Reader Chrome extension: recent messages, unread and awaiting-reply chats, one chat, and search.",
-  "long_description": "WA Reader lets Claude read your WhatsApp on demand. It works together with the free WA Reader Chrome extension: keep web.whatsapp.com open in Chrome, and Claude can read recent messages, see which chats are unread or waiting for your reply, read one chat, or search. It cannot send, delete or mark messages. Nothing is stored, and messages travel only inside your computer (127.0.0.1) to Claude. Paste the token from the extension's settings when installing.",
+  "description": "Claude קורא את ה-WhatsApp שלך מתוך WhatsApp Web בכרום, דרך התוסף WA Reader. קריאה בלבד, הכול נשאר במחשב.",
+  "long_description": "WA Reader מחבר את Claude Desktop ל-WhatsApp Web שפתוח בכרום, דרך תוסף הכרום החינמי WA Reader. Claude יכול לראות רשימת שיחות (כולל לא נקראו וממתינות לתשובה), לקרוא שיחה ולחפש בהודעות. הוא לא יכול לשלוח, למחוק או לסמן הודעות.\n\nהכול מקומי: ההרחבה מאזינה רק על 127.0.0.1 ומקבלת חיבור רק מהתוסף WA Reader. אין שרת חיצוני, אין טלמטריה, ושום הודעה לא נשמרת. מה ש-Claude מבקש עובר ל-Anthropic כחלק מהשיחה.\n\nנבנה על ידי איתן | דיגיטציה ארגונית – https://digital.m-eitan.co.il",
   "author": {
-    "name": "Kobi Eitan – Eitan | Organizational Digitization",
+    "name": "Kobi Eitan – איתן | דיגיטציה ארגונית",
     "email": "kobi@eitan-m.co.il",
     "url": "https://digital.m-eitan.co.il/"
   },
@@ -16,80 +16,40 @@
     "url": "https://github.com/kobibest/wa-reader"
   },
   "homepage": "https://kobibest.github.io/wa-reader/",
+  "documentation": "https://github.com/kobibest/wa-reader#readme",
   "support": "https://github.com/kobibest/wa-reader/issues",
   "icon": "icon.png",
   "license": "MIT",
-  "keywords": [
-    "whatsapp",
-    "messages",
-    "read-only",
-    "chrome-extension"
-  ],
-  "privacy_policies": [
-    "https://kobibest.github.io/wa-reader/privacy.html"
-  ],
+  "keywords": ["whatsapp", "messages", "read-only", "local", "chrome-extension"],
+  "privacy_policies": ["https://kobibest.github.io/wa-reader/privacy.html"],
   "server": {
     "type": "node",
     "entry_point": "server/index.js",
     "mcp_config": {
       "command": "node",
-      "args": [
-        "${__dirname}/server/index.js"
-      ],
+      "args": ["${__dirname}/server/index.js"],
       "env": {
-        "WA_READER_TOKEN": "${user_config.token}",
-        "WA_READER_PORT": "${user_config.port}"
+        "WA_READER_EXTENSION_ID": "${user_config.extension_id}"
       }
     }
   },
   "user_config": {
-    "token": {
+    "extension_id": {
       "type": "string",
-      "title": "WA Reader token",
-      "description": "Copy it from the WA Reader Chrome extension: Settings → Claude Desktop → Copy token.",
-      "sensitive": true,
-      "required": true
-    },
-    "port": {
-      "type": "number",
-      "title": "Local port",
-      "description": "Leave as is unless you changed the port in the extension settings.",
-      "default": 47821,
-      "min": 1024,
-      "max": 65535,
+      "title": "מזהה תוסף הכרום (Extension ID)",
+      "description": "השאר כמו שהוא. משנים רק כשמפתחים גרסה לא ארוזה של התוסף.",
+      "default": "pihiihgmfgefkneahjhmeamnmlfapmfp",
       "required": false
     }
   },
   "tools": [
-    {
-      "name": "whatsapp_status",
-      "description": "Check whether WhatsApp Web is connected"
-    },
-    {
-      "name": "whatsapp_recent_messages",
-      "description": "Messages from the last N hours across chats, grouped by chat"
-    },
-    {
-      "name": "whatsapp_list_chats",
-      "description": "List chats: unread, awaiting my reply, direct, groups"
-    },
-    {
-      "name": "whatsapp_get_messages",
-      "description": "Messages from one chat by name or id, optionally by date range"
-    },
-    {
-      "name": "whatsapp_search",
-      "description": "Search recent message text"
-    }
+    { "name": "whatsapp_status", "description": "בדיקה שהתוסף מחובר ו-WhatsApp Web טעון" },
+    { "name": "list_chats", "description": "רשימת שיחות: לא נקראו, ממתינות לתשובה, פרטיות, קבוצות" },
+    { "name": "get_messages", "description": "הודעות משיחה אחת (עד 200)" },
+    { "name": "search", "description": "חיפוש טקסט בהודעות (עד 100 תוצאות)" }
   ],
   "compatibility": {
-    "platforms": [
-      "win32",
-      "darwin",
-      "linux"
-    ],
-    "runtimes": {
-      "node": ">=18.0.0"
-    }
+    "platforms": ["win32", "darwin"],
+    "runtimes": { "node": ">=18.0.0" }
   }
 }

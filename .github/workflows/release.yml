@@ -1,0 +1,37 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm test
+      - run: ./scripts/build-mcpb.sh
+      - run: ./scripts/package.sh
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          v=$(node -p "require('./package.json').version")
+          tag="v$v"
+          notes="WA Reader $v – local-only bridge between WhatsApp Web and Claude Desktop.
+
+          Install: 1) WA Reader from the Chrome Web Store, 2) double-click wa-reader.mcpb (Claude Desktop only).
+          No server, no telemetry, read-only, nothing stored."
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" dist/wa-reader.mcpb "dist/wa-reader-$v.zip" --clobber
+          else
+            gh release create "$tag" dist/wa-reader.mcpb "dist/wa-reader-$v.zip" --target "$GITHUB_SHA" --title "WA Reader $v" --notes "$notes" --latest
+          fi

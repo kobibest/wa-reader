@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build the Claude Desktop extension: dist/wa-reader.mcpb (also copied to docs/ for GitHub Pages)
+# Build the Claude Desktop extension: dist/wa-reader.mcpb
 set -euo pipefail
 cd "$(dirname "$0")/.."
 v=$(node -p "require('./package.json').version")
@@ -12,5 +12,4 @@ npx esbuild mcp/server.js --bundle --platform=node --format=esm --target=node18 
   --outfile=build/mcpb/server/index.js --log-level=warning
 npx -y @anthropic-ai/mcpb@2.1.2 validate build/mcpb/manifest.json
 npx -y @anthropic-ai/mcpb@2.1.2 pack build/mcpb dist/wa-reader.mcpb
-cp dist/wa-reader.mcpb docs/wa-reader.mcpb
 echo "dist/wa-reader.mcpb (v$v)"

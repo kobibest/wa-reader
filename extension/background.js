@@ -1,46 +1,19 @@
 // WA Reader – service worker.
-// Answers read-only queries from the user's AI tools by asking the open WhatsApp Web tab. Two ways in:
-//   1. Cloud relay (default): Claude → wa-mcp Edge Function → Supabase Realtime (end-to-end encrypted) → here.
-//   2. Local (advanced): Claude Desktop / Code / Cursor → wa-reader-mcp on 127.0.0.1 → here.
-// Nothing is stored.
-import { BroadcastChannel } from './lib/realtime.js';
-import { deriveRelay, seal, open, newSecret, SECRET_RE } from './lib/relay-crypto.js';
+// Connects to the local WA Reader MCP server that Claude Desktop runs (ws://127.0.0.1:17345) and answers its
+// read-only requests by asking the open WhatsApp Web tab. That is the only connection this extension makes:
+// no other servers, no telemetry. Messages are never stored – each request is answered from memory and forgotten.
 
 const WA_URL = 'https://web.whatsapp.com/*';
-const CONSENT_VERSION = 3;
-const CONNECT_PAGE = 'https://kobibest.github.io/wa-reader/connect.html';
-const CLOUD = {
-  url: 'https://igmqqdexoqwulvknvrnj.supabase.co',
-  // public anon key – only allows joining Realtime broadcast channels; all traffic on them is encrypted
-  key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlnbXFxZGV4b3F3dWx2a252cm5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2MjExOTYsImV4cCI6MjEwMDE5NzE5Nn0.Pp0IgD6hVK64GL457ZxCBz60G1SrhqXgETrFEyEKi8Q',
-  mcpUrl: 'https://igmqqdexoqwulvknvrnj.supabase.co/functions/v1/wa-mcp'
-};
-const DEFAULT_PORT = 47821;
-const METHODS = new Set(['status', 'listChats', 'getMessages', 'recent', 'search']);
+const BRIDGE_URL = 'ws://127.0.0.1:17345';
+const CONSENT_VERSION = 4;           // 4 = local-only 2.0 (no cloud relay)
+const QUERY_TIMEOUT_MS = 14000;      // the MCP server gives up after 15 s
+const PING_MS = 20000;               // keeps the WebSocket – and this service worker – alive (Chrome 116+)
+const METHODS = new Set(['status', 'listChats', 'getMessages', 'search']);
 
-// ---------- settings & status ----------
-function newToken() {
-  const b = crypto.getRandomValues(new Uint8Array(24));
-  return btoa(String.fromCharCode(...b)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-}
+// In-memory status only (shown in the popup)
+const status = { bridge: 'disconnected', waReady: false, lastQueryAt: 0 };
 
-async function getSettings() {
-  const { settings } = await chrome.storage.local.get('settings');
-  const s = { port: DEFAULT_PORT, token: '', cloudSecret: '', excludeChats: '', ...(settings || {}) };
-  let changed = false;
-  if (!s.token) { s.token = newToken(); changed = true; }
-  if (!SECRET_RE.test(s.cloudSecret || '')) { s.cloudSecret = newSecret(); changed = true; }
-  if (changed) await chrome.storage.local.set({ settings: s });
-  return s;
-}
-
-const status = { ai: 'disconnected', aiError: '', cloud: 'disconnected', waReady: false, me: '', lastQueryAt: 0, lastQuery: '' };
-async function setStatus(patch) {
-  Object.assign(status, patch);
-  try { await chrome.storage.session.set({ status }); } catch { /* ignore */ }
-}
-
-// ---------- consent ----------
+// ---------- consent & content scripts ----------
 const SCRIPTS = [
   { id: 'wa-bridge', matches: [WA_URL], js: ['bridge.js'], runAt: 'document_start', world: 'ISOLATED' },
   { id: 'wa-page', matches: [WA_URL], js: ['page/config.js', 'page/wppconnect-wa.js', 'page/page.js'], runAt: 'document_idle', world: 'MAIN' }
@@ -72,16 +45,14 @@ async function grantConsent() {
   await reloadWaTabs();
   ensureAlarm();
   connect();
-  setTimeout(cloudConnect, 3000);
 }
 
 async function revokeConsent() {
   disconnect();
-  await cloudDisconnect();
   await chrome.alarms.clearAll();
   await unregisterScripts();
   await chrome.storage.local.remove('consent');
-  await setStatus({ waReady: false, me: '' });
+  status.waReady = false;
   await reloadWaTabs();
 }
 
@@ -91,35 +62,35 @@ async function findWaTab() {
   return tabs[0] || null;
 }
 
-function excludeList(text) {
-  return (text || '').split('\n').map((s) => s.trim()).filter(Boolean);
+async function excludeList() {
+  const { settings } = await chrome.storage.local.get('settings');
+  return String(settings?.excludeChats || '').split('\n').map((s) => s.trim()).filter(Boolean);
 }
 
 async function queryWhatsApp(method, params) {
   if (!METHODS.has(method)) throw new Error('unknown method');
-  if (!(await hasConsent())) throw new Error('The WA Reader extension is installed but not activated. Ask the user to open the extension and click "Activate".');
+  if (!(await hasConsent())) throw new Error('התוסף WA Reader מותקן אבל לא הופעל. פתח את התוסף בכרום ולחץ "הפעל".');
   const tab = await findWaTab();
   if (!tab) {
     if (method === 'status') return { whatsappReady: false };
-    throw new Error('WhatsApp Web is not open. Ask the user to open https://web.whatsapp.com in Chrome.');
+    throw new Error('WhatsApp Web לא פתוח. פתח את https://web.whatsapp.com בכרום ונסה שוב.');
   }
-  const s = await getSettings();
   let res;
   try {
-    res = await chrome.tabs.sendMessage(tab.id, { kind: 'query', method, params: { ...params, exclude: excludeList(s.excludeChats) } });
+    res = await chrome.tabs.sendMessage(tab.id, { kind: 'query', method, params: { ...params, exclude: await excludeList() }, timeoutMs: QUERY_TIMEOUT_MS });
   } catch {
     if (method === 'status') return { whatsappReady: false };
-    throw new Error('The WhatsApp Web tab is not responding. Ask the user to refresh it (F5).');
+    throw new Error('הטאב של WhatsApp Web לא מגיב. רענן אותו (F5) ונסה שוב.');
   }
   if (!res?.ok) {
     if (method === 'status') return { whatsappReady: false };
-    throw new Error(res?.error || 'WhatsApp Web error');
+    throw new Error(res?.error || 'שגיאה ב-WhatsApp Web');
   }
   const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
   return method === 'status' ? { ...res.result, version: chrome.runtime.getManifest().version, tz } : { ...res.result, tz };
 }
 
-// ---------- connection to the local MCP server ----------
+// ---------- connection to the local MCP server (Claude Desktop) ----------
 let ws = null;
 let pingTimer = null;
 let retryTimer = null;
@@ -130,227 +101,103 @@ function disconnect() {
   pingTimer = retryTimer = null;
   if (ws) { try { ws.onclose = null; ws.close(); } catch { /* ignore */ } }
   ws = null;
-  setStatus({ ai: 'disconnected' });
+  status.bridge = 'disconnected';
 }
 
-function scheduleRetry() {
+function scheduleRetry(delay = backoff) {
   clearTimeout(retryTimer);
-  retryTimer = setTimeout(connect, backoff);
+  retryTimer = setTimeout(connect, delay);
   backoff = Math.min(backoff * 2, 30000);
 }
 
 async function connect() {
   if (!(await hasConsent())) return;
   if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) return;
-  const s = await getSettings();
   let sock;
-  try { sock = new WebSocket(`ws://127.0.0.1:${Number(s.port) || DEFAULT_PORT}/ext`); }
-  catch { scheduleRetry(); return; }
+  try { sock = new WebSocket(BRIDGE_URL); } catch { scheduleRetry(); return; }
   ws = sock;
-  setStatus({ ai: 'connecting' });
-  sock.onopen = () => sock.send(JSON.stringify({ type: 'hello', token: s.token, version: chrome.runtime.getManifest().version }));
+  status.bridge = 'connecting';
+  sock.onopen = () => {
+    backoff = 1000;
+    status.bridge = 'connected';
+    clearInterval(pingTimer);
+    pingTimer = setInterval(() => { try { sock.send('{"type":"ping"}'); } catch { /* ignore */ } }, PING_MS);
+  };
   sock.onmessage = async (ev) => {
     let msg;
     try { msg = JSON.parse(ev.data); } catch { return; }
-    if (msg.type === 'welcome') {
-      backoff = 1000;
-      setStatus({ ai: 'connected', aiError: '' });
-      clearInterval(pingTimer);
-      // keeps the connection – and this service worker – alive while an AI tool is running
-      pingTimer = setInterval(() => { try { sock.send('{"type":"ping"}'); } catch { /* ignore */ } }, 20000);
-    } else if (msg.type === 'request') {
-      let reply;
-      setStatus({ lastQueryAt: Date.now(), lastQuery: msg.method });
-      try { reply = { type: 'response', id: msg.id, ok: true, result: await queryWhatsApp(msg.method, msg.params || {}) }; }
-      catch (e) { reply = { type: 'response', id: msg.id, ok: false, error: String(e?.message || e) }; }
-      try { sock.send(JSON.stringify(reply)); } catch { /* ignore */ }
-    }
+    if (!msg || msg.id === undefined || typeof msg.method !== 'string') return; // pong etc.
+    status.lastQueryAt = Date.now();
+    let reply;
+    try { reply = { id: msg.id, result: await queryWhatsApp(msg.method, msg.params || {}) }; }
+    catch (e) { reply = { id: msg.id, error: String(e?.message || e) }; }
+    try { sock.send(JSON.stringify(reply)); } catch { /* ignore */ }
   };
   sock.onclose = (ev) => {
     clearInterval(pingTimer); pingTimer = null;
     if (ws === sock) ws = null;
-    const aiError = ev.code === 4003 ? 'הטוקן לא תואם להגדרת ה-MCP' : '';
-    setStatus({ ai: 'disconnected', aiError });
-    scheduleRetry();
+    status.bridge = 'disconnected';
+    // 4000 = another connection (e.g. a second Chrome profile) took over – back off longer
+    scheduleRetry(ev.code === 4000 ? 30000 : backoff);
   };
   sock.onerror = () => { /* onclose follows */ };
 }
 
-// ---------- cloud relay (Supabase Realtime, end-to-end encrypted) ----------
-let cloud = null;          // { ch, key, secret }
-let cloudConnecting = false;
-const seenRids = new Map(); // rid → time, replay protection
-const CHUNK = 90000;        // chars per broadcast (Realtime free plan limit is 256 KB)
-
-async function cloudDisconnect() {
-  if (cloud) { try { cloud.ch.close(); } catch { /* ignore */ } }
-  cloud = null;
-  await setStatus({ cloud: 'disconnected' });
-}
-
-async function cloudConnect() {
-  if (cloud || cloudConnecting || !(await hasConsent())) return;
-  if (!(await findWaTab())) return; // only while WhatsApp Web is open
-  cloudConnecting = true;
-  try {
-    const s = await getSettings();
-    const { topic, key } = await deriveRelay(s.cloudSecret);
-    const state = { key, secret: s.cloudSecret, ch: null };
-    state.ch = new BroadcastChannel({
-      url: CLOUD.url, apikey: CLOUD.key, topic,
-      onBroadcast: (event, p) => { if (event === 'req') onCloudRequest(state, p); },
-      onClose: () => { if (cloud === state) { cloud = null; setStatus({ cloud: 'disconnected' }); } }
-    });
-    await state.ch.join();
-    cloud = state;
-    await setStatus({ cloud: 'connected' });
-  } catch {
-    await setStatus({ cloud: 'disconnected' });
-  } finally {
-    cloudConnecting = false;
-  }
-}
-
-async function onCloudRequest(state, p) {
-  if (typeof p?.rid !== 'string' || typeof p?.e !== 'string' || p.e.length > 200000) return;
-  let msg;
-  try { msg = await open(state.key, p.e); } catch { return; } // not sealed with our key → ignore
-  const now = Date.now();
-  for (const [r, t] of seenRids) if (now - t > 300000) seenRids.delete(r);
-  if (msg.rid !== p.rid || seenRids.has(msg.rid) || Math.abs(now - (msg.ts || 0)) > 120000) return;
-  seenRids.set(msg.rid, now);
-  try { state.ch.broadcast('ack', { rid: msg.rid }); } catch { return; }
-  await setStatus({ lastQueryAt: now, lastQuery: msg.method });
-  let reply;
-  try { reply = { rid: msg.rid, ok: true, result: await queryWhatsApp(msg.method, msg.params || {}) }; }
-  catch (e) { reply = { rid: msg.rid, ok: false, error: String(e?.message || e) }; }
-  const sealed = await seal(state.key, reply);
-  const n = Math.ceil(sealed.length / CHUNK) || 1;
-  if (n > 200) {
-    const small = await seal(state.key, { rid: msg.rid, ok: false, error: 'The answer is too large. Ask for a shorter time range or fewer chats.' });
-    try { state.ch.broadcast('res', { rid: msg.rid, k: 0, n: 1, d: small }); } catch { /* ignore */ }
-    return;
-  }
-  for (let k = 0; k < n; k++) {
-    try { state.ch.broadcast('res', { rid: msg.rid, k, n, d: sealed.slice(k * CHUNK, (k + 1) * CHUNK) }); } catch { return; }
-    if (n > 5) await new Promise((r) => setTimeout(r, 30)); // stay under Realtime's messages/second limit
-  }
-}
-
-// Wakes the service worker to reconnect when no AI tool was running before.
+// Wakes the service worker every 30 s to reconnect while Claude Desktop is not running.
 function ensureAlarm() { chrome.alarms.create('reconnect', { periodInMinutes: 0.5 }); }
-chrome.alarms.onAlarm.addListener(async (a) => {
-  if (a.name !== 'reconnect') return;
-  connect();
-  if (await findWaTab()) cloudConnect(); else if (cloud) cloudDisconnect();
-});
+chrome.alarms.onAlarm.addListener((a) => { if (a.name === 'reconnect') connect(); });
+
+// ---------- startup & migration from earlier versions ----------
+// Earlier versions kept a pairing token, a cloud-relay key and a port in chrome.storage. 2.0 needs none of them.
+async function cleanupOldStorage() {
+  const { settings } = await chrome.storage.local.get('settings');
+  const excludeChats = settings?.excludeChats || '';
+  await chrome.storage.local.remove(['settings', 'status', 'migratedV2', 'reconsentShown']);
+  if (excludeChats) await chrome.storage.local.set({ settings: { excludeChats } });
+  try { await chrome.storage.session.clear(); } catch { /* ignore */ }
+}
 
 async function boot() {
-  const migrated = await migrateFromV1();
-  if (await hasConsent()) { await registerScripts(); ensureAlarm(); connect(); cloudConnect(); return; }
+  if (await hasConsent()) { await registerScripts(); ensureAlarm(); connect(); return; }
   await unregisterScripts();
-  // re-consent when the purpose changed (1.x → 2, or 2 → 3: cloud relay)
-  const { consent, reconsentShown } = await chrome.storage.local.get(['consent', 'reconsentShown']);
-  if (migrated || (consent && consent.version < CONSENT_VERSION && reconsentShown !== CONSENT_VERSION)) {
-    await chrome.storage.local.set({ reconsentShown: CONSENT_VERSION });
-    chrome.tabs.create({ url: chrome.runtime.getURL('ui/welcome.html') });
-  }
-}
-
-// ---------- migration from 1.x (local digest version) ----------
-// 1.x stored messages in IndexedDB and had sync/prune/export alarms and webhook settings.
-// 2.x stores no messages, so everything left over is deleted on update.
-async function migrateFromV1() {
-  const { migratedV2, consent, settings: old } = await chrome.storage.local.get(['migratedV2', 'consent', 'settings']);
-  if (migratedV2) return false;
-  if (!consent && !old) { await chrome.storage.local.set({ migratedV2: true }); return false; } // fresh install
-  await new Promise((resolve) => {
-    try {
-      const req = indexedDB.deleteDatabase('wa-reader');
-      req.onsuccess = req.onerror = req.onblocked = () => resolve();
-    } catch { resolve(); }
-  });
-  for (const name of ['sync', 'prune', 'export']) await chrome.alarms.clear(name);
-  const { settings } = await chrome.storage.local.get('settings');
-  const keep = settings ? { port: settings.port, token: settings.token, excludeChats: settings.excludeChats } : null;
-  await chrome.storage.local.remove(['status', 'settings']);
-  if (keep && keep.token) await chrome.storage.local.set({ settings: { port: Number(keep.port) || DEFAULT_PORT, token: keep.token, excludeChats: keep.excludeChats || '' } });
-  else if (keep?.excludeChats) await chrome.storage.local.set({ settings: { port: DEFAULT_PORT, token: '', excludeChats: keep.excludeChats } });
-  await chrome.storage.local.set({ migratedV2: true });
-  return true;
 }
 
 chrome.runtime.onInstalled.addListener(async ({ reason }) => {
-  if (reason !== 'install') return; // updates are handled by boot() → migrateFromV1()
-  await chrome.storage.local.set({ migratedV2: true });
-  await getSettings(); // creates the pairing token
-  chrome.tabs.create({ url: chrome.runtime.getURL('ui/welcome.html') });
+  await cleanupOldStorage();
+  if (reason === 'install' || (reason === 'update' && !(await hasConsent()))) {
+    chrome.tabs.create({ url: chrome.runtime.getURL('ui/welcome.html') });
+  }
 });
 chrome.runtime.onStartup.addListener(boot);
 boot();
 
-// settings changes (port/token) → reconnect
-chrome.storage.onChanged.addListener((ch, area) => {
-  if (area === 'local' && ch.settings) {
-    const o = ch.settings.oldValue || {}, n = ch.settings.newValue || {};
-    if (o.token !== n.token || o.port !== n.port) { disconnect(); connect(); }
-    if (o.cloudSecret !== n.cloudSecret) cloudDisconnect().then(cloudConnect);
-  }
-});
-
-// ---------- messages from our pages and content script ----------
+// ---------- messages from our pages and the WhatsApp content script ----------
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   (async () => {
-    const fromWa = sender.tab && sender.url?.startsWith('https://web.whatsapp.com/') && sender.id === chrome.runtime.id;
-    const fromUi = !sender.tab || sender.url?.startsWith(chrome.runtime.getURL(''));
-    const fromConnect = sender.tab && sender.id === chrome.runtime.id && sender.url?.startsWith(CONNECT_PAGE);
-    const allowed = msg?.kind?.startsWith('wa_') ? fromWa : msg?.kind?.startsWith('connect') ? fromConnect : fromUi;
+    if (sender.id !== chrome.runtime.id) return { ok: false, error: 'forbidden' };
+    const fromWa = !!sender.tab && !!sender.url?.startsWith('https://web.whatsapp.com/');
+    const fromUi = !sender.tab || !!sender.url?.startsWith(chrome.runtime.getURL(''));
+    const allowed = msg?.kind?.startsWith('wa_') ? fromWa : fromUi;
     if (!allowed) return { ok: false, error: 'forbidden' };
     switch (msg?.kind) {
-      case 'wa_ready':
-        await setStatus({ waReady: true, me: msg.payload?.me || '' });
-        cloudConnect();
-        return { ok: true };
-      case 'wa_error':
-        await setStatus({ waReady: false });
-        return { ok: true };
-      case 'consent':
-        await grantConsent();
-        return { ok: true };
-      case 'revoke':
-        await revokeConsent();
-        return { ok: true };
-      case 'newToken': {
-        const s = await getSettings();
-        await chrome.storage.local.set({ settings: { ...s, token: newToken() } });
-        return { ok: true };
-      }
-      case 'newCloudSecret': {
-        const s = await getSettings();
-        await chrome.storage.local.set({ settings: { ...s, cloudSecret: newSecret() } });
-        return { ok: true };
-      }
+      case 'wa_ready': status.waReady = true; return { ok: true };
+      case 'wa_error': status.waReady = false; return { ok: true };
+      case 'consent': await grantConsent(); return { ok: true };
+      case 'revoke': await revokeConsent(); return { ok: true };
       case 'state': {
-        const tab = await findWaTab();
-        const s = await getSettings();
         const consent = await hasConsent();
+        const tab = await findWaTab();
         let wa = { whatsappReady: false };
-        if (tab && consent) wa = await Promise.race([queryWhatsApp('status', {}).catch(() => ({ whatsappReady: false })), new Promise((r) => setTimeout(() => r({ whatsappReady: false }), 4000))]);
-        if (wa.whatsappReady) await setStatus({ waReady: true, me: wa.me || status.me });
-        if (tab && consent && !cloud) cloudConnect();
-        return { ok: true, consent, status: { ...status, waOpen: !!tab, waReady: !!wa.whatsappReady, chats: wa.chats || 0 }, settings: s, connectorUrl: CLOUD.mcpUrl, connectorKey: s.cloudSecret };
+        if (tab && consent) {
+          wa = await Promise.race([
+            queryWhatsApp('status', {}).catch(() => ({ whatsappReady: false })),
+            new Promise((r) => setTimeout(() => r({ whatsappReady: false }), 4000))
+          ]);
+        }
+        status.waReady = !!wa.whatsappReady;
+        if (consent && status.bridge === 'disconnected') { backoff = 1000; connect(); }
+        return { ok: true, consent, status: { ...status, waOpen: !!tab, chats: wa.chats || 0 } };
       }
-      // Claude sign-in page (connect-cs.js): hand over the personal key after the user clicks Approve there
-      case 'connectInfo':
-        return { ok: true, consent: await hasConsent() };
-      case 'connectKey': {
-        if (!(await hasConsent())) return { ok: false, error: 'not_activated' };
-        const s = await getSettings();
-        return { ok: true, secret: s.cloudSecret };
-      }
-      case 'reconnect':
-        disconnect(); connect();
-        return { ok: true };
       default:
         return { ok: false, error: 'unknown' };
     }

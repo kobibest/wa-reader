@@ -2,10 +2,13 @@
   "manifest_version": 3,
   "name": "__MSG_extName__",
   "short_name": "WA Reader",
-  "version": "2.2.0",
+  "version": "2.0.0",
   "description": "__MSG_extDescription__",
   "default_locale": "he",
   "homepage_url": "https://kobibest.github.io/wa-reader/",
+  "author": "Kobi Eitan – Eitan | Organizational Digitization",
+  "minimum_chrome_version": "116",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtrEptJTSpjaa+Re3hxB5Iga5Fl20wSPDYObOdk7vT7n4JR15z83IFv80Y92iEa3M2z5/cqwmShOON6dvos+M+9tdA/RMcpyOsH2Vxzl4oQ3dLWqJHyKYv4g9+1pMxDS6qAUh3pIWfltd33gxJsnhyeWTfXBsO0zFX21gkNesfi3cSsog42EGgJfG5bWtItuQD+7iEKo5t2AWXasjMi2WarEDkqIC5vUTTrkARkVLZUtlFPVqHH6TtMZI9GUw0xDS/VJ12JcuOeAFLAkCZ5FmokxtH4b+Az3zlp6I7IYkKz9vXXkFjagIeJAw9XlelIoKnRu2OOiHoREiED7FxRo7hwIDAQAB",
   "icons": {
     "16": "icons/16.png",
     "48": "icons/48.png",
@@ -31,17 +34,7 @@
   "host_permissions": [
     "https://web.whatsapp.com/*"
   ],
-  "author": "Kobi Eitan – Eitan | Organizational Digitization",
-  "minimum_chrome_version": "116",
-  "content_scripts": [
-    {
-      "matches": [
-        "https://kobibest.github.io/wa-reader/connect.html*"
-      ],
-      "js": [
-        "connect-cs.js"
-      ],
-      "run_at": "document_end"
-    }
-  ]
+  "content_security_policy": {
+    "extension_pages": "default-src 'self'; script-src 'self'; object-src 'none'; img-src 'self'; style-src 'self' 'unsafe-inline'; connect-src ws://127.0.0.1:17345; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+  }
 }

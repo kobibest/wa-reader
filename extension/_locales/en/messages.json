@@ -1,8 +1,8 @@
 {
   "extName": {
-    "message": "WA Reader – WhatsApp for Claude, read-only"
+    "message": "WA Reader – WhatsApp for Claude Desktop, read-only"
   },
   "extDescription": {
-    "message": "Lets Claude (web, desktop, mobile) read your WhatsApp Web on demand. Read-only, encrypted, nothing stored."
+    "message": "Local bridge between WhatsApp Web and Claude Desktop: Claude reads your messages when you ask. Read-only, no server, nothing stored."
   }
 }

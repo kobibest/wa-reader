@@ -1,0 +1,38 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Fake WhatsApp Web (e2e)</title>
+<script>
+// Stand-in for WhatsApp Web's data layer, used only by test/e2e.mjs.
+// WA-JS (loaded by the extension) assigns self.WPP – the setter ignores it so page.js sees this fake instead.
+(() => {
+  const now = Math.floor(Date.now() / 1000);
+  const wid = (s) => ({ _serialized: s, user: s.split('@')[0], server: s.split('@')[1] });
+  const chats = [
+    { id: wid('972501111111@c.us'), formattedTitle: 'Dana Cohen', unreadCount: 2, t: now - 60 },
+    { id: wid('120363000000000001@g.us'), formattedTitle: 'Family', isGroup: true, unreadCount: 0, t: now - 3600 }
+  ];
+  const msg = (chat, n, fromMe, body, ago, author) => ({ id: { _serialized: `${chat}_${n}`, fromMe, id: String(n) }, type: 'chat', body, t: now - ago, author: author ? wid(author) : undefined });
+  const messages = {
+    '972501111111@c.us': [
+      msg('972501111111@c.us', 1, true, 'Hi Dana, did you get the draft?', 7200),
+      msg('972501111111@c.us', 2, false, 'Yes, thanks!', 7000),
+      msg('972501111111@c.us', 3, false, 'Can you send the contract today?', 60)
+    ],
+    '120363000000000001@g.us': [
+      msg('120363000000000001@g.us', 1, false, 'Dinner on Friday at 8', 3600, '972502222222@c.us')
+    ]
+  };
+  const WPP = {
+    version: 'fake-1', isFullReady: true, loader: { onFullReady: (f) => f() },
+    chat: {
+      list: async () => chats,
+      get: async (id) => chats.find((c) => c.id._serialized === id),
+      getMessages: async (id, { count = 50 } = {}) => (messages[id] || []).slice(-count),
+      sendTextMessage: async () => 'SENT'
+    },
+    contact: { get: async (id) => ({ name: id.startsWith('972502222222') ? 'Avi' : '' }) },
+    conn: { getMyUserId: () => wid('972500000000@c.us') }
+  };
+  Object.defineProperty(window, 'WPP', { get: () => WPP, set: () => {}, configurable: true });
+})();
+</script></head>
+<body>fake whatsapp</body></html>

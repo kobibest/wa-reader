@@ -1,8 +1,8 @@
 {
   "extName": {
-    "message": "WA Reader – ווצאפ ל-Claude, קריאה בלבד"
+    "message": "WA Reader – ווצאפ ל-Claude Desktop, קריאה בלבד"
   },
   "extDescription": {
-    "message": "מחבר את WhatsApp Web ל-Claude (באתר, בדסקטופ ובטלפון), כדי ש-Claude יקרא את ההודעות כשתשאל. קריאה בלבד, מוצפן, שום דבר לא נשמר."
+    "message": "גשר מקומי בין WhatsApp Web ל-Claude Desktop: Claude קורא את ההודעות כשתשאל. קריאה בלבד, בלי שרת, שום דבר לא נשמר."
   }
 }

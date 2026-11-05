@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>WA Reader – ווצאפ לכלי AI</title>
-<meta name="description" content="תוסף כרום חינמי בקוד פתוח שמחבר את WhatsApp ל-Claude, Cursor וכלי AI נוספים דרך MCP. קריאה בלבד.">
+<title>WA Reader – ווצאפ ל-Claude Desktop</title>
+<meta name="description" content="גשר מקומי חינמי בקוד פתוח בין WhatsApp Web ל-Claude Desktop. קריאה בלבד, בלי שרת, שום דבר לא נשמר.">
 <link rel="icon" href="icon.png">
 <style>
   :root { --bg:#f6f5f1; --panel:#fff; --ink:#1d2320; --muted:#6b726e; --line:#e3e1da; --accent:#0f7a5c; }
@@ -37,18 +37,19 @@
 <body>
 <div class="wrap">
   <div class="hero"><img src="icon.png" alt=""><h1>WA Reader</h1></div>
-  <p class="lead">שואלים את Claude "מה קרה היום בווצאפ?", והוא קורא בעצמו: ב-claude.ai, בדסקטופ ובטלפון. קריאה בלבד, מוצפן, שום דבר לא נשמר. חינם וקוד פתוח.</p>
+  <p class="lead">שואלים את Claude Desktop "מי מחכה לתשובה ממני בווצאפ?", והוא קורא בעצמו מ-WhatsApp Web שפתוח בכרום. הכול נשאר במחשב: קריאה בלבד, בלי שרת, שום דבר לא נשמר. חינם וקוד פתוח.<br><small>עובד רק עם Claude Desktop (Windows ו-Mac).</small></p>
   <div class="btns">
-    <a class="btn primary" id="store" href="https://chromewebstore.google.com/detail/pihiihgmfgefkneahjhmeamnmlfapmfp">להתקנה מחנות Chrome</a>
+    <a class="btn primary" id="store" href="https://chromewebstore.google.com/detail/pihiihgmfgefkneahjhmeamnmlfapmfp">1. התוסף מחנות Chrome</a>
+    <a class="btn primary" href="https://github.com/kobibest/wa-reader/releases/latest/download/wa-reader.mcpb">2. wa-reader.mcpb ל-Claude Desktop</a>
     <a class="btn" href="https://github.com/kobibest/wa-reader">הקוד ב-GitHub</a>
     <a class="btn" href="privacy.html">מדיניות פרטיות</a>
   </div>
   <img class="shot" src="screenshot-1.png" alt="איך WA Reader מחבר את WhatsApp לכלי AI">
   <div class="grid">
     <div class="card"><b>קריאה בלבד</b>אי אפשר לשלוח, למחוק או לסמן כנקרא, ולא נשלח וי כחול.</div>
-    <div class="card"><b>שום דבר לא נשמר</b>כל בקשה עוברת מוצפנת, נמסרת ל-Claude ונשכחת. אין מסד נתונים, אין אנליטיקס ואין מעקב.</div>
-    <div class="card"><b>בכל מקום שיש Claude</b>חיבור אחד ב-claude.ai, והוא עובד גם בדסקטופ ובטלפון. מעדיפים בלי שרת? יש <a href="wa-reader.mcpb" download>הרחבה מקומית ל-Claude לדסקטופ</a>.</div>
-    <div class="card"><b>שליטה מלאה</b>שיחות מוחרגות לא מגיעות ל-AI אף פעם. כיבוי בלחיצה אחת.</div>
+    <div class="card"><b>שום דבר לא נשמר</b>כל בקשה נקראת מ-WhatsApp Web, נמסרת ל-Claude ונשכחת. אין מסד נתונים, אין אנליטיקס ואין מעקב.</div>
+    <div class="card"><b>בלי שרת</b>התוסף מדבר רק עם Claude Desktop במחשב שלך (127.0.0.1). ההודעות לא יוצאות מהמחשב, חוץ ממה ש-Claude מבקש ומעביר ל-Anthropic.</div>
+    <div class="card"><b>שליטה מלאה</b>שיחות מוחרגות לא מגיעות ל-Claude אף פעם. כיבוי בלחיצה אחת.</div>
   </div>
   <a class="maker" href="https://digital.m-eitan.co.il/?utm_source=wa-reader&amp;utm_medium=landing" target="_blank" rel="noopener">
     <img src="eitan-mark-light.svg" alt="">
