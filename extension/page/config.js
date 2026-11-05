@@ -4,7 +4,9 @@ window.WPPConfig = {
   deviceName: false,              // don't rename the linked device
   disableGoogleAnalytics: true,   // WA-JS ships with GA on by default – off
   googleAnalyticsId: null,
-  linkPreviewApiServers: null,    // no external link-preview servers
+  googleAnalyticsUserProperty: {},
+  // MUST be an empty array: WA-JS does `linkPreviewApiServers || [3 third-party servers]`, so null would enable them
+  linkPreviewApiServers: [],
   poweredBy: null,
   sendStatusToDevice: false,
   syncAllStatus: false,

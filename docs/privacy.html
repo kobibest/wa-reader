@@ -25,61 +25,57 @@
 
 <section lang="he">
   <h1>WA Reader – מדיניות פרטיות</h1>
-  <div class="muted">בתוקף מ-5 בנובמבר 2026 (גרסה 3) · <a href="#en">English below</a></div>
+  <div class="muted">בתוקף מ-5 בנובמבר 2026 (גרסה 4, WA Reader 2.0) · <a href="#en">English below</a></div>
 
-  <div class="box"><b>בקצרה:</b> התוסף מאפשר ל-Claude לקרוא את הודעות ה-WhatsApp Web שלך כשהוא מבקש. כל בקשה ותשובה עוברות <b>מוצפנות</b> דרך שרת ממסר של WA Reader, שמעביר אותן ל-Claude ומיד שוכח אותן. ההודעות לא נשמרות, לא בתוסף ולא בשרת, ואי אפשר לשלוח דרך התוסף הודעות. מי שמעדיף שההודעות לא יעברו בשום שרת יכול להשתמש בחיבור המקומי.</div>
+  <div class="box"><b>בקצרה:</b> WA Reader הוא גשר מקומי בין WhatsApp Web בכרום לבין Claude Desktop במחשב שלך. <b>ההודעות לא יוצאות מהמחשב</b>, חוץ ממה ש-Claude מבקש ומעביר ל-Anthropic כחלק מהשיחה שלך איתו. אין שרת של WA Reader, ההודעות לא נשמרות, ואי אפשר לשלוח דרך התוסף הודעות.</div>
 
   <h2>איזה מידע התוסף קורא</h2>
   <ul>
     <li>תוכן הודעות (טקסט וכיתובים), שם השיחה, שם השולח, שעה, וסימונים כמו "קבוצה", "מושתק", "הועבר" ומספר ההודעות שלא נקראו. את המידע הזה Chrome מגדיר כ"תקשורת אישית".</li>
     <li>מזהה השיחה ב-WhatsApp, שבשיחות פרטיות כולל את מספר הטלפון של איש הקשר, ושמות אנשי הקשר. את המידע הזה Chrome מגדיר כ"פרטים אישיים מזהים".</li>
     <li>ממדיה (תמונות, קבצים, הודעות קוליות) נקראת רק תווית טקסט, למשל "[image]" או שם הקובץ. הקבצים עצמם לא נקראים.</li>
-    <li>התוסף קורא רק אחרי שאישרת במסך ההפעלה, רק כשכלי AI שחיברת מבקש מידע, ורק כשטאב של web.whatsapp.com פתוח.</li>
+    <li>התוסף קורא רק אחרי שאישרת במסך ההפעלה, רק כש-Claude Desktop מבקש מידע, ורק כשטאב של web.whatsapp.com פתוח.</li>
   </ul>
 
   <h2>לאן המידע עובר</h2>
   <ul>
-    <li><b>חיבור ל-Claude (ברירת המחדל):</b> Claude שולח את הבקשה לשרת הממסר של WA Reader (פונקציה ב-Supabase, ‏wa-mcp). השרת מעביר אותה לתוסף שלך דרך ערוץ Supabase Realtime, התוסף קורא את התשובה מ-WhatsApp Web ומחזיר אותה באותה דרך, והשרת מוסר אותה ל-Claude.</li>
-    <li>בדרך בין השרת לתוסף, הבקשה והתשובה מוצפנות (AES-256-GCM) במפתח שנגזר מהמפתח האישי שלך. Supabase Realtime רואה רק טקסט מוצפן. שרת הממסר מפענח את התשובה בזיכרון רק כדי למסור אותה ל-Claude, ולא כותב אותה לשום מסד נתונים, קובץ או יומן.</li>
-    <li>יומני השרת של Supabase שומרים רק מידע טכני על הבקשה (זמן, סטטוס, כתובת). המפתח האישי שלך נשלח בכותרת (header) ולכן לא מופיע ביומנים, ותוכן ההודעות לא נרשם אף פעם.</li>
-    <li>רק מי שמחזיק במפתח האישי שלך יכול לבקש נתונים, וגם זה רק בזמן ש-WhatsApp Web פתוח אצלך. אפשר ליצור מפתח חדש בהגדרות בכל רגע, והישן מפסיק לעבוד מיד.</li>
-    <li><b>חיבור מקומי (אופציונלי):</b> אם אתה משתמש בהרחבה ל-Claude לדסקטופ או בשרת MCP מקומי, ההודעות עוברות רק בתוך המחשב שלך (127.0.0.1), ולא בשום שרת.</li>
-    <li>Claude (או כלי AI אחר שחיברת) מעבד את מה שהוא מקבל לפי מדיניות הפרטיות שלו, ושולח את המידע לשרתים של הספק שלו, כמו כל מידע אחר שאתה נותן לו.</li>
-    <li>המפתח לא מעביר מידע לשום צד שלישי אחר, ואין בתוסף או בשרת אנליטיקס או מעקב.</li>
+    <li><b>רק בתוך המחשב שלך.</b> ההרחבה של WA Reader ב-Claude Desktop מפעילה שרת קטן שמאזין רק על 127.0.0.1 (המחשב עצמו). התוסף בכרום מתחבר אליו, מקבל בקשה, קורא את התשובה מ-WhatsApp Web ומחזיר אותה.</li>
+    <li>השרת המקומי מקבל חיבור רק מהתוסף WA Reader עצמו. דפי אינטרנט, תוספים אחרים ומחשבים אחרים ברשת נחסמים.</li>
+    <li><b>Anthropic:</b> Claude Desktop שולח את מה שהתקבל ל-Claude, כלומר לשרתים של Anthropic, כחלק מהשיחה שלך, ו-Anthropic מעבדת אותו לפי מדיניות הפרטיות שלה. זה המקום היחיד שבו מידע יוצא מהמחשב, ורק המידע ש-Claude ביקש.</li>
+    <li>לא התוסף ולא ההרחבה ל-Claude Desktop מתחברים לשום שרת אחר. אין שרת של WA Reader, ואין אנליטיקס, טלמטריה או מעקב.</li>
   </ul>
 
   <h2>שמירה</h2>
   <ul>
-    <li>התוסף לא שומר הודעות. כל בקשה נקראת ישירות מ-WhatsApp Web ונמחקת מהזיכרון אחרי שהיא נמסרת.</li>
-    <li>באחסון המקומי של התוסף נשמרים רק ההגדרות שלך: המפתח האישי, הטוקן המקומי, הפורט, רשימת השיחות המוחרגות, ואם הסכמת.</li>
+    <li>ההודעות לא נשמרות בשום מקום: לא בדיסק, לא באחסון של כרום ולא בשרת. כל בקשה נקראת ישירות מ-WhatsApp Web, נשמרת בזיכרון רק עד שהתשובה נמסרת, ונשכחת.</li>
+    <li>באחסון המקומי של התוסף נשמרים רק אם הסכמת ורשימת השיחות המוחרגות.</li>
   </ul>
 
   <h2>איך המידע משמש</h2>
   <ul>
-    <li>רק כדי לענות לבקשות של כלי ה-AI שחיברת.</li>
+    <li>רק כדי לענות לבקשות של Claude Desktop.</li>
     <li>אין שימוש אחר: לא פרסום, לא מכירה, לא פרופיילינג, לא אימון מודלים על ידי המפתח, ולא דירוג אשראי.</li>
   </ul>
 
   <h2>הרשאות</h2>
   <ul>
-    <li><b>web.whatsapp.com:</b> כדי לקרוא את ההודעות.</li>
+    <li><b>web.whatsapp.com:</b> כדי לקרוא את ההודעות. זו ההרשאה היחידה לאתר.</li>
     <li><b>scripting:</b> כדי להתחבר ל-WhatsApp Web רק אחרי שאישרת, ולהתנתק כשאתה מכבה את התוסף.</li>
-    <li><b>storage:</b> כדי לשמור את ההגדרות.</li>
-    <li><b>alarms:</b> כדי לחדש את החיבור לשרת הממסר או לשרת המקומי כשהוא נקטע.</li>
+    <li><b>storage:</b> כדי לשמור את ההסכמה ואת רשימת השיחות המוחרגות.</li>
+    <li><b>alarms:</b> כדי לחדש את החיבור ל-Claude Desktop במחשב כשהוא נקטע.</li>
   </ul>
 
   <h2>שליטה</h2>
   <ul>
-    <li>בהגדרות אפשר להחריג שיחות, ואז הן לא נמסרות לכלי AI לעולם. אפשר גם ליצור מפתח חדש, או לכבות את התוסף ולנתק אותו מ-WhatsApp Web ומכלי ה-AI.</li>
-    <li>הסרת התוסף מוחקת את כל ההגדרות שלו, ואחריה שרת הממסר לא יכול להגיע לשום דבר. כדי לנתק את Claude, מוחקים את החיבור WhatsApp ב-Claude (Customize ← Connectors).</li>
-    <li>כשמחברים את Claude, דף האישור (kobibest.github.io/wa-reader/connect.html) מקבל מהתוסף את המפתח האישי שלך, ושרת הממסר הופך אותו לטוקן מוצפן ש-Claude שומר כפרטי החיבור. יצירת מפתח חדש בהגדרות התוסף מבטלת אותו.</li>
+    <li>בהגדרות אפשר להחריג שיחות, ואז הן לא נמסרות ל-Claude לעולם. אפשר גם לכבות את התוסף ולנתק אותו מ-WhatsApp Web ומ-Claude Desktop.</li>
+    <li>הסרת התוסף מוחקת את כל ההגדרות שלו. כדי לנתק את Claude Desktop, מסירים את ההרחבה WA Reader ב-Claude Desktop (Settings ← Extensions).</li>
   </ul>
 
   <h2>Limited Use</h2>
   <p>השימוש של WA Reader במידע שמתקבל מ-WhatsApp Web ומ-Chrome עומד בדרישות <a href="https://developer.chrome.com/docs/webstore/program-policies/limited-use" target="_blank" rel="noopener">מדיניות הנתונים של Chrome Web Store</a>, כולל דרישות ה-Limited Use.</p>
 
   <h2>אין קשר ל-WhatsApp</h2>
-  <p>WA Reader הוא פרויקט עצמאי בקוד פתוח, והוא לא קשור ל-WhatsApp או ל-Meta ולא מאושר על ידן. התוסף משתמש בספרייה הפתוחה <a href="https://github.com/wppconnect-team/wa-js" target="_blank" rel="noopener">WA-JS</a> (Apache 2.0) כדי לקרוא נתונים מתוך WhatsApp Web.</p>
+  <p>WA Reader הוא פרויקט עצמאי בקוד פתוח, והוא לא קשור ל-WhatsApp או ל-Meta ולא מאושר על ידן. התוסף משתמש בספרייה הפתוחה <a href="https://github.com/wppconnect-team/wa-js" target="_blank" rel="noopener">WA-JS</a> (Apache 2.0) כדי לקרוא נתונים מתוך WhatsApp Web, והאפשרויות שלה ליצור קשר עם שרתים חיצוניים (אנליטיקס ותצוגה מקדימה של קישורים) כבויות.</p>
 
   <h2>מי עומד מאחורי התוסף</h2>
   <p>WA Reader פותח על ידי קובי איתן, <a href="https://digital.m-eitan.co.il/?utm_source=wa-reader&amp;utm_medium=privacy" target="_blank" rel="noopener">איתן | דיגיטציה ארגונית</a> (עוסק מורשה, ישראל).</p>
@@ -92,63 +88,59 @@
 
 <section lang="en" id="en">
   <h1>WA Reader – Privacy Policy</h1>
-  <div class="muted">Effective November 5, 2026 (version 3)</div>
+  <div class="muted">Effective November 5, 2026 (version 4, WA Reader 2.0)</div>
 
-  <div class="box"><b>Short version:</b> WA Reader lets Claude read your WhatsApp Web messages when it asks. Each request and answer travels <b>encrypted</b> through a WA Reader relay server, which hands it to Claude and immediately forgets it. Messages are never stored, neither in the extension nor on the server, and the extension cannot send messages. If you prefer that messages never pass through any server, use the local connection.</div>
+  <div class="box"><b>In short:</b> WA Reader is a local bridge between WhatsApp Web in Chrome and Claude Desktop on your computer. <b>Your messages never leave your computer</b>, except what Claude asks for, which Claude Desktop sends to Anthropic as part of your conversation. There is no WA Reader server, nothing is stored, and the extension cannot send messages.</div>
 
-  <h2>Data the extension reads</h2>
+  <h2>What the extension reads</h2>
   <ul>
-    <li>Message content (text and captions), chat name, sender name, time, and flags such as group, muted, forwarded and unread count. Chrome classifies this as "personal communications".</li>
-    <li>The WhatsApp chat ID (which for direct chats contains the contact's phone number) and contact names. Chrome classifies this as "personally identifiable information".</li>
-    <li>For media (images, files, voice notes) only a text label is read, such as "[image]" or the file name. Media files themselves are never read.</li>
-    <li>Reading happens only after you agree on the activation screen, only when an AI tool you connected asks, and only while a web.whatsapp.com tab is open.</li>
+    <li>Message content (text and captions), chat name, sender name, time, and flags such as group, muted, forwarded and unread count ("personal communications").</li>
+    <li>WhatsApp chat IDs, which for direct chats contain the contact's phone number, and contact names ("personally identifiable information").</li>
+    <li>For media (images, files, voice notes) only a text label such as "[image]" or the file name. The files themselves are never read.</li>
+    <li>Only after you agree on the activation screen, only when Claude Desktop asks, and only while a web.whatsapp.com tab is open.</li>
   </ul>
 
-  <h2>Where the data goes</h2>
+  <h2>Where it goes</h2>
   <ul>
-    <li><b>Claude connector (default):</b> Claude sends the request to the WA Reader relay (a Supabase Edge Function, wa-mcp). The relay passes it to your extension over a Supabase Realtime channel; the extension reads the answer from WhatsApp Web and returns it the same way; the relay hands it to Claude.</li>
-    <li>Between the relay and the extension, requests and answers are encrypted (AES-256-GCM) with a key derived from your personal key. Supabase Realtime only sees ciphertext. The relay decrypts the answer in memory only to hand it to Claude, and never writes it to any database, file or log.</li>
-    <li>Supabase request logs keep only technical metadata (time, status, URL). Your personal key is sent in a request header, so it is not in those logs, and message content is never logged.</li>
-    <li>Only someone holding your personal key can request data, and only while your WhatsApp Web is open. You can create a new key in settings at any time; the old one stops working immediately.</li>
-    <li><b>Local connection (optional):</b> with the Claude Desktop extension or a local MCP server, messages travel only inside your computer (127.0.0.1) and never through any server.</li>
-    <li>Claude (or another AI tool you connect) processes what it receives under its own privacy policy and sends it to its provider's servers, like anything else you give it.</li>
-    <li>The developer does not pass data to any other third party. There is no analytics or tracking in the extension or the relay.</li>
+    <li><b>Only inside your computer.</b> The WA Reader extension for Claude Desktop runs a small server that listens on 127.0.0.1 only. The Chrome extension connects to it, receives a request, reads the answer from WhatsApp Web and returns it.</li>
+    <li>The local server accepts connections only from the WA Reader Chrome extension itself. Web pages, other extensions and other computers are refused.</li>
+    <li><b>Anthropic:</b> Claude Desktop sends what it received to Claude (Anthropic's servers) as part of your conversation, and Anthropic processes it under its own privacy policy. That is the only way data leaves your computer, and only the data Claude asked for.</li>
+    <li>Neither the Chrome extension nor the Claude Desktop extension connects to any other server. There is no WA Reader server, no analytics, no telemetry and no tracking.</li>
   </ul>
 
-  <h2>Storage</h2>
+  <h2>Retention</h2>
   <ul>
-    <li>The extension does not store messages. Each request is read live from WhatsApp Web and released from memory once delivered.</li>
-    <li>Only your settings are kept in the extension's local storage: your personal key, the local token, the port, the excluded-chats list, and your consent.</li>
+    <li>Messages are never stored: not on disk, not in Chrome storage, not on a server. Each request is read live from WhatsApp Web, kept in memory only until the answer is delivered, and then forgotten.</li>
+    <li>The extension's local storage holds only your consent and your list of excluded chats.</li>
   </ul>
 
-  <h2>How it is used</h2>
+  <h2>Use</h2>
   <ul>
-    <li>Only to answer requests from the AI tools you connected.</li>
-    <li>No other use: no advertising, selling, profiling, model training by the developer, or creditworthiness assessment.</li>
+    <li>Only to answer requests from Claude Desktop.</li>
+    <li>No other use: no advertising, no selling, no profiling, no model training by the developer, no credit scoring.</li>
   </ul>
 
   <h2>Permissions</h2>
   <ul>
-    <li><b>web.whatsapp.com:</b> to read your messages.</li>
-    <li><b>scripting:</b> to attach to WhatsApp Web only after you consent, and to detach when you turn the extension off.</li>
-    <li><b>storage:</b> to keep your settings.</li>
-    <li><b>alarms:</b> to re-establish the connection to the relay or the local server when it drops.</li>
+    <li><b>web.whatsapp.com:</b> to read messages. This is the only site permission.</li>
+    <li><b>scripting:</b> to attach to WhatsApp Web only after you agree, and detach when you turn it off.</li>
+    <li><b>storage:</b> to keep your consent and excluded chats.</li>
+    <li><b>alarms:</b> to reconnect to Claude Desktop on your computer when the connection drops.</li>
   </ul>
 
-  <h2>Your control</h2>
+  <h2>Control</h2>
   <ul>
-    <li>In settings you can exclude chats (never returned to any AI tool), create a new key, or turn the extension off, which detaches it from WhatsApp Web and from AI tools.</li>
-    <li>Uninstalling removes all of its settings, after which the relay cannot reach anything. To disconnect Claude, remove the WhatsApp connector in Claude (Customize → Connectors).</li>
-    <li>When you connect Claude, the sign-in page (kobibest.github.io/wa-reader/connect.html) receives your personal key from the extension and the relay turns it into an encrypted token that Claude keeps as the connector credential. Creating a new key in the extension settings invalidates it.</li>
+    <li>In the settings you can exclude chats (never returned to Claude) or turn the extension off and detach it from WhatsApp Web and Claude Desktop.</li>
+    <li>Removing the extension deletes all its settings. To disconnect Claude Desktop, remove the WA Reader extension in Claude Desktop (Settings → Extensions).</li>
   </ul>
 
   <h2>Limited Use</h2>
   <p>The use of information received from WhatsApp Web and Chrome by WA Reader complies with the <a href="https://developer.chrome.com/docs/webstore/program-policies/limited-use" target="_blank" rel="noopener">Chrome Web Store User Data Policy</a>, including the Limited Use requirements.</p>
 
   <h2>Not affiliated with WhatsApp</h2>
-  <p>WA Reader is an independent open-source project. It is not affiliated with, endorsed by or sponsored by WhatsApp or Meta. It uses the open-source <a href="https://github.com/wppconnect-team/wa-js" target="_blank" rel="noopener">WA-JS</a> library (Apache 2.0) to read data inside WhatsApp Web.</p>
+  <p>WA Reader is an independent open-source project. It is not affiliated with, endorsed by or sponsored by WhatsApp or Meta. It uses the open-source <a href="https://github.com/wppconnect-team/wa-js" target="_blank" rel="noopener">WA-JS</a> library (Apache 2.0) to read data inside WhatsApp Web, with its external features (analytics, link-preview servers) turned off.</p>
 
-  <h2>Who builds it</h2>
+  <h2>Who is behind it</h2>
   <p>WA Reader is developed by Kobi Eitan, <a href="https://digital.m-eitan.co.il/?utm_source=wa-reader&amp;utm_medium=privacy" target="_blank" rel="noopener">Eitan | Organizational Digitization</a> (a registered Israeli business, Osek Murshe).</p>
 
   <h2>Changes and contact</h2>

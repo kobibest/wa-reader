@@ -1,7 +1,9 @@
-# Chrome Web Store – טקסטים להעתקה (גרסה 2.2.0)
+# Chrome Web Store – טקסטים להעתקה (גרסה 2.0.0)
 
 ## Package
-מעלים את `dist/wa-reader-2.2.0.zip`. בונים אותו עם `scripts/package.sh`.
+מעלים את `dist/wa-reader-2.0.0.zip`. בונים אותו עם `scripts/package.sh`, שמסיר מה-manifest את השדה `key` של גרסת הפיתוח.
+
+> מספר הגרסה 2.0.0 נמוך מ-2.2.0 שכבר פורסמה בחנות. Chrome Web Store דוחה עלייה עם גרסה נמוכה יותר, אז צריך לבחור: לפרסם בחנות כ-2.3.0 (ולעדכן גם את ה-mcpb), או להשאיר 2.0.0 לרכיבים ולשנות רק את מספר הגרסה בחבילה לחנות.
 
 ## Store listing
 
@@ -9,75 +11,69 @@
 
 ### Description (עברית)
 ```
-WA Reader מחבר את הווצאפ שלך ל-Claude, כך ש-Claude יכול לקרוא אותו כשאתה שואל: ב-claude.ai, באפליקציית הדסקטופ ובטלפון.
+WA Reader מחבר את WhatsApp Web ל-Claude Desktop, כך ש-Claude יכול לקרוא את הווצאפ שלך כשאתה שואל. הכול נשאר במחשב שלך.
 
-שואלים את Claude, למשל:
-• "מה קרה היום בווצאפ ומה מחכה לתשובה ממני?"
+שואלים את Claude Desktop, למשל:
+• "אילו שיחות מחכות לתשובה ממני בווצאפ?"
 • "מה דנה כתבה לי השבוע?"
 • "חפש בווצאפ את המילה חשבונית"
-והוא מבקש מהתוסף בדיוק את ההודעות שהוא צריך, ועונה.
 
 מה Claude יכול לעשות:
-• לקרוא את ההודעות מהשעות או מהימים האחרונים, מסודרות לפי שיחה
-• לראות אילו שיחות לא נקראו ואילו מחכות לתשובה ממך
-• לקרוא שיחה מסוימת לפי שם או לפי טווח תאריכים
+• לראות רשימת שיחות, כולל שיחות שלא נקראו ושיחות שמחכות לתשובה ממך
+• לקרוא שיחה מסוימת
 • לחפש טקסט בהודעות
 
 פרטיות ובטיחות:
-• קריאה בלבד: אי אפשר לשלוח, למחוק או לסמן הודעות כנקראו. ברגע שהתוסף נטען, הוא מנתק מהדף את הפונקציות שעושות את זה.
-• שום דבר לא נשמר. כל בקשה נקראת ישירות מ-WhatsApp Web, עוברת מוצפנת (AES-256) דרך שרת ממסר, נמסרת ל-Claude ונשכחת.
-• רק מי שמחזיק במפתח האישי שלך יכול לבקש נתונים, ורק בזמן ש-WhatsApp Web פתוח אצלך.
-• אפשר להחריג שיחות (משפחה, רפואי וכו'), ואז Claude לא יראה אותן לעולם.
-• מעדיפים שההודעות לא יעברו בשום שרת? יש גם חיבור מקומי ל-Claude לדסקטופ.
-• אין אנליטיקס ואין מעקב. קוד פתוח: github.com/kobibest/wa-reader
+• מקומי בלבד: התוסף מדבר רק עם Claude Desktop במחשב שלך (127.0.0.1). אין שרת של WA Reader, אין אנליטיקס ואין מעקב.
+• ההודעות לא יוצאות מהמחשב, חוץ ממה ש-Claude מבקש ומעביר ל-Anthropic כחלק מהשיחה.
+• קריאה בלבד: אי אפשר לשלוח, למחוק או לסמן הודעות כנקראו.
+• שום דבר לא נשמר: כל בקשה נקראת מ-WhatsApp Web, נמסרת ונשכחת.
+• אפשר להחריג שיחות, ואז Claude לא יראה אותן לעולם.
+• קוד פתוח: github.com/kobibest/wa-reader
 
-איך מתחילים (פעם אחת, חצי דקה):
-1. מתקינים את התוסף ומאשרים במסך ההפעלה
-2. ב-claude.ai: Customize → Connectors → Add custom connector
-3. מדביקים את הכתובת מהגדרות התוסף, לוחצים Connect ומאשרים בדף שנפתח
-4. משאירים את web.whatsapp.com פתוח בכרום במחשב
+התקנה (שני צעדים):
+1. מתקינים את התוסף ומאשרים במסך ההפעלה.
+2. מורידים את wa-reader.mcpb מ-github.com/kobibest/wa-reader/releases ולוחצים עליו פעמיים. Claude Desktop מתקין אותו.
+משאירים את web.whatsapp.com פתוח בכרום.
 
-התוסף עובד כשטאב של WhatsApp Web פתוח בכרום במחשב. ב-Claude חינמי אפשר להוסיף חיבור מותאם אישית אחד.
+עובד רק עם Claude Desktop (Windows ו-Mac). לא עובד עם claude.ai בדפדפן או עם האפליקציה בטלפון.
 
 נבנה על ידי איתן | דיגיטציה ארגונית (digital.m-eitan.co.il). WA Reader הוא פרויקט עצמאי ולא קשור ל-WhatsApp, ל-Meta או ל-Anthropic.
 ```
 
 ### Detailed description (English)
 ```
-WA Reader connects your WhatsApp to Claude, so Claude can read it when you ask – on claude.ai, in the desktop app and on your phone.
+WA Reader connects WhatsApp Web to Claude Desktop, so Claude can read your WhatsApp when you ask. Everything stays on your computer.
 
-Ask Claude, for example:
-• "What happened on WhatsApp today and what do I still need to reply to?"
+Ask Claude Desktop, for example:
+• "Which WhatsApp chats are waiting for my reply?"
 • "What did Dana send me this week?"
 • "Search WhatsApp for invoice"
-It asks the extension for exactly the messages it needs, and answers.
 
 What Claude can do:
-• Read messages from the last hours or days, grouped by chat
-• See unread chats and chats waiting for your reply
-• Read one chat by name or date range
+• List chats, including unread chats and chats waiting for your reply
+• Read one chat
 • Search message text
 
 Privacy and safety:
-• Read-only: it cannot send, delete or mark messages as read. When it loads, it removes those functions from the page.
-• Nothing is stored. Each request is read live from WhatsApp Web, travels encrypted (AES-256) through a relay, is handed to Claude and forgotten.
-• Only someone holding your personal key can request data, and only while your WhatsApp Web is open.
+• Local only: the extension talks only to Claude Desktop on your computer (127.0.0.1). There is no WA Reader server, no analytics and no tracking.
+• Messages never leave your computer, except what Claude asks for, which Claude Desktop sends to Anthropic as part of your conversation.
+• Read-only: it cannot send, delete or mark messages as read.
+• Nothing is stored: each request is read live from WhatsApp Web, handed over and forgotten.
 • Exclude chats so Claude never sees them.
-• Prefer that messages never pass through any server? A local connection for Claude Desktop is available too.
-• No analytics, no tracking. Open source: github.com/kobibest/wa-reader
+• Open source: github.com/kobibest/wa-reader
 
-Getting started (once, 30 seconds):
-1. Install the extension and agree on the activation screen
-2. On claude.ai: Customize → Connectors → Add custom connector
-3. Paste the URL from the extension settings, click Connect and approve on the page that opens
-4. Keep web.whatsapp.com open in Chrome on your computer
+Setup (two steps):
+1. Install the extension and agree on the activation screen.
+2. Download wa-reader.mcpb from github.com/kobibest/wa-reader/releases and double-click it. Claude Desktop installs it.
+Keep web.whatsapp.com open in Chrome.
 
-Works while a WhatsApp Web tab is open in Chrome on your computer. Claude's free plan allows one custom connector.
+Works only with Claude Desktop (Windows and Mac). It does not work with claude.ai in the browser or the mobile app.
 
 Built by Eitan | Organizational Digitization (digital.m-eitan.co.il). WA Reader is an independent project, not affiliated with WhatsApp, Meta or Anthropic.
 ```
 
-**התמונות:** `store/icon-128.png`, `store/screenshot-1.png`, `store/screenshot-2.png`, `store/screenshot-3.png`, `store/promo-tile-440x280.png`
+**התמונות:** `store/icon-128.png`, `store/screenshot-*.png`, `store/promo-tile-440x280.png` (צריך לעדכן צילומי מסך שמראים את החיבור הענני)
 **Homepage URL:** `https://github.com/kobibest/wa-reader`
 **Support URL:** `https://github.com/kobibest/wa-reader/issues`
 
@@ -87,16 +83,15 @@ Built by Eitan | Organizational Digitization (digital.m-eitan.co.il). WA Reader 
 
 **Single purpose:**
 ```
-Gives the user's own AI assistant (Claude, via a custom connector the user adds) read-only, on-demand access to the user's WhatsApp Web messages, through an end-to-end encrypted relay that stores nothing.
+Gives the user's own Claude Desktop app, running on the same computer, read-only, on-demand access to the user's WhatsApp Web messages over a local connection (127.0.0.1). No server, nothing stored.
 ```
 
 | Permission | Justification |
 |---|---|
-| `storage` | Stores the user's settings only: the personal connector key, the local pairing token and port, the excluded-chats list and the consent flag. No messages are stored. |
-| `alarms` | Periodically re-establishes the encrypted relay connection (Supabase Realtime) or the local MCP connection after the browser or network restarts, so the user's AI assistant can reach WhatsApp Web. |
+| `storage` | Stores the consent flag and the user's list of excluded chats. No messages are stored. |
+| `alarms` | Wakes the service worker every 30 seconds to reconnect to the WA Reader extension of Claude Desktop on the same computer (ws://127.0.0.1:17345) when Claude Desktop is started after Chrome. |
 | `scripting` | Registers the content scripts on web.whatsapp.com only after the user gives consent on the activation screen, and unregisters them when the user turns the extension off. |
-| Host permission `https://web.whatsapp.com/*` | Required to read the user's messages inside WhatsApp Web when the user's AI assistant requests them. This is the extension's single purpose. |
-| Content script on `https://kobibest.github.io/wa-reader/connect.html` | This is WA Reader's own sign-in page, opened by Claude when the user connects it. When the user clicks "Approve" there, the extension hands that page the user's personal connector key so the connection completes without copying anything. The script runs on that single page only and reads nothing from it. |
+| Host permission `https://web.whatsapp.com/*` | Required to read the user's messages inside WhatsApp Web when the user's Claude Desktop requests them. This is the extension's single purpose. |
 
 **Remote code:** No. All code is in the package, including the WA-JS library in `page/`.
 
@@ -104,7 +99,7 @@ Gives the user's own AI assistant (Claude, via a custom connector the user adds)
 - ✅ Personally identifiable information: שמות אנשי קשר, ומזהי שיחה שכוללים מספרי טלפון
 - ✅ Personal communications: תוכן ההודעות
 
-ומסמנים גם את **שלושת** האישורים. (הנתונים עוברים דרך השרת רק כדי למסור אותם לכלי ה-AI שהמשתמש בחר, וזה חלק מהמטרה היחידה. לכן האישור "I do not sell or transfer user data to third parties, outside of the approved use cases" נכון.)
+ומסמנים גם את **שלושת** האישורים. (הנתונים נמסרים רק ל-Claude Desktop שהמשתמש התקין במחשב שלו, וזה חלק מהמטרה היחידה.)
 
 **Privacy policy URL:** `https://kobibest.github.io/wa-reader/privacy.html`
 
@@ -113,10 +108,10 @@ Free · Public · All regions
 
 ## Test instructions (לבודק)
 ```
-WA Reader lets the user's Claude read WhatsApp Web through a custom MCP connector. To test:
+WA Reader lets the user's Claude Desktop read WhatsApp Web over a local connection. To test:
 1. Install the extension; the activation screen opens. Check the box and click "הפעל את התוסף" (Activate).
-2. Open https://web.whatsapp.com and log in with any account. The popup shows "WhatsApp Web: connected" and "Claude: ready".
-3. Open the extension settings ("חיבור ל-Claude והגדרות"). On claude.ai go to Customize → Connectors → Add custom connector, enter the URL shown, click Add and then Connect. A WA Reader approval page opens in the browser; click "אשר את החיבור" (Approve) and the browser returns to Claude. (Alternative: choose "No sign in" and add the request header x-api-key with the key shown in the settings.)
-4. In a Claude chat, enable the WhatsApp connector and ask "What happened on WhatsApp today?".
-The extension only answers requests sealed with the user's personal key (AES-256-GCM) and only reads: it captures read functions from the bundled WA-JS library and deletes its global from the page (page/page.js). Neither the extension nor the relay (supabase/functions/wa-mcp in the open-source repo) stores messages.
+2. Open https://web.whatsapp.com and log in with any account. The popup shows a green light for "WhatsApp Web פתוח".
+3. Install Claude Desktop, download wa-reader.mcpb from https://github.com/kobibest/wa-reader/releases/latest and double-click it to install. The popup now shows all three lights green.
+4. In Claude Desktop ask "Which WhatsApp chats are waiting for my reply?".
+The extension connects only to ws://127.0.0.1:17345 (enforced by its content security policy). The local server accepts only this extension's origin. It only reads: it captures read functions from the bundled WA-JS library and deletes its global from the page (page/page.js). No messages are stored.
 ```

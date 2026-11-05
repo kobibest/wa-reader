@@ -32,13 +32,13 @@
   </div>
 
   <div id="ask">
-    <p>התוסף מחבר את WhatsApp Web ל-Claude. כשתשאל את Claude משהו על הווצאפ, הוא יבקש מהתוסף את ההודעות הרלוונטיות ויקבל אותן. עד שתאשר כאן, התוסף לא נוגע ב-WhatsApp Web.</p>
+    <p>התוסף מחבר את WhatsApp Web ל-Claude Desktop. כשתשאל את Claude משהו על הווצאפ, הוא יבקש מהתוסף את ההודעות הרלוונטיות ויקבל אותן. עד שתאשר כאן, התוסף לא נוגע ב-WhatsApp Web.</p>
 
     <div class="card">
       <h3>מה קורה בפועל</h3>
       <ul>
         <li>התוסף קורא הודעות רק כש-Claude מבקש, ורק בזמן ש-web.whatsapp.com פתוח בכרום.</li>
-        <li>הבקשה והתשובה עוברות <b>מוצפנות</b> דרך שרת ממסר של WA Reader (ב-Supabase), שמעביר אותן ל-Claude ולא שומר אותן. מי שמעדיף שההודעות לא יעברו בשום שרת יכול לבחור בהגדרות בחיבור המקומי.</li>
+        <li>הבקשה והתשובה עוברות <b>רק בתוך המחשב שלך</b> (127.0.0.1), בין כרום ל-Claude Desktop. אין שרת של WA Reader, ושום דבר לא יוצא לאינטרנט מהתוסף.</li>
         <li>Claude מעבד את מה שהוא קיבל לפי מדיניות הפרטיות של Anthropic, כמו כל שאלה אחרת שאתה שואל אותו.</li>
       </ul>
     </div>
@@ -47,8 +47,8 @@
       <h3>מה התוסף לא עושה</h3>
       <ul>
         <li>לא שולח הודעות, לא מוחק, לא משנה ולא מסמן כנקרא. הפונקציות של שליחה, מחיקה וסימון מנותקות מהדף ברגע שהוא נטען.</li>
-        <li>לא שומר הודעות, לא בתוסף ולא בשרת. אין בו אנליטיקס או מעקב.</li>
-        <li>רק מי שמחזיק במפתח החיבור האישי שלך יכול לבקש נתונים, וגם זה רק בזמן ש-WhatsApp Web פתוח.</li>
+        <li>לא שומר הודעות, לא בדיסק ולא בזיכרון של הדפדפן. אין בו אנליטיקס או מעקב.</li>
+        <li>רק ההרחבה של WA Reader ב-Claude Desktop יכולה לבקש נתונים. דפי אינטרנט ותוספים אחרים נחסמים.</li>
       </ul>
     </div>
 
@@ -63,15 +63,15 @@
 
     <label class="agree">
       <input type="checkbox" id="ok">
-      <span>קראתי והבנתי, ואני מסכים שהתוסף יקרא את הודעות הווצאפ שלי כש-Claude מבקש, וימסור אותן ל-Claude דרך שרת הממסר המוצפן של WA Reader.</span>
+      <span>קראתי והבנתי, ואני מסכים שהתוסף יקרא את הודעות הווצאפ שלי כש-Claude Desktop מבקש, וימסור אותן ל-Claude Desktop במחשב שלי.</span>
     </label>
     <button class="primary" id="go" disabled>הפעל את התוסף</button>
   </div>
 
   <div class="done card" id="done">
-    <h3>התוסף פעיל. נשאר לחבר את Claude</h3>
-    <p>עוד שלב אחד, דקה: מעתיקים כתובת ומפתח ל-Claude.</p>
-    <button class="primary" id="toSetup">לחיבור Claude ←</button>
+    <h3>התוסף פעיל. נשאר לחבר את Claude Desktop</h3>
+    <p>מורידים את <a href="https://github.com/kobibest/wa-reader/releases/latest/download/wa-reader.mcpb" target="_blank" rel="noopener"><b>wa-reader.mcpb</b></a> ולוחצים עליו פעמיים. Claude Desktop יציע להתקין את ההרחבה.</p>
+    <button class="primary" id="toSetup">להגדרות ←</button>
   </div>
 
   <div id="by" style="margin-top:22px"></div>

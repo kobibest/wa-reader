@@ -7,9 +7,11 @@
 <style>
   body { width: 320px; padding: 14px; }
   header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-  .st { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; margin-bottom: 8px; }
-  .st .k { font-size: 12px; color: var(--muted); }
-  .st .v { font-weight: 600; }
+  .lights { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 4px 12px; margin-bottom: 8px; }
+  .light { display: flex; align-items: center; gap: 2px; padding: 7px 0; }
+  .light + .light { border-top: 1px solid var(--line); }
+  .light .v { font-weight: 600; }
+  .light .k { font-size: 12px; color: var(--muted); margin-inline-start: auto; }
   .actions { display: grid; gap: 6px; margin-top: 10px; }
   .actions button { width: 100%; }
 </style>
@@ -26,12 +28,15 @@
   </div>
 
   <div id="main" style="display:none">
-    <div class="st"><div class="k">WhatsApp Web</div><div class="v" id="wa"><span class="dot"></span>בודק…</div></div>
-    <div class="st"><div class="k">חיבור ל-Claude</div><div class="v" id="ai"><span class="dot"></span>בודק…</div></div>
-    <div class="small muted" id="last"></div>
+    <div class="lights">
+      <div class="light"><span class="dot" id="d1"></span><span class="v">WhatsApp Web פתוח</span><span class="k" id="k1"></span></div>
+      <div class="light"><span class="dot" id="d2"></span><span class="v">מחובר ל-Claude Desktop</span><span class="k" id="k2"></span></div>
+      <div class="light"><span class="dot" id="d3"></span><span class="v">מוכן</span><span class="k" id="k3"></span></div>
+    </div>
+    <div class="small muted" id="hint"></div>
     <div class="actions">
-      <button class="primary" id="opts">חיבור ל-Claude והגדרות</button>
       <button id="openWa">פתח את WhatsApp Web</button>
+      <button id="opts">הגדרות</button>
     </div>
   </div>
 
