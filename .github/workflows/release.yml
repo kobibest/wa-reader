@@ -25,13 +25,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           v=$(node -p "require('./package.json').version")
+          ev=$(node -p "require('./extension/manifest.json').version")
           tag="v$v"
           notes="WA Reader $v – local-only bridge between WhatsApp Web and Claude Desktop.
 
-          Install: 1) WA Reader from the Chrome Web Store, 2) double-click wa-reader.mcpb (Claude Desktop only).
+          Install: 1) WA Reader from the Chrome Web Store. 2) Claude Desktop → Settings → Desktop app → Extensions → Advanced settings → Install Extension… → choose wa-reader.mcpb (Claude Desktop only, regular Chat).
           No server, no telemetry, read-only, nothing stored."
           if gh release view "$tag" >/dev/null 2>&1; then
-            gh release upload "$tag" dist/wa-reader.mcpb "dist/wa-reader-$v.zip" --clobber
+            gh release upload "$tag" dist/wa-reader.mcpb "dist/wa-reader-$ev.zip" --clobber
           else
-            gh release create "$tag" dist/wa-reader.mcpb "dist/wa-reader-$v.zip" --target "$GITHUB_SHA" --title "WA Reader $v" --notes "$notes" --latest
+            gh release create "$tag" dist/wa-reader.mcpb "dist/wa-reader-$ev.zip" --target "$GITHUB_SHA" --title "WA Reader $v" --notes "$notes" --latest
           fi
