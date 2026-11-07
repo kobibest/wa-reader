@@ -25,6 +25,14 @@ execFileSync('unzip', ['-q', path.join(root, 'dist/wa-reader.mcpb'), '-d', unpac
 const manifest = JSON.parse(fs.readFileSync(path.join(unpacked, 'manifest.json'), 'utf8'));
 const args = manifest.server.mcp_config.args.map((a) => a.replace('${__dirname}', unpacked));
 
+// Claude Desktop sometimes starts an extension's server twice. Reproduce that: a first process takes the port,
+// and the MCP client below talks to a second one, which must forward to the first.
+const { spawn } = await import('node:child_process');
+const firstLog = [];
+const first = spawn(process.execPath, args, { env: { ...process.env, WA_READER_EXTENSION_ID: DEV_EXTENSION_ID }, stdio: ['pipe', 'ignore', 'pipe'] });
+first.stderr.on('data', (d) => firstLog.push(String(d)));
+await new Promise((r) => setTimeout(r, 1500));
+
 const serverLog = [];
 const transport = new StdioClientTransport({
   command: process.execPath, args,
@@ -133,10 +141,12 @@ assert.ok(r.text.startsWith('Connected'), 'extension connection survives the att
 
 // 6. no external requests from the extension pages or the WA tab (except the stand-in page itself)
 const wsLog = serverLog.join('');
+console.log('first process log:\n' + firstLog.join('').trim().split('\n').map((l) => '   ' + l).join('\n'));
 console.log('server log:\n' + wsLog.trim().split('\n').map((l) => '   ' + l).join('\n'));
 console.log('blocked external requests:', external.length ? external : 'none');
 
 await ctx.close();
 await client.close();
+first.kill();
 fs.rmSync(tmp, { recursive: true, force: true });
 console.log('\nE2E OK');
