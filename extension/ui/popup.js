@@ -16,7 +16,7 @@ async function refresh() {
   light(2, bridge, bridge ? 'מחובר' : s.bridge === 'connecting' ? 'מתחבר…' : 'לא מחובר');
   light(3, wa && bridge, wa && bridge ? 'Claude יכול לקרוא' : '');
   $('hint').textContent = !s.waOpen ? 'פתח את web.whatsapp.com בכרום.'
-    : !bridge ? 'פתח את Claude Desktop ובדוק שההרחבה WA Reader מותקנת ופעילה (Settings ← Extensions).'
+    : !bridge ? 'פתח את Claude Desktop ובדוק שההרחבה WA Reader מותקנת ומופעלת (Settings ← Desktop app ← Extensions).'
     : '';
 }
 

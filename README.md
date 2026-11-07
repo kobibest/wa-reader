@@ -9,9 +9,9 @@
 ## התקנה (שני צעדים)
 
 1. **התוסף לכרום:** מתקינים את WA Reader [מחנות Chrome](https://chromewebstore.google.com/detail/pihiihgmfgefkneahjhmeamnmlfapmfp) ומאשרים במסך ההפעלה.
-2. **ההרחבה ל-Claude Desktop:** מורידים את [**wa-reader.mcpb**](https://github.com/kobibest/wa-reader/releases/latest/download/wa-reader.mcpb) ולוחצים עליו פעמיים. Claude Desktop מציע להתקין, ולוחצים **Install**.
+2. **ההרחבה ל-Claude Desktop:** מורידים את [**wa-reader.mcpb**](https://github.com/kobibest/wa-reader/releases/latest/download/wa-reader.mcpb). ב-Claude Desktop נכנסים ל-**Settings ← Desktop app**, לוחצים **Manage** ליד **Extensions**, ואז **Advanced settings ← Install Extension…**, בוחרים את הקובץ ולוחצים **Install**.
 
-זהו. משאירים את [web.whatsapp.com](https://web.whatsapp.com) פתוח בכרום ושואלים את Claude.
+זהו, בלי שום הגדרה. משאירים את [web.whatsapp.com](https://web.whatsapp.com) פתוח בכרום, ושואלים את Claude **בשיחה רגילה (לשונית Chat)**. שיחות Claude Code בענן לא רואות הרחבות מקומיות.
 בחלון של התוסף מופיעות שלוש נורות: **WhatsApp Web פתוח**, **מחובר ל-Claude Desktop**, **מוכן**. כשכולן ירוקות, Claude יכול לקרוא.
 
 > לא צריך להתקין Node.js: Claude Desktop מריץ את ההרחבה בעצמו.
@@ -62,13 +62,13 @@ npm install
 npm test                      # בדיקות: Origin, החלפת חיבור, פרוטוקול, הגדרות פרטיות
 ./scripts/build-mcpb.sh       # dist/wa-reader.mcpb
 node test/e2e.mjs             # בדיקת קצה לקצה: לקוח MCP → ה-mcpb → כרום עם התוסף → דף WhatsApp מדומה
-./scripts/package.sh          # dist/wa-reader-<version>.zip לחנות (בלי השדה key)
+./scripts/package.sh          # dist/wa-reader-<version>.zip לחנות + dist/wa-reader-test-<version>.zip לבדיקה
 ./scripts/update-wa-js.sh     # עדכון WA-JS כש-WhatsApp משתנה
 ```
 
-**מזהה התוסף.** בגרסת הפיתוח, השדה `key` ב-[`extension/manifest.json`](extension/manifest.json) קובע את המזהה `cphfcojbhpemojgolhcgngodbfodildd` (טוענים את התיקייה `extension/` דרך chrome://extensions ← Load unpacked). ההרחבה ל-Claude Desktop מקבלת כברירת מחדל רק את המזהה של החנות, `pihiihgmfgefkneahjhmeamnmlfapmfp`. כדי לפתח, משנים בהגדרות ההרחבה ב-Claude Desktop את "Extension ID" למזהה של גרסת הפיתוח. אפשר גם כמה מזהים, מופרדים בפסיקים.
+**בדיקה לפני עדכון בחנות.** בכל Release יש קובץ `wa-reader-test-<version>.zip`. מחלצים אותו, ב-`chrome://extensions` מפעילים Developer mode ← **Load unpacked** ← בוחרים את התיקייה (ומכבים את גרסת החנות). השדה `key` ב-manifest קובע לו תמיד את המזהה `cphfcojbhpemojgolhcgngodbfodildd`, וההרחבה ל-Claude Desktop מקבלת אותו ואת מזהה החנות `pihiihgmfgefkneahjhmeamnmlfapmfp` בלי שום הגדרה. אותו דבר כשטוענים ישירות את התיקייה `extension/` מהריפו. הקובץ `wa-reader-<version>.zip` (בלי `key`) הוא זה שמעלים לחנות.
 
-**Release.** דוחפים תגית `v*`, או מריצים את ה-workflow ‏Release ידנית, וקובץ ה-`.mcpb` נבנה ומתפרסם ב-GitHub Releases.
+**Release.** מריצים את ה-workflow ‏Release (או דוחפים תגית `v*`). הוא מריץ את הבדיקות, בונה את ה-`.mcpb` ואת שני קובצי ה-ZIP, ומפרסם אותם ב-GitHub Releases.
 
 ## חשוב לדעת
 

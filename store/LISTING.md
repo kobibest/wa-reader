@@ -1,9 +1,7 @@
-# Chrome Web Store – טקסטים להעתקה (גרסה 2.0.0)
+# Chrome Web Store – טקסטים להעתקה (גרסה 2.3.0)
 
 ## Package
-מעלים את `dist/wa-reader-2.0.0.zip`. בונים אותו עם `scripts/package.sh`, שמסיר מה-manifest את השדה `key` של גרסת הפיתוח.
-
-> מספר הגרסה 2.0.0 נמוך מ-2.2.0 שכבר פורסמה בחנות. Chrome Web Store דוחה עלייה עם גרסה נמוכה יותר, אז צריך לבחור: לפרסם בחנות כ-2.3.0 (ולעדכן גם את ה-mcpb), או להשאיר 2.0.0 לרכיבים ולשנות רק את מספר הגרסה בחבילה לחנות.
+מעלים את `wa-reader-2.3.0.zip` מדף ה-Release ב-GitHub, **כעדכון לפריט הקיים** (Package ← Upload new package), לא כפריט חדש: רק כך המזהה `pihiihgmfgefkneahjhmeamnmlfapmfp` נשמר, וההרחבה ל-Claude Desktop מקבלת אותו. הקובץ בנוי בלי השדה `key`. את `wa-reader-test-2.3.0.zip` לא מעלים, הוא לבדיקה בלבד.
 
 ## Store listing
 
@@ -33,7 +31,7 @@ WA Reader מחבר את WhatsApp Web ל-Claude Desktop, כך ש-Claude יכול 
 
 התקנה (שני צעדים):
 1. מתקינים את התוסף ומאשרים במסך ההפעלה.
-2. מורידים את wa-reader.mcpb מ-github.com/kobibest/wa-reader/releases ולוחצים עליו פעמיים. Claude Desktop מתקין אותו.
+2. מורידים את wa-reader.mcpb מ-github.com/kobibest/wa-reader/releases, וב-Claude Desktop: Settings ← Desktop app ← Extensions (Manage) ← Advanced settings ← Install Extension… ← בוחרים את הקובץ.
 משאירים את web.whatsapp.com פתוח בכרום.
 
 עובד רק עם Claude Desktop (Windows ו-Mac). לא עובד עם claude.ai בדפדפן או עם האפליקציה בטלפון.
@@ -65,7 +63,7 @@ Privacy and safety:
 
 Setup (two steps):
 1. Install the extension and agree on the activation screen.
-2. Download wa-reader.mcpb from github.com/kobibest/wa-reader/releases and double-click it. Claude Desktop installs it.
+2. Download wa-reader.mcpb from github.com/kobibest/wa-reader/releases. In Claude Desktop: Settings → Desktop app → Extensions (Manage) → Advanced settings → Install Extension… → choose the file.
 Keep web.whatsapp.com open in Chrome.
 
 Works only with Claude Desktop (Windows and Mac). It does not work with claude.ai in the browser or the mobile app.
@@ -111,7 +109,8 @@ Free · Public · All regions
 WA Reader lets the user's Claude Desktop read WhatsApp Web over a local connection. To test:
 1. Install the extension; the activation screen opens. Check the box and click "הפעל את התוסף" (Activate).
 2. Open https://web.whatsapp.com and log in with any account. The popup shows a green light for "WhatsApp Web פתוח".
-3. Install Claude Desktop, download wa-reader.mcpb from https://github.com/kobibest/wa-reader/releases/latest and double-click it to install. The popup now shows all three lights green.
-4. In Claude Desktop ask "Which WhatsApp chats are waiting for my reply?".
+3. Install Claude Desktop and download wa-reader.mcpb from https://github.com/kobibest/wa-reader/releases/latest. In Claude Desktop: Settings → Desktop app → Extensions (Manage) → Advanced settings → Install Extension… → choose the file → Install. No settings are needed. The popup now shows all three lights green.
+4. Ask in a regular Claude Desktop chat (Chat tab).
+   For example: "Which WhatsApp chats are waiting for my reply?".
 The extension connects only to ws://127.0.0.1:17345 (enforced by its content security policy). The local server accepts only this extension's origin. It only reads: it captures read functions from the bundled WA-JS library and deletes its global from the page (page/page.js). No messages are stored.
 ```
