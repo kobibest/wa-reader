@@ -93,6 +93,9 @@ test('allowed origins come from config, exact ids only', () => {
   assert.deepEqual([...allowedOrigins({})], [`chrome-extension://${STORE_EXTENSION_ID}`]);
   assert.deepEqual([...allowedOrigins({ WA_READER_EXTENSION_ID: `${ID}, bad, ${ID.toUpperCase()}` })], [GOOD]);
   assert.deepEqual([...allowedOrigins({ WA_READER_EXTENSION_ID: '' })], [`chrome-extension://${STORE_EXTENSION_ID}`]);
+  // invisible direction marks / spaces copied from Chrome's Hebrew UI are ignored
+  assert.deepEqual([...allowedOrigins({ WA_READER_EXTENSION_ID: `\u200f\u200e ${ID}\u200e ` })], [GOOD]);
+  assert.deepEqual([...allowedOrigins({ WA_READER_EXTENSION_ID: `מזהה: ${ID}` })], [GOOD]);
 });
 
 test('a second WA Reader process forwards to the one holding the port, and takes over when it exits', async () => {
@@ -124,4 +127,11 @@ test('a second WA Reader process forwards to the one holding the port, and takes
   // and still refuses web pages
   assert.equal((await connect(second.port, 'https://example.com')).status, 403);
   ext2.close();
+});
+
+test('a refused extension ID is explained in the "not connected" error', async () => {
+  const b = await makeBridge();
+  const r = await connect(b.port, 'chrome-extension://bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb');
+  assert.equal(r.status, 403);
+  await assert.rejects(b.call('status'), (e) => e.message.includes('bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb') && e.message.includes(ID) && e.message.includes('Extension ID'));
 });

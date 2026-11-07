@@ -49,6 +49,7 @@ export class Bridge {
     this.ipcServer = null;
     this.retry = null;
     this.closed = false;
+    this.lastRefused = null; // { origin, at } – shown in the "not connected" error to help fix a wrong Extension ID
   }
 
   get connected() { return !!this.ext && this.ext.readyState === 1; }
@@ -62,6 +63,7 @@ export class Bridge {
         const origin = req.headers.origin;
         if (typeof origin !== 'string' || !this.origins.has(origin)) {
           this.log(`refused connection from origin ${JSON.stringify(origin ?? null)}`);
+          if (typeof origin === 'string' && origin.startsWith('chrome-extension://')) this.lastRefused = { origin, at: Date.now() };
           socket.end('HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n');
           return;
         }
@@ -119,8 +121,19 @@ export class Bridge {
     for (const [id, p] of this.pending) { clearTimeout(p.timer); p.reject(new Error(message)); this.pending.delete(id); }
   }
 
+  // "not connected" + what we know about why (no message content, only extension IDs)
+  notConnectedMessage() {
+    const r = this.lastRefused;
+    if (!r || Date.now() - r.at > 10 * 60000) return NOT_CONNECTED;
+    const got = r.origin.replace('chrome-extension://', '');
+    const allowed = [...this.origins].map((o) => o.replace('chrome-extension://', '')).join(', ');
+    return `התוסף WA Reader ניסה להתחבר אבל נדחה, כי המזהה שלו לא תואם להגדרות. ` +
+      `מזהה התוסף בכרום: ${got}. המזהה שמוגדר בהרחבה ב-Claude Desktop: ${allowed}. ` +
+      `תקן את Extension ID בהגדרות ההרחבה WA Reader ב-Claude Desktop (Settings ← Desktop app ← Extensions), שמור, וכבה והדלק את ההרחבה.`;
+  }
+
   #callExtension(method, params = {}) {
-    if (!this.connected) return Promise.reject(new Error(NOT_CONNECTED));
+    if (!this.connected) return Promise.reject(new Error(this.notConnectedMessage()));
     const ws = this.ext;
     const id = ++this.seq;
     return new Promise((resolve, reject) => {

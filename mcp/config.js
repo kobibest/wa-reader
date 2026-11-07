@@ -1,7 +1,7 @@
 // WA Reader – local MCP server configuration.
 // Everything stays on this computer: the bridge listens on 127.0.0.1 only.
 
-export const VERSION = '2.0.1';
+export const VERSION = '2.0.2';
 
 // Fixed port the Chrome extension connects to (ws://127.0.0.1:17345).
 export const PORT = 17345;
@@ -21,7 +21,9 @@ const ID_RE = /^[a-p]{32}$/;
 // Defaults to the Chrome Web Store ID. Each one is matched exactly against the Origin header.
 export function allowedOrigins(env = process.env) {
   const raw = String(env.WA_READER_EXTENSION_ID || STORE_EXTENSION_ID);
-  const ids = raw.split(',').map((s) => s.trim().toLowerCase()).filter((s) => ID_RE.test(s));
+  // keep only a–z: drops spaces, quotes and invisible direction marks (LRM/RLM) that get copied
+  // along with the ID from Chrome's right-to-left (e.g. Hebrew) extensions page
+  const ids = raw.split(/[,;\s]+/).map((s) => s.toLowerCase().replace(/[^a-z]/g, '')).filter((s) => ID_RE.test(s));
   if (!ids.length) ids.push(STORE_EXTENSION_ID);
   return new Set(ids.map((id) => `chrome-extension://${id}`));
 }
