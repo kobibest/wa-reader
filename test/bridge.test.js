@@ -12,11 +12,10 @@ let port = 27345;
 const bridges = [];
 after(() => bridges.forEach((b) => b.close()));
 
-async function makeBridge(timeoutMs = 500) {
-  const b = new Bridge({ host: '127.0.0.1', port: ++port, origins: new Set([GOOD]), timeoutMs });
+async function makeBridge(timeoutMs = 500, p = ++port) {
+  const b = new Bridge({ host: '127.0.0.1', port: p, origins: new Set([GOOD]), timeoutMs, retryMs: 200 });
   bridges.push(b);
-  b.start();
-  await new Promise((r) => b.server.once('listening', r));
+  await b.start();
   return b;
 }
 
@@ -94,4 +93,35 @@ test('allowed origins come from config, exact ids only', () => {
   assert.deepEqual([...allowedOrigins({})], [`chrome-extension://${STORE_EXTENSION_ID}`]);
   assert.deepEqual([...allowedOrigins({ WA_READER_EXTENSION_ID: `${ID}, bad, ${ID.toUpperCase()}` })], [GOOD]);
   assert.deepEqual([...allowedOrigins({ WA_READER_EXTENSION_ID: '' })], [`chrome-extension://${STORE_EXTENSION_ID}`]);
+});
+
+test('a second WA Reader process forwards to the one holding the port, and takes over when it exits', async () => {
+  const first = await makeBridge(2000);
+  const second = await makeBridge(2000, first.port);
+  assert.equal(first.role, 'primary');
+  assert.equal(second.role, 'secondary');
+  await assert.rejects(second.call('status'), (e) => e.message === NOT_CONNECTED);
+
+  const ext = (await connect(first.port, GOOD)).ws;
+  ext.on('message', (raw) => { const m = JSON.parse(raw); if (m.method) ext.send(JSON.stringify({ id: m.id, result: { via: m.method, p: m.params } })); });
+  await new Promise((r) => setTimeout(r, 50));
+  assert.deepEqual(await second.call('listChats', { limit: 2 }), { via: 'listChats', p: { limit: 2 } });
+  assert.deepEqual(await first.call('status'), { via: 'status', p: {} });
+
+  // errors from the extension pass through
+  ext.removeAllListeners('message');
+  ext.on('message', (raw) => { const m = JSON.parse(raw); if (m.method) ext.send(JSON.stringify({ id: m.id, error: 'boom' })); });
+  await assert.rejects(second.call('search', {}), /boom/);
+
+  // the primary exits → the secondary takes the port and the extension can reconnect to it
+  first.close(); ext.close();
+  for (let i = 0; i < 30 && second.role !== 'primary'; i++) await new Promise((r) => setTimeout(r, 100));
+  assert.equal(second.role, 'primary');
+  const ext2 = (await connect(second.port, GOOD)).ws;
+  ext2.on('message', (raw) => { const m = JSON.parse(raw); if (m.method) ext2.send(JSON.stringify({ id: m.id, result: 'now-direct' })); });
+  await new Promise((r) => setTimeout(r, 50));
+  assert.equal(await second.call('status'), 'now-direct');
+  // and still refuses web pages
+  assert.equal((await connect(second.port, 'https://example.com')).status, 403);
+  ext2.close();
 });

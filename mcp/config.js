@@ -1,7 +1,7 @@
 // WA Reader – local MCP server configuration.
 // Everything stays on this computer: the bridge listens on 127.0.0.1 only.
 
-export const VERSION = '2.0.0';
+export const VERSION = '2.0.1';
 
 // Fixed port the Chrome extension connects to (ws://127.0.0.1:17345).
 export const PORT = 17345;
