@@ -3,7 +3,7 @@
   "manifest_version": "0.3",
   "name": "wa-reader",
   "display_name": "WA Reader – וואטסאפ (קריאה בלבד, מקומי)",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Claude קורא את ה-WhatsApp שלך מתוך WhatsApp Web בכרום, דרך התוסף WA Reader. קריאה בלבד, הכול נשאר במחשב.",
   "long_description": "WA Reader מחבר את Claude Desktop ל-WhatsApp Web שפתוח בכרום, דרך תוסף הכרום החינמי WA Reader. Claude יכול לראות רשימת שיחות (כולל לא נקראו וממתינות לתשובה), לקרוא שיחה ולחפש בהודעות. הוא לא יכול לשלוח, למחוק או לסמן הודעות.\n\nהכול מקומי: ההרחבה מאזינה רק על 127.0.0.1 ומקבלת חיבור רק מהתוסף WA Reader. אין שרת חיצוני, אין טלמטריה, ושום הודעה לא נשמרת. מה ש-Claude מבקש עובר ל-Anthropic כחלק מהשיחה.\n\nנבנה על ידי איתן | דיגיטציה ארגונית – https://digital.m-eitan.co.il",
   "author": {
