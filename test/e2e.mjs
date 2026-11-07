@@ -2,7 +2,7 @@
 // (unpacked, dev ID) → content scripts → a stand-in WhatsApp Web page with a fake WPP data layer.
 // Also checks that a normal web page cannot open the WebSocket.
 //
-//   ./scripts/build-mcpb.sh && node test/e2e.mjs
+//   ./scripts/build-mcpb.sh && ./scripts/package.sh && node test/e2e.mjs
 // Needs Playwright's Chromium (require('playwright')). Not part of `npm test`.
 import { createRequire } from 'node:module';
 import { execFileSync } from 'node:child_process';
@@ -29,14 +29,14 @@ const args = manifest.server.mcp_config.args.map((a) => a.replace('${__dirname}'
 // and the MCP client below talks to a second one, which must forward to the first.
 const { spawn } = await import('node:child_process');
 const firstLog = [];
-const first = spawn(process.execPath, args, { env: { ...process.env, WA_READER_EXTENSION_ID: DEV_EXTENSION_ID }, stdio: ['pipe', 'ignore', 'pipe'] });
+const first = spawn(process.execPath, args, { env: (({ WA_READER_EXTENSION_ID, ...e }) => e)(process.env), stdio: ['pipe', 'ignore', 'pipe'] });
 first.stderr.on('data', (d) => firstLog.push(String(d)));
 await new Promise((r) => setTimeout(r, 1500));
 
 const serverLog = [];
 const transport = new StdioClientTransport({
   command: process.execPath, args,
-  env: { ...process.env, WA_READER_EXTENSION_ID: DEV_EXTENSION_ID },
+  env: (({ WA_READER_EXTENSION_ID, ...e }) => e)(process.env),
   stderr: 'pipe'
 });
 transport.stderr.on('data', (d) => serverLog.push(String(d)));
@@ -54,11 +54,14 @@ let r = await call('list_chats');
 assert.ok(r.error && r.text.includes('פתח את WhatsApp Web בכרום ובדוק שהתוסף פעיל'), r.text);
 console.log('✓ not connected → Hebrew error:', r.text);
 
-// 3. Chrome with the unpacked extension
+// 3. Chrome with the test build exactly as released (dist/wa-reader-test-<version>.zip), loaded unpacked
+const extVersion = JSON.parse(fs.readFileSync(path.join(root, 'extension/manifest.json'), 'utf8')).version;
+const extDir = path.join(tmp, 'extension');
+execFileSync('unzip', ['-q', path.join(root, `dist/wa-reader-test-${extVersion}.zip`), '-d', extDir]);
 const external = [];
 const ctx = await chromium.launchPersistentContext(path.join(tmp, 'profile'), {
   headless: true, channel: 'chromium',
-  args: [`--disable-extensions-except=${path.join(root, 'extension')}`, `--load-extension=${path.join(root, 'extension')}`]
+  args: [`--disable-extensions-except=${extDir}`, `--load-extension=${extDir}`]
 });
 const FAKE_WA = fs.readFileSync(path.join(root, 'test/fake-whatsapp.html'), 'utf8');
 await ctx.route('**/*', (route) => {

@@ -49,7 +49,7 @@ export class Bridge {
     this.ipcServer = null;
     this.retry = null;
     this.closed = false;
-    this.lastRefused = null; // { origin, at } – shown in the "not connected" error to help fix a wrong Extension ID
+    this.lastRefused = null; // { origin, at } – shown in the "not connected" error
   }
 
   get connected() { return !!this.ext && this.ext.readyState === 1; }
@@ -127,9 +127,8 @@ export class Bridge {
     if (!r || Date.now() - r.at > 10 * 60000) return NOT_CONNECTED;
     const got = r.origin.replace('chrome-extension://', '');
     const allowed = [...this.origins].map((o) => o.replace('chrome-extension://', '')).join(', ');
-    return `התוסף WA Reader ניסה להתחבר אבל נדחה, כי המזהה שלו לא תואם להגדרות. ` +
-      `מזהה התוסף בכרום: ${got}. המזהה שמוגדר בהרחבה ב-Claude Desktop: ${allowed}. ` +
-      `תקן את Extension ID בהגדרות ההרחבה WA Reader ב-Claude Desktop (Settings ← Desktop app ← Extensions), שמור, וכבה והדלק את ההרחבה.`;
+    return `תוסף כרום ניסה להתחבר אבל נדחה, כי המזהה שלו (${got}) הוא לא של WA Reader. ` +
+      `מזהים מותרים: ${allowed}. התקן את WA Reader מחנות Chrome, או את קובץ הבדיקה wa-reader-test מדף ה-Releases ב-GitHub.`;
   }
 
   #callExtension(method, params = {}) {

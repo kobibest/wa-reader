@@ -3,7 +3,7 @@
   "manifest_version": "0.3",
   "name": "wa-reader",
   "display_name": "WA Reader – וואטסאפ (קריאה בלבד, מקומי)",
-  "version": "2.0.2",
+  "version": "2.3.0",
   "description": "Claude קורא את ה-WhatsApp שלך מתוך WhatsApp Web בכרום, דרך התוסף WA Reader. קריאה בלבד, הכול נשאר במחשב.",
   "long_description": "WA Reader מחבר את Claude Desktop ל-WhatsApp Web שפתוח בכרום, דרך תוסף הכרום החינמי WA Reader. Claude יכול לראות רשימת שיחות (כולל לא נקראו וממתינות לתשובה), לקרוא שיחה ולחפש בהודעות. הוא לא יכול לשלוח, למחוק או לסמן הודעות.\n\nהכול מקומי: ההרחבה מאזינה רק על 127.0.0.1 ומקבלת חיבור רק מהתוסף WA Reader. אין שרת חיצוני, אין טלמטריה, ושום הודעה לא נשמרת. מה ש-Claude מבקש עובר ל-Anthropic כחלק מהשיחה.\n\nנבנה על ידי איתן | דיגיטציה ארגונית – https://digital.m-eitan.co.il",
   "author": {
@@ -20,36 +20,51 @@
   "support": "https://github.com/kobibest/wa-reader/issues",
   "icon": "icon.png",
   "license": "MIT",
-  "keywords": ["whatsapp", "messages", "read-only", "local", "chrome-extension"],
-  "privacy_policies": ["https://kobibest.github.io/wa-reader/privacy.html"],
+  "keywords": [
+    "whatsapp",
+    "messages",
+    "read-only",
+    "local",
+    "chrome-extension"
+  ],
+  "privacy_policies": [
+    "https://kobibest.github.io/wa-reader/privacy.html"
+  ],
   "server": {
     "type": "node",
     "entry_point": "server/index.js",
     "mcp_config": {
       "command": "node",
-      "args": ["${__dirname}/server/index.js"],
-      "env": {
-        "WA_READER_EXTENSION_ID": "${user_config.extension_id}"
-      }
-    }
-  },
-  "user_config": {
-    "extension_id": {
-      "type": "string",
-      "title": "מזהה תוסף הכרום (Extension ID)",
-      "description": "השאר כמו שהוא. משנים רק כשמפתחים גרסה לא ארוזה של התוסף.",
-      "default": "pihiihgmfgefkneahjhmeamnmlfapmfp",
-      "required": false
+      "args": [
+        "${__dirname}/server/index.js"
+      ]
     }
   },
   "tools": [
-    { "name": "whatsapp_status", "description": "בדיקה שהתוסף מחובר ו-WhatsApp Web טעון" },
-    { "name": "list_chats", "description": "רשימת שיחות: לא נקראו, ממתינות לתשובה, פרטיות, קבוצות" },
-    { "name": "get_messages", "description": "הודעות משיחה אחת (עד 200)" },
-    { "name": "search", "description": "חיפוש טקסט בהודעות (עד 100 תוצאות)" }
+    {
+      "name": "whatsapp_status",
+      "description": "בדיקה שהתוסף מחובר ו-WhatsApp Web טעון"
+    },
+    {
+      "name": "list_chats",
+      "description": "רשימת שיחות: לא נקראו, ממתינות לתשובה, פרטיות, קבוצות"
+    },
+    {
+      "name": "get_messages",
+      "description": "הודעות משיחה אחת (עד 200)"
+    },
+    {
+      "name": "search",
+      "description": "חיפוש טקסט בהודעות (עד 100 תוצאות)"
+    }
   ],
   "compatibility": {
-    "platforms": ["win32", "darwin"],
-    "runtimes": { "node": ">=18.0.0" }
+    "platforms": [
+      "win32",
+      "darwin"
+    ],
+    "runtimes": {
+      "node": ">=18.0.0"
+    }
   }
 }

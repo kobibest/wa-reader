@@ -3,7 +3,7 @@ import { test, after } from 'node:test';
 import assert from 'node:assert/strict';
 import WebSocket from 'ws';
 import { Bridge, NOT_CONNECTED } from '../mcp/bridge.js';
-import { allowedOrigins, STORE_EXTENSION_ID } from '../mcp/config.js';
+import { allowedOrigins, STORE_EXTENSION_ID, DEV_EXTENSION_ID } from '../mcp/config.js';
 
 const ID = 'abcdefghijklmnopabcdefghijklmnop';
 const GOOD = `chrome-extension://${ID}`;
@@ -90,9 +90,10 @@ test('clear Hebrew error when the extension is not connected', async () => {
 });
 
 test('allowed origins come from config, exact ids only', () => {
-  assert.deepEqual([...allowedOrigins({})], [`chrome-extension://${STORE_EXTENSION_ID}`]);
+  const defaults = [`chrome-extension://${STORE_EXTENSION_ID}`, `chrome-extension://${DEV_EXTENSION_ID}`];
+  assert.deepEqual([...allowedOrigins({})], defaults);
   assert.deepEqual([...allowedOrigins({ WA_READER_EXTENSION_ID: `${ID}, bad, ${ID.toUpperCase()}` })], [GOOD]);
-  assert.deepEqual([...allowedOrigins({ WA_READER_EXTENSION_ID: '' })], [`chrome-extension://${STORE_EXTENSION_ID}`]);
+  assert.deepEqual([...allowedOrigins({ WA_READER_EXTENSION_ID: '' })], defaults);
   // invisible direction marks / spaces copied from Chrome's Hebrew UI are ignored
   assert.deepEqual([...allowedOrigins({ WA_READER_EXTENSION_ID: `\u200f\u200e ${ID}\u200e ` })], [GOOD]);
   assert.deepEqual([...allowedOrigins({ WA_READER_EXTENSION_ID: `מזהה: ${ID}` })], [GOOD]);
@@ -133,5 +134,5 @@ test('a refused extension ID is explained in the "not connected" error', async (
   const b = await makeBridge();
   const r = await connect(b.port, 'chrome-extension://bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb');
   assert.equal(r.status, 403);
-  await assert.rejects(b.call('status'), (e) => e.message.includes('bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb') && e.message.includes(ID) && e.message.includes('Extension ID'));
+  await assert.rejects(b.call('status'), (e) => e.message.includes('bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb') && e.message.includes(ID) && e.message.includes('wa-reader-test'));
 });
