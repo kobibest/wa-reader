@@ -71,7 +71,7 @@ Works only with Claude Desktop (Windows and Mac). It does not work with claude.a
 Built by Eitan | Organizational Digitization (digital.m-eitan.co.il). WA Reader is an independent project, not affiliated with WhatsApp, Meta or Anthropic.
 ```
 
-**התמונות:** `store/icon-128.png`, `store/screenshot-*.png`, `store/promo-tile-440x280.png` (צריך לעדכן צילומי מסך שמראים את החיבור הענני)
+**התמונות:** `store/icon-128.png`, `store/screenshot-*.png`, `store/promo-tile-440x280.png` (1280×800, עודכנו ל-2.3.0: איך זה עובד, התקנה בשני צעדים, פרטיות)
 **Homepage URL:** `https://github.com/kobibest/wa-reader`
 **Support URL:** `https://github.com/kobibest/wa-reader/issues`
 
