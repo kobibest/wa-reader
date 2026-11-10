@@ -7,6 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 
 export const INLINE_IMAGE_MAX_BYTES = 700 * 1024; // Claude Desktop limits one tool answer to about 1 MB
+export const INLINE_AUDIO_MAX_BYTES = 700 * 1024; // a voice message of about 5 minutes
 export const INLINE_TEXT_MAX_BYTES = 100 * 1024;
 
 const KIND = { image: 'image', video: 'video', gif: 'GIF', ptv: 'video note', ptt: 'voice message', audio: 'audio', document: 'document', sticker: 'sticker' };
@@ -32,6 +33,7 @@ const EXT = {
   'text/plain': 'txt', 'text/csv': 'csv', 'text/html': 'html', 'text/markdown': 'md', 'text/vcard': 'vcf', 'text/calendar': 'ics'
 };
 const baseMime = (mime) => String(mime || '').split(';')[0].trim().toLowerCase(); // "audio/ogg; codecs=opus" → "audio/ogg"
+export const audioMime = (mime) => baseMime(mime); // what goes in the MCP audio block: "audio/ogg"
 export const extFor = (mime) => EXT[baseMime(mime)] || 'bin';
 
 const TEXT_EXT = /\.(txt|csv|tsv|json|md|xml|html?|log|ics|vcf|ya?ml)$/i;

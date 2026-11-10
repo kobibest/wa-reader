@@ -134,6 +134,8 @@ assert.equal(saved.length, 1);
 assert.match(saved[0], /Dana Cohen voice message\.ogg$/);
 assert.equal(fs.readFileSync(path.join(mediaDir, saved[0]), 'utf8'), 'OggS fake voice message');
 assert.ok(r.text.includes(path.join(mediaDir, saved[0])), r.text);
+const rec = r.content.find((c) => c.type === 'audio');
+assert.ok(rec && rec.mimeType === 'audio/ogg' && Buffer.from(rec.data, 'base64').toString() === 'OggS fake voice message', 'the recording reaches Claude as it is');
 console.log('✓ get_media (voice message):\n' + r.text);
 
 r = await call('get_media', { media_id: `false_${DANA}_5` });

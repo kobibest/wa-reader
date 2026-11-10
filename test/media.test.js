@@ -85,8 +85,15 @@ test('get_media: a voice message is saved and Claude gets the path; a small text
   const [file] = fs.readdirSync(dir);
   assert.match(file, /Dana voice message\.ogg$/);
   assert.equal(fs.readFileSync(path.join(dir, file), 'utf8'), 'OggS!');
+  // the recording itself goes to Claude as it is, and is also saved
+  assert.deepEqual(r.content[1], { type: 'audio', data: Buffer.from('OggS!').toString('base64'), mimeType: 'audio/ogg' });
+  assert.ok(r.content[0].text.includes(path.join(dir, file)) && r.content[0].text.includes('0:12') && /transcription tool connected to Claude/.test(r.content[0].text));
+  // a long recording is only saved
+  const big = Buffer.alloc(800 * 1024, 1).toString('base64');
+  r = await tools(async () => ({ ...answer, base64: big })).get_media.fn({ media_id: 'false_1@c.us_AB' });
   assert.equal(r.content.length, 1);
-  assert.ok(r.content[0].text.includes(path.join(dir, file)) && r.content[0].text.includes('0:12') && /transcription/.test(r.content[0].text));
+  assert.match(r.content[0].text, /too long to attach/);
+  fs.rmSync(path.join(dir, fs.readdirSync(dir).find((f) => f.includes('(2)'))));
 
   answer = { chat: { name: 'Dana' }, message: msg({ type: 'document', text: '[document: list.csv]', media: { mime: 'text/csv', size: 7, filename: 'list.csv' } }), mime: 'text/csv', base64: Buffer.from('a,b\n1,2').toString('base64'), tz: 'UTC' };
   r = await t.get_media.fn({ media_id: 'false_1@c.us_AB' });
