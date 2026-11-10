@@ -5,7 +5,7 @@
 //   - accepts a connection only when the Origin header is exactly chrome-extension://<allowed id>;
 //     everything else (web pages, other extensions, scripts without an Origin) is refused with 403
 //   - one active connection at a time: a new accepted connection replaces the previous one
-//   - nothing is written to disk; requests and answers live in memory until the call returns
+//   - the bridge writes nothing to disk; requests and answers live in memory until the call returns
 //
 // Protocol (JSON text frames):
 //   server → extension  {id, method, params}
@@ -27,6 +27,8 @@ import { WebSocketServer } from 'ws';
 export const NOT_CONNECTED =
   'התוסף WA Reader לא מחובר. פתח את WhatsApp Web בכרום ובדוק שהתוסף פעיל.';
 const TIMEOUT = 'התוסף לא ענה תוך 15 שניות. בדוק שהטאב של WhatsApp Web פתוח וטעון, ונסה שוב.';
+const SLOW_TIMEOUT = (ms) => `התוסף לא ענה תוך ${Math.round(ms / 1000)} שניות. בדוק שהטאב של WhatsApp Web פתוח וטעון, ונסה שוב.`;
+const MAX_TIMEOUT_MS = 120000;
 const MAX_LINE = 32 * 1024 * 1024;
 
 export function ipcPath(port) {
@@ -131,12 +133,19 @@ export class Bridge {
       `מזהים מותרים: ${allowed}. התקן את WA Reader מחנות Chrome, או את קובץ הבדיקה wa-reader-test מדף ה-Releases ב-GitHub.`;
   }
 
-  #callExtension(method, params = {}) {
+  // timeoutMs: only for calls that need longer than the default (downloading a file)
+  #timeout(timeoutMs) {
+    const ms = Number(timeoutMs);
+    return Number.isFinite(ms) && ms > 0 ? { ms: Math.min(ms, MAX_TIMEOUT_MS), text: SLOW_TIMEOUT(Math.min(ms, MAX_TIMEOUT_MS)) } : { ms: this.timeoutMs, text: TIMEOUT };
+  }
+
+  #callExtension(method, params = {}, timeoutMs) {
     if (!this.connected) return Promise.reject(new Error(this.notConnectedMessage()));
     const ws = this.ext;
     const id = ++this.seq;
     return new Promise((resolve, reject) => {
-      const timer = setTimeout(() => { this.pending.delete(id); reject(new Error(TIMEOUT)); }, this.timeoutMs);
+      const limit = this.#timeout(timeoutMs);
+      const timer = setTimeout(() => { this.pending.delete(id); reject(new Error(limit.text)); }, limit.ms);
       this.pending.set(id, { resolve, reject, timer, ws });
       try { ws.send(JSON.stringify({ id, method, params })); }
       catch { clearTimeout(timer); this.pending.delete(id); reject(new Error(NOT_CONNECTED)); }
@@ -160,7 +169,7 @@ export class Bridge {
             let msg;
             try { msg = JSON.parse(line); } catch { continue; }
             const reply = (o) => { try { sock.write(JSON.stringify({ id: msg.id, ...o }) + '\n'); } catch { /* ignore */ } };
-            this.#callExtension(String(msg.method || ''), msg.params || {})
+            this.#callExtension(String(msg.method || ''), msg.params || {}, msg.timeoutMs)
               .then((result) => reply({ result }), (e) => reply({ error: e.message }));
           }
         });
@@ -176,17 +185,19 @@ export class Bridge {
   }
 
   // ---------- secondary: forward to the primary ----------
-  #forward(method, params) {
+  #forward(method, params, timeoutMs) {
     return new Promise((resolve, reject) => {
       const sock = net.connect(this.ipc);
       let buf = '', done = false;
       const finish = (fn, v) => { if (done) return; done = true; clearTimeout(timer); sock.destroy(); fn(v); };
-      const timer = setTimeout(() => finish(reject, new Error(TIMEOUT)), this.timeoutMs + 2000);
+      const limit = this.#timeout(timeoutMs);
+      const timer = setTimeout(() => finish(reject, new Error(limit.text)), limit.ms + 2000);
       sock.setEncoding('utf8');
-      sock.on('connect', () => sock.write(JSON.stringify({ id: 1, method, params }) + '\n'));
+      sock.on('connect', () => sock.write(JSON.stringify({ id: 1, method, params, timeoutMs }) + '\n'));
       sock.on('data', (chunk) => {
         buf += chunk;
         if (buf.length > MAX_LINE) return finish(reject, new Error('answer too large'));
+        if (!chunk.includes('\n')) return; // a file arrives in many chunks – don't rescan the whole buffer for each
         const nl = buf.indexOf('\n');
         if (nl < 0) return;
         let msg;
@@ -199,9 +210,9 @@ export class Bridge {
     });
   }
 
-  call(method, params = {}) {
-    if (this.role === 'secondary') return this.#forward(method, params);
-    return this.#callExtension(method, params);
+  call(method, params = {}, timeoutMs) {
+    if (this.role === 'secondary') return this.#forward(method, params, timeoutMs);
+    return this.#callExtension(method, params, timeoutMs);
   }
 
   close() {

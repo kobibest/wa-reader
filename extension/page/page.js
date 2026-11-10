@@ -1,8 +1,10 @@
 // WA Reader – page script (MAIN world, next to WA-JS). Answers read-only queries on demand.
 // READ-ONLY by design:
-//   1. On ready it captures only read functions (chat.list/get/getMessages, contact.get) into a frozen object R.
+//   1. On ready it captures only read functions (chat.list/get/getMessages/getMessageById/downloadMedia, contact.get)
+//      into a frozen object R.
 //   2. Then it deletes the global WPP from the page, so no code on web.whatsapp.com can reach any send/mark/delete API.
 // Nothing is stored here; each query reads live from WhatsApp Web's own memory.
+// A media file (image, document, voice message…) is read only when getMedia asks for one specific message.
 (() => {
   'use strict';
   const SRC_PAGE = 'WA_READER_PAGE';
@@ -26,6 +28,8 @@
       list: W.chat.list.bind(W.chat),
       getChat: W.chat.get.bind(W.chat),
       getMessages: W.chat.getMessages.bind(W.chat),
+      getMessageById: W.chat.getMessageById.bind(W.chat),
+      downloadMedia: W.chat.downloadMedia.bind(W.chat),
       getContact: W.contact.get.bind(W.contact),
       myId: () => { try { return W.conn.getMyUserId(); } catch { return null; } },
       version: W.version || ''
@@ -59,6 +63,10 @@
     sticker: 'sticker', location: 'location', vcard: 'contact card', multi_vcard: 'contact cards',
     poll_creation: 'poll', revoked: 'deleted message', ptv: 'video note', gif: 'GIF', event_creation: 'event'
   };
+  // types whose file get_media can hand over
+  const DOWNLOADABLE = new Set(['image', 'video', 'ptt', 'audio', 'document', 'sticker', 'ptv', 'gif']);
+  const MAX_MEDIA_BYTES = 20 * 1024 * 1024; // one answer must fit in a single local WebSocket frame (32 MB as base64 JSON)
+  const duration = (sec) => { const n = Math.round(Number(sec) || 0); return n > 0 ? `${Math.floor(n / 60)}:${String(n % 60).padStart(2, '0')}` : ''; };
   const clip = (s, n) => (s && s.length > n ? s.slice(0, n) + '…' : s || '');
 
   const nameCache = new Map();
@@ -99,7 +107,9 @@
     let text = type === 'chat' ? (m.body || '') : (m.caption || '');
     if (type !== 'chat') {
       let label = MEDIA_LABEL[type] || type;
+      if (m.isViewOnce) label = `view-once ${label}`;
       if (type === 'document' && m.filename) label += `: ${m.filename}`;
+      if ((type === 'ptt' || type === 'audio' || type === 'video' || type === 'ptv') && duration(m.duration)) label += ` ${duration(m.duration)}`;
       if (type === 'poll_creation' && m.pollName) label += `: ${m.pollName}`;
       if (type === 'location' && (m.loc || m.comment)) label += `: ${m.loc || m.comment}`;
       text = `[${label}]` + (text ? ` ${text}` : '');
@@ -113,7 +123,11 @@
     let quoted = '';
     const q = m.quotedMsg;
     if (q) quoted = q.type === 'chat' ? clip(q.body, 140) : (q.caption ? clip(q.caption, 140) : `[${MEDIA_LABEL[q.type] || q.type || 'message'}]`);
-    return { id, chatId: meta.id, chatName: meta.name, fromMe, sender, t: m.t || 0, type, text: clip(text, 4000), quoted, forwarded: !!m.isForwarded };
+    // view-once media is never offered for download
+    const media = DOWNLOADABLE.has(type) && !m.isViewOnce
+      ? { mime: String(m.mimetype || ''), size: Number(m.size) || 0, duration: Math.round(Number(m.duration) || 0), filename: clip(String(m.filename || ''), 200) }
+      : null;
+    return { id, chatId: meta.id, chatName: meta.name, fromMe, sender, t: m.t || 0, type, text: clip(text, 4000), quoted, forwarded: !!m.isForwarded, media };
   }
 
   // ---------- 3. Queries ----------
@@ -165,6 +179,14 @@
 
   const publicChat = (meta, extra = {}) => ({ id: meta.id, name: meta.name, isGroup: meta.isGroup, archived: meta.archived, muted: meta.muted, unread: meta.unread, ...extra });
 
+  const toBase64 = (blob) => new Promise((resolve, reject) => {
+    const fr = new FileReader();
+    fr.onload = () => { const s = String(fr.result || ''); resolve(s.slice(s.indexOf(',') + 1)); };
+    fr.onerror = () => reject(new Error('could not read the file'));
+    fr.readAsDataURL(blob);
+  });
+  const tooBig = (bytes) => `The file is ${(bytes / 1048576).toFixed(1)} MB. WA Reader can hand over files up to ${MAX_MEDIA_BYTES / 1048576} MB.`;
+
   const METHODS = {
     async status() {
       const chats = await R.list({ count: 2000 });
@@ -205,6 +227,33 @@
       }
       const last = out[out.length - 1];
       return { chat: publicChat(meta, { awaitingReply: !!last && !last.fromMe && !meta.isGroup }), messages: out.slice(-limit) };
+    },
+
+    // The file of ONE message, by the id get_messages/search printed. Reads only: nothing is sent or marked.
+    async getMedia({ messageId, exclude }) {
+      const id = String(messageId || '').trim();
+      let m = null;
+      try { m = await R.getMessageById(id); } catch { /* not found */ }
+      if (Array.isArray(m)) m = m[0];
+      const chatId = widStr(m?.id?.remote);
+      if (!m || !chatId) return { message: null };
+      let chat = null;
+      try { chat = await R.getChat(chatId); } catch { /* ignore */ }
+      if (!chat) return { message: null };
+      const meta = chatMeta(chat);
+      // same visibility rules as every other query: excluded chats, statuses and channels do not exist
+      if (meta.id === 'status@broadcast' || meta.id.endsWith('@newsletter') || excluder(exclude)(meta)) return { message: null };
+      const s = await serialize(m, meta);
+      if (!s) return { message: null };
+      if (m.isViewOnce) throw new Error('This is a view-once message. WA Reader does not hand over view-once media.');
+      if (!s.media) throw new Error(`This message has no file to hand over (type: ${s.type}).`);
+      if (s.media.size > MAX_MEDIA_BYTES) throw new Error(tooBig(s.media.size));
+      let blob;
+      try { blob = await R.downloadMedia(id); }
+      catch { throw new Error('WhatsApp Web could not load this file. Old media may no longer be on WhatsApp\'s servers: open the chat on the phone, download it there, and try again.'); }
+      if (!blob || !blob.size) throw new Error('WhatsApp Web returned an empty file.');
+      if (blob.size > MAX_MEDIA_BYTES) throw new Error(tooBig(blob.size));
+      return { chat: publicChat(meta), message: s, mime: s.media.mime || blob.type || 'application/octet-stream', size: blob.size, base64: await toBase64(blob) };
     },
 
     async recent({ sinceMs, includeGroups = true, includeMuted = false, includeArchived = false, maxChats = 80, exclude }) {

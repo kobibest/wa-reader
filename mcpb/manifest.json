@@ -3,9 +3,9 @@
   "manifest_version": "0.3",
   "name": "wa-reader",
   "display_name": "WA Reader – וואטסאפ (קריאה בלבד, מקומי)",
-  "version": "2.3.0",
-  "description": "Claude קורא את ה-WhatsApp שלך מתוך WhatsApp Web בכרום, דרך התוסף WA Reader. קריאה בלבד, הכול נשאר במחשב.",
-  "long_description": "WA Reader מחבר את Claude Desktop ל-WhatsApp Web שפתוח בכרום, דרך תוסף הכרום החינמי WA Reader. Claude יכול לראות רשימת שיחות (כולל לא נקראו וממתינות לתשובה), לקרוא שיחה ולחפש בהודעות. הוא לא יכול לשלוח, למחוק או לסמן הודעות.\n\nהכול מקומי: ההרחבה מאזינה רק על 127.0.0.1 ומקבלת חיבור רק מהתוסף WA Reader. אין שרת חיצוני, אין טלמטריה, ושום הודעה לא נשמרת. מה ש-Claude מבקש עובר ל-Anthropic כחלק מהשיחה.\n\nנבנה על ידי איתן | דיגיטציה ארגונית – https://digital.m-eitan.co.il",
+  "version": "2.4.0",
+  "description": "Claude קורא את ה-WhatsApp שלך, כולל קבצים והקלטות, מתוך WhatsApp Web בכרום, דרך התוסף WA Reader. קריאה בלבד, הכול נשאר במחשב.",
+  "long_description": "WA Reader מחבר את Claude Desktop ל-WhatsApp Web שפתוח בכרום, דרך תוסף הכרום החינמי WA Reader. Claude יכול לראות רשימת שיחות (כולל לא נקראו וממתינות לתשובה), לקרוא שיחה, לחפש בהודעות, ולקבל קובץ של הודעה מסוימת: תמונה, מסמך, הודעה קולית או סרטון. הוא לא יכול לשלוח, למחוק או לסמן הודעות.\n\nהכול מקומי: ההרחבה מאזינה רק על 127.0.0.1 ומקבלת חיבור רק מהתוסף WA Reader. אין שרת חיצוני, אין טלמטריה, ושום הודעה לא נשמרת. קובץ ש-Claude מבקש נשמר בתיקייה Downloads/WA Reader במחשב (תמונה מוצגת ל-Claude בלי להישמר). מה ש-Claude מבקש עובר ל-Anthropic כחלק מהשיחה.\n\nנבנה על ידי איתן | דיגיטציה ארגונית – https://digital.m-eitan.co.il",
   "author": {
     "name": "Kobi Eitan – איתן | דיגיטציה ארגונית",
     "email": "kobi@eitan-m.co.il",
@@ -56,6 +56,10 @@
     {
       "name": "search",
       "description": "חיפוש טקסט בהודעות (עד 100 תוצאות)"
+    },
+    {
+      "name": "get_media",
+      "description": "קובץ של הודעה אחת: תמונה, מסמך, הודעה קולית, אודיו או וידאו (עד 20MB)"
     }
   ],
   "compatibility": {

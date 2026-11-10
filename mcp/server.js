@@ -2,7 +2,8 @@
 // WA Reader – local MCP server for Claude Desktop (packaged as wa-reader.mcpb).
 //   - MCP over stdio (Claude Desktop starts this process)
 //   - in the same process: a WebSocket server on 127.0.0.1:17345 that only the WA Reader Chrome extension may join
-// No external network calls, no telemetry, nothing stored on disk.
+// No external network calls, no telemetry. Messages are never stored. The only thing written to disk is a file
+// Claude explicitly asked for with get_media (a document, a voice message…), saved in the user's "WA Reader" folder.
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { Bridge } from './bridge.js';
@@ -18,7 +19,7 @@ const bridge = new Bridge({ host: HOST, port: PORT, origins, timeoutMs: REQUEST_
 bridge.start();
 
 const server = new McpServer({ name: 'wa-reader', version: VERSION }, { instructions: INSTRUCTIONS });
-registerTools(server, (method, params) => bridge.call(method, params));
+registerTools(server, (method, params, timeoutMs) => bridge.call(method, params, timeoutMs));
 await server.connect(new StdioServerTransport());
 log(`ready v${VERSION}, allowed: ${[...origins].join(' ')}`);
 

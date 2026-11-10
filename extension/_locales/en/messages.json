@@ -3,6 +3,6 @@
     "message": "WA Reader – WhatsApp for Claude Desktop, read-only"
   },
   "extDescription": {
-    "message": "Local bridge between WhatsApp Web and Claude Desktop: Claude reads your messages when you ask. Read-only, no server, nothing stored."
+    "message": "Local bridge between WhatsApp Web and Claude Desktop: Claude reads messages, files and voice notes when you ask. Read-only, local."
   }
 }

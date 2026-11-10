@@ -1,7 +1,7 @@
 // WA Reader – local MCP server configuration.
 // Everything stays on this computer: the bridge listens on 127.0.0.1 only.
 
-export const VERSION = '2.3.0';
+export const VERSION = '2.4.0';
 
 // Fixed port the Chrome extension connects to (ws://127.0.0.1:17345).
 export const PORT = 17345;
@@ -14,6 +14,9 @@ export const DEV_EXTENSION_ID = 'cphfcojbhpemojgolhcgngodbfodildd';
 
 // Seconds to wait for the extension to answer one request.
 export const REQUEST_TIMEOUT_MS = 15000;
+
+// Seconds to wait when the extension has to download one file from WhatsApp.
+export const MEDIA_TIMEOUT_MS = 45000;
 
 const ID_RE = /^[a-p]{32}$/;
 

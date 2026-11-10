@@ -30,7 +30,7 @@ jobs:
           notes="WA Reader $v – local-only bridge between WhatsApp Web and Claude Desktop.
 
           Install: 1) WA Reader from the Chrome Web Store. 2) Claude Desktop → Settings → Desktop app → Extensions → Advanced settings → Install Extension… → choose wa-reader.mcpb (Claude Desktop only, regular Chat).
-          No server, no telemetry, read-only, nothing stored.
+          No server, no telemetry, read-only, messages are not stored. Files and voice messages are handed over only when Claude asks for one, and saved in Downloads/WA Reader.
 
           Files: wa-reader.mcpb = Claude Desktop extension · wa-reader-$ev.zip = Chrome Web Store upload · wa-reader-test-$ev.zip = test build (unzip → chrome://extensions → Load unpacked; works with the .mcpb with no settings)."
           if gh release view "$tag" >/dev/null 2>&1; then

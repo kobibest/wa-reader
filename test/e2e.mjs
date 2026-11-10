@@ -34,19 +34,20 @@ first.stderr.on('data', (d) => firstLog.push(String(d)));
 await new Promise((r) => setTimeout(r, 1500));
 
 const serverLog = [];
+const mediaDir = path.join(tmp, 'media');
 const transport = new StdioClientTransport({
   command: process.execPath, args,
-  env: (({ WA_READER_EXTENSION_ID, ...e }) => e)(process.env),
+  env: { ...(({ WA_READER_EXTENSION_ID, ...e }) => e)(process.env), WA_READER_MEDIA_DIR: mediaDir },
   stderr: 'pipe'
 });
 transport.stderr.on('data', (d) => serverLog.push(String(d)));
 const client = new Client({ name: 'e2e', version: '1.0.0' });
 await client.connect(transport);
 const tools = (await client.listTools()).tools.map((t) => t.name).sort();
-assert.deepEqual(tools, ['get_messages', 'list_chats', 'search', 'whatsapp_status']);
+assert.deepEqual(tools, ['get_media', 'get_messages', 'list_chats', 'search', 'whatsapp_status']);
 const call = async (name, a = {}) => {
   const r = await client.callTool({ name, arguments: a });
-  return { error: !!r.isError, text: r.content.map((c) => c.text).join('\n') };
+  return { error: !!r.isError, text: r.content.map((c) => c.text || '').join('\n'), content: r.content };
 };
 
 // 2. before Chrome: clear Hebrew error
@@ -117,6 +118,61 @@ assert.ok(r.error, 'limit > 200 must be rejected');
 r = await call('search', { query: 'contract', limit: 101 });
 assert.ok(r.error, 'limit > 100 must be rejected');
 console.log('✓ limits enforced (get_messages ≤ 200, search ≤ 100)');
+
+// files and recordings: get_messages prints a media_id, get_media hands the file over
+const DANA = '972501111111@c.us';
+r = await call('get_messages', { chat: 'Dana', limit: 200 });
+assert.ok(r.text.includes(`[voice message 0:12] {media_id: false_${DANA}_4`), r.text);
+assert.ok(r.text.includes(`{media_id: false_${DANA}_5`) && r.text.includes('signed copy'), r.text);
+assert.ok(r.text.includes('[view-once image]') && !r.text.includes(`media_id: false_${DANA}_7`), 'view-once media is not offered');
+assert.ok(!r.text.includes('BASE64THUMBNAIL'), 'thumbnails are never used as text');
+
+r = await call('get_media', { media_id: `false_${DANA}_4` });
+assert.ok(!r.error, r.text);
+let saved = fs.readdirSync(mediaDir);
+assert.equal(saved.length, 1);
+assert.match(saved[0], /Dana Cohen voice message\.ogg$/);
+assert.equal(fs.readFileSync(path.join(mediaDir, saved[0]), 'utf8'), 'OggS fake voice message');
+assert.ok(r.text.includes(path.join(mediaDir, saved[0])), r.text);
+console.log('✓ get_media (voice message):\n' + r.text);
+
+r = await call('get_media', { media_id: `false_${DANA}_5` });
+assert.ok(!r.error, r.text);
+saved = fs.readdirSync(mediaDir).filter((f) => f.endsWith('.pdf'));
+assert.equal(saved.length, 1);
+assert.ok(saved[0].endsWith('חוזה.pdf') && !saved[0].includes('..'), saved[0]);
+assert.equal(fs.readFileSync(path.join(mediaDir, saved[0]), 'utf8'), '%PDF-1.4 fake');
+assert.ok(!fs.existsSync(path.join(tmp, 'חוזה.pdf')), 'the sender cannot choose the folder');
+console.log('✓ get_media (document): saved as', saved[0]);
+
+r = await call('get_media', { media_id: `false_${DANA}_6` });
+assert.ok(!r.error, r.text);
+const img = r.content.find((c) => c.type === 'image');
+assert.ok(img && img.mimeType === 'image/png' && Buffer.from(img.data, 'base64').subarray(1, 4).toString() === 'PNG');
+assert.equal(fs.readdirSync(mediaDir).length, 2, 'an image is shown, not saved');
+console.log('✓ get_media (image): returned to Claude as an image, not saved');
+
+r = await call('get_media', { media_id: `false_${DANA}_7` });
+assert.ok(r.error && /view-once/.test(r.text), r.text);
+r = await call('get_media', { media_id: `true_${DANA}_1` });
+assert.ok(r.error && /no file/.test(r.text), r.text);
+r = await call('get_media', { media_id: 'false_nobody@c.us_99' });
+assert.ok(r.error && /No message found/.test(r.text), r.text);
+console.log('✓ get_media refuses view-once media, text messages and unknown ids');
+
+// an excluded chat does not exist for get_media either
+const opts = await ctx.newPage();
+await opts.goto(`chrome-extension://${extId}/ui/welcome.html`);
+await opts.evaluate(() => chrome.storage.local.set({ settings: { excludeChats: 'Secret Chat' } }));
+r = await call('get_media', { media_id: 'false_secret@c.us_1' });
+assert.ok(r.error && /No message found/.test(r.text), r.text);
+assert.equal(fs.readdirSync(mediaDir).length, 2);
+await opts.evaluate(() => chrome.storage.local.remove('settings'));
+await opts.close();
+console.log('✓ get_media: files in excluded chats are not handed over');
+
+// nothing was sent or marked in WhatsApp, and the page can no longer reach WA-JS
+assert.deepEqual(await wa.evaluate(() => window.__sideEffects), []);
 
 // popup: three lights on
 const popup = await ctx.newPage();

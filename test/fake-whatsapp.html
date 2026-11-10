@@ -8,15 +8,26 @@
   const wid = (s) => ({ _serialized: s, user: s.split('@')[0], server: s.split('@')[1] });
   const chats = [
     { id: wid('972501111111@c.us'), formattedTitle: 'Dana Cohen', unreadCount: 2, t: now - 60 },
-    { id: wid('120363000000000001@g.us'), formattedTitle: 'Family', isGroup: true, unreadCount: 0, t: now - 3600 }
+    { id: wid('120363000000000001@g.us'), formattedTitle: 'Family', isGroup: true, unreadCount: 0, t: now - 3600 },
+    { id: wid('secret@c.us'), formattedTitle: 'Secret Chat', unreadCount: 0, t: now - 7200 }
   ];
-  const msg = (chat, n, fromMe, body, ago, author) => ({ id: { _serialized: `${chat}_${n}`, fromMe, id: String(n) }, type: 'chat', body, t: now - ago, author: author ? wid(author) : undefined });
+  const byId = (id) => Object.values(messages).flat().find((m) => m.id._serialized === id);
+  window.__sideEffects = [];
+  const msg = (chat, n, fromMe, body, ago, author) => ({ id: { _serialized: `${fromMe}_${chat}_${n}`, fromMe, id: String(n), remote: wid(chat) }, type: 'chat', body, t: now - ago, author: author ? wid(author) : undefined });
+  const media = (m, type, extra, bytes) => Object.assign(m, { type, body: 'BASE64THUMBNAIL', size: bytes.length, ...extra, _bytes: bytes });
+  const PNG = Uint8Array.from(atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='), (c) => c.charCodeAt(0));
+  const enc = (t) => new TextEncoder().encode(t);
   const messages = {
     '972501111111@c.us': [
       msg('972501111111@c.us', 1, true, 'Hi Dana, did you get the draft?', 7200),
       msg('972501111111@c.us', 2, false, 'Yes, thanks!', 7000),
+      media(msg('972501111111@c.us', 4, false, '', 300), 'ptt', { mimetype: 'audio/ogg; codecs=opus', duration: 12 }, enc('OggS fake voice message')),
+      media(msg('972501111111@c.us', 5, false, '', 200), 'document', { mimetype: 'application/pdf', filename: '../../חוזה.pdf', caption: 'signed copy' }, enc('%PDF-1.4 fake')),
+      media(msg('972501111111@c.us', 6, false, '', 150), 'image', { mimetype: 'image/png', caption: 'photo' }, PNG),
+      media(msg('972501111111@c.us', 7, false, '', 100), 'image', { mimetype: 'image/png', isViewOnce: true }, PNG),
       msg('972501111111@c.us', 3, false, 'Can you send the contract today?', 60)
     ],
+    'secret@c.us': [media(msg('secret@c.us', 1, false, '', 50), 'document', { mimetype: 'application/pdf', filename: 'secret.pdf' }, enc('secret'))],
     '120363000000000001@g.us': [
       msg('120363000000000001@g.us', 1, false, 'Dinner on Friday at 8', 3600, '972502222222@c.us')
     ]
@@ -27,7 +38,11 @@
       list: async () => chats,
       get: async (id) => chats.find((c) => c.id._serialized === id),
       getMessages: async (id, { count = 50 } = {}) => (messages[id] || []).slice(-count),
-      sendTextMessage: async () => 'SENT'
+      getMessageById: async (id) => { const m = byId(id); if (!m) throw new Error('msg_not_found'); return m; },
+      downloadMedia: async (id) => { const m = byId(id); return new Blob([m._bytes], { type: m.mimetype }); },
+      markIsRead: async () => { window.__sideEffects.push('markIsRead'); },
+      markPlayed: async () => { window.__sideEffects.push('markPlayed'); },
+      sendTextMessage: async () => { window.__sideEffects.push('send'); return 'SENT'; }
     },
     contact: { get: async (id) => ({ name: id.startsWith('972502222222') ? 'Avi' : '' }) },
     conn: { getMyUserId: () => wid('972500000000@c.us') }

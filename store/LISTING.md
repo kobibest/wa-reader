@@ -1,7 +1,7 @@
-# Chrome Web Store – טקסטים להעתקה (גרסה 2.3.0)
+# Chrome Web Store – טקסטים להעתקה (גרסה 2.4.0)
 
 ## Package
-מעלים את `wa-reader-2.3.0.zip` מדף ה-Release ב-GitHub, **כעדכון לפריט הקיים** (Package ← Upload new package), לא כפריט חדש: רק כך המזהה `pihiihgmfgefkneahjhmeamnmlfapmfp` נשמר, וההרחבה ל-Claude Desktop מקבלת אותו. הקובץ בנוי בלי השדה `key`. את `wa-reader-test-2.3.0.zip` לא מעלים, הוא לבדיקה בלבד.
+מעלים את `wa-reader-2.4.0.zip` מדף ה-Release ב-GitHub, **כעדכון לפריט הקיים** (Package ← Upload new package), לא כפריט חדש: רק כך המזהה `pihiihgmfgefkneahjhmeamnmlfapmfp` נשמר, וההרחבה ל-Claude Desktop מקבלת אותו. הקובץ בנוי בלי השדה `key`. את `wa-reader-test-2.4.0.zip` לא מעלים, הוא לבדיקה בלבד.
 
 ## Store listing
 
@@ -15,17 +15,20 @@ WA Reader מחבר את WhatsApp Web ל-Claude Desktop, כך ש-Claude יכול 
 • "אילו שיחות מחכות לתשובה ממני בווצאפ?"
 • "מה דנה כתבה לי השבוע?"
 • "חפש בווצאפ את המילה חשבונית"
+• "שמור לי את החוזה שדנה שלחה"
 
 מה Claude יכול לעשות:
 • לראות רשימת שיחות, כולל שיחות שלא נקראו ושיחות שמחכות לתשובה ממך
 • לקרוא שיחה מסוימת
 • לחפש טקסט בהודעות
+• לקבל קובץ של הודעה מסוימת: תמונה, מסמך, הודעה קולית או סרטון (עד 20MB)
 
 פרטיות ובטיחות:
 • מקומי בלבד: התוסף מדבר רק עם Claude Desktop במחשב שלך (127.0.0.1). אין שרת של WA Reader, אין אנליטיקס ואין מעקב.
 • ההודעות לא יוצאות מהמחשב, חוץ ממה ש-Claude מבקש ומעביר ל-Anthropic כחלק מהשיחה.
 • קריאה בלבד: אי אפשר לשלוח, למחוק או לסמן הודעות כנקראו.
-• שום דבר לא נשמר: כל בקשה נקראת מ-WhatsApp Web, נמסרת ונשכחת.
+• הודעות לא נשמרות: כל בקשה נקראת מ-WhatsApp Web, נמסרת ונשכחת.
+• קבצים רק לפי בקשה: קובץ ש-Claude מבקש נשמר בתיקייה Downloads/WA Reader במחשב שלך. תמונה מוצגת ל-Claude. מדיה לצפייה חד-פעמית לא נמסרת.
 • אפשר להחריג שיחות, ואז Claude לא יראה אותן לעולם.
 • קוד פתוח: github.com/kobibest/wa-reader
 
@@ -47,17 +50,20 @@ Ask Claude Desktop, for example:
 • "Which WhatsApp chats are waiting for my reply?"
 • "What did Dana send me this week?"
 • "Search WhatsApp for invoice"
+• "Save the contract Dana sent me"
 
 What Claude can do:
 • List chats, including unread chats and chats waiting for your reply
 • Read one chat
 • Search message text
+• Get the file of one message: image, document, voice message or video (up to 20 MB)
 
 Privacy and safety:
 • Local only: the extension talks only to Claude Desktop on your computer (127.0.0.1). There is no WA Reader server, no analytics and no tracking.
 • Messages never leave your computer, except what Claude asks for, which Claude Desktop sends to Anthropic as part of your conversation.
 • Read-only: it cannot send, delete or mark messages as read.
-• Nothing is stored: each request is read live from WhatsApp Web, handed over and forgotten.
+• Messages are not stored: each request is read live from WhatsApp Web, handed over and forgotten.
+• Files only on request: a file Claude asks for is saved in the Downloads/WA Reader folder on your computer. An image is shown to Claude. View-once media is never handed over.
 • Exclude chats so Claude never sees them.
 • Open source: github.com/kobibest/wa-reader
 
@@ -81,7 +87,7 @@ Built by Eitan | Organizational Digitization (digital.m-eitan.co.il). WA Reader 
 
 **Single purpose:**
 ```
-Gives the user's own Claude Desktop app, running on the same computer, read-only, on-demand access to the user's WhatsApp Web messages over a local connection (127.0.0.1). No server, nothing stored.
+Gives the user's own Claude Desktop app, running on the same computer, read-only, on-demand access to the user's WhatsApp Web messages, and to the file of a specific message when asked, over a local connection (127.0.0.1). No server, messages are not stored.
 ```
 
 | Permission | Justification |
@@ -89,13 +95,13 @@ Gives the user's own Claude Desktop app, running on the same computer, read-only
 | `storage` | Stores the consent flag and the user's list of excluded chats. No messages are stored. |
 | `alarms` | Wakes the service worker every 30 seconds to reconnect to the WA Reader extension of Claude Desktop on the same computer (ws://127.0.0.1:17345) when Claude Desktop is started after Chrome. |
 | `scripting` | Registers the content scripts on web.whatsapp.com only after the user gives consent on the activation screen, and unregisters them when the user turns the extension off. |
-| Host permission `https://web.whatsapp.com/*` | Required to read the user's messages inside WhatsApp Web when the user's Claude Desktop requests them. This is the extension's single purpose. |
+| Host permission `https://web.whatsapp.com/*` | Required to read the user's messages, and the file attached to a specific message, inside WhatsApp Web when the user's Claude Desktop requests them. This is the extension's single purpose. |
 
 **Remote code:** No. All code is in the package, including the WA-JS library in `page/`.
 
 **Data usage – מסמנים את שתי אלה:**
 - ✅ Personally identifiable information: שמות אנשי קשר, ומזהי שיחה שכוללים מספרי טלפון
-- ✅ Personal communications: תוכן ההודעות
+- ✅ Personal communications: תוכן ההודעות, וקבצים והקלטות שצורפו להודעות (רק כש-Claude מבקש קובץ של הודעה מסוימת)
 
 ומסמנים גם את **שלושת** האישורים. (הנתונים נמסרים רק ל-Claude Desktop שהמשתמש התקין במחשב שלו, וזה חלק מהמטרה היחידה.)
 
@@ -113,4 +119,5 @@ WA Reader lets the user's Claude Desktop read WhatsApp Web over a local connecti
 4. Ask in a regular Claude Desktop chat (Chat tab).
    For example: "Which WhatsApp chats are waiting for my reply?".
 The extension connects only to ws://127.0.0.1:17345 (enforced by its content security policy). The local server accepts only this extension's origin. It only reads: it captures read functions from the bundled WA-JS library and deletes its global from the page (page/page.js). No messages are stored.
+5. Optional: ask "Show me the last image I received on WhatsApp". Claude calls get_media for that one message. Images are shown to Claude; other files are saved by the Claude Desktop extension in Downloads/WA Reader. The Chrome extension itself writes no files.
 ```

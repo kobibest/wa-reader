@@ -1,14 +1,16 @@
 // WA Reader – service worker.
 // Connects to the local WA Reader MCP server that Claude Desktop runs (ws://127.0.0.1:17345) and answers its
 // read-only requests by asking the open WhatsApp Web tab. That is the only connection this extension makes:
-// no other servers, no telemetry. Messages are never stored – each request is answered from memory and forgotten.
+// no other servers, no telemetry. The extension never stores messages or files – each request is answered from
+// memory and forgotten.
 
 const WA_URL = 'https://web.whatsapp.com/*';
 const BRIDGE_URL = 'ws://127.0.0.1:17345';
-const CONSENT_VERSION = 4;           // 4 = local-only 2.0 (no cloud relay)
+const CONSENT_VERSION = 5;           // 5 = 2.4: Claude can also ask for the file of one message (image, document, voice message)
 const QUERY_TIMEOUT_MS = 14000;      // the MCP server gives up after 15 s
+const MEDIA_TIMEOUT_MS = 40000;      // downloading one file: the MCP server gives up after 45 s
 const PING_MS = 20000;               // keeps the WebSocket – and this service worker – alive (Chrome 116+)
-const METHODS = new Set(['status', 'listChats', 'getMessages', 'search']);
+const METHODS = new Set(['status', 'listChats', 'getMessages', 'search', 'getMedia']);
 
 // In-memory status only (shown in the popup)
 const status = { bridge: 'disconnected', waReady: false, lastQueryAt: 0 };
@@ -77,7 +79,7 @@ async function queryWhatsApp(method, params) {
   }
   let res;
   try {
-    res = await chrome.tabs.sendMessage(tab.id, { kind: 'query', method, params: { ...params, exclude: await excludeList() }, timeoutMs: QUERY_TIMEOUT_MS });
+    res = await chrome.tabs.sendMessage(tab.id, { kind: 'query', method, params: { ...params, exclude: await excludeList() }, timeoutMs: method === 'getMedia' ? MEDIA_TIMEOUT_MS : QUERY_TIMEOUT_MS });
   } catch {
     if (method === 'status') return { whatsappReady: false };
     throw new Error('הטאב של WhatsApp Web לא מגיב. רענן אותו (F5) ונסה שוב.');

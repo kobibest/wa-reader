@@ -136,3 +136,20 @@ test('a refused extension ID is explained in the "not connected" error', async (
   assert.equal(r.status, 403);
   await assert.rejects(b.call('status'), (e) => e.message.includes('bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb') && e.message.includes(ID) && e.message.includes('wa-reader-test'));
 });
+
+test('a call can ask for a longer timeout (file download), also through a second process', async () => {
+  const first = await makeBridge(100);
+  const second = await makeBridge(100, first.port);
+  const ext = (await connect(first.port, GOOD)).ws;
+  ext.on('message', (raw) => {
+    const m = JSON.parse(raw);
+    if (m.method === 'getMedia') setTimeout(() => ext.send(JSON.stringify({ id: m.id, result: { base64: 'x'.repeat(m.params.n) } })), 400);
+  });
+  await new Promise((r) => setTimeout(r, 50));
+  await assert.rejects(first.call('getMedia', { n: 1 }), /15 שניות/);            // default limit (100 ms here)
+  assert.equal((await first.call('getMedia', { n: 3 }, 2000)).base64, 'xxx');
+  // a large answer (5 MB) forwarded over the local IPC channel
+  assert.equal((await second.call('getMedia', { n: 5 * 1024 * 1024 }, 5000)).base64.length, 5 * 1024 * 1024);
+  await assert.rejects(second.call('getMedia', { n: 1 }, 200), /0 שניות|1 שניות|not connected|לא ענה/);
+  ext.close(); first.close(); second.close();
+});

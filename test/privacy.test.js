@@ -23,7 +23,7 @@ test('extension can only connect to the local bridge', () => {
 });
 
 test('no network APIs in our own code', () => {
-  const files = ['mcp/server.js', 'mcp/bridge.js', 'mcp/tools.js', 'mcp/config.js', 'extension/background.js',
+  const files = ['mcp/server.js', 'mcp/bridge.js', 'mcp/tools.js', 'mcp/media.js', 'mcp/config.js', 'extension/background.js',
     'extension/bridge.js', 'extension/page/page.js', 'extension/page/config.js',
     ...fs.readdirSync('extension/ui').filter((f) => f.endsWith('.js')).map((f) => 'extension/ui/' + f)];
   for (const f of files) {
@@ -42,4 +42,14 @@ test('the test build ID is fixed by "key" and accepted by default', async () => 
   assert.ok(allowedOrigins({}).has(`chrome-extension://${id}`));
   const mcpb = JSON.parse(fs.readFileSync('mcpb/manifest.json', 'utf8'));
   assert.ok(!mcpb.user_config, 'no settings for the user to get wrong');
+});
+
+test('disk is written in one place only: the file get_media asked for', () => {
+  for (const f of ['mcp/server.js', 'mcp/bridge.js', 'mcp/tools.js', 'mcp/config.js']) {
+    assert.doesNotMatch(fs.readFileSync(f, 'utf8'), /writeFile|appendFile|createWriteStream/, f);
+  }
+  assert.match(fs.readFileSync('mcp/media.js', 'utf8'), /flag: 'wx'/, 'never overwrites an existing file');
+  // the Chrome extension itself has no way to write files
+  const m = JSON.parse(fs.readFileSync('extension/manifest.json', 'utf8'));
+  assert.deepEqual(m.permissions, ['storage', 'alarms', 'scripting']);
 });

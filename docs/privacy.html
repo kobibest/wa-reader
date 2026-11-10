@@ -25,15 +25,16 @@
 
 <section lang="he">
   <h1>WA Reader – מדיניות פרטיות</h1>
-  <div class="muted">בתוקף מ-5 בנובמבר 2026 (גרסה 4, WA Reader 2.0) · <a href="#en">English below</a></div>
+  <div class="muted">בתוקף מ-10 בנובמבר 2026 (גרסה 5, WA Reader 2.4) · <a href="#en">English below</a></div>
 
-  <div class="box"><b>בקצרה:</b> WA Reader הוא גשר מקומי בין WhatsApp Web בכרום לבין Claude Desktop במחשב שלך. <b>ההודעות לא יוצאות מהמחשב</b>, חוץ ממה ש-Claude מבקש ומעביר ל-Anthropic כחלק מהשיחה שלך איתו. אין שרת של WA Reader, ההודעות לא נשמרות, ואי אפשר לשלוח דרך התוסף הודעות.</div>
+  <div class="box"><b>בקצרה:</b> WA Reader הוא גשר מקומי בין WhatsApp Web בכרום לבין Claude Desktop במחשב שלך. <b>ההודעות לא יוצאות מהמחשב</b>, חוץ ממה ש-Claude מבקש ומעביר ל-Anthropic כחלק מהשיחה שלך איתו. אין שרת של WA Reader, ההודעות לא נשמרות, ואי אפשר לשלוח דרך התוסף הודעות. קובץ או הקלטה נמסרים רק כש-Claude מבקש קובץ של הודעה מסוימת, ונשמרים בתיקייה במחשב שלך.</div>
 
   <h2>איזה מידע התוסף קורא</h2>
   <ul>
     <li>תוכן הודעות (טקסט וכיתובים), שם השיחה, שם השולח, שעה, וסימונים כמו "קבוצה", "מושתק", "הועבר" ומספר ההודעות שלא נקראו. את המידע הזה Chrome מגדיר כ"תקשורת אישית".</li>
     <li>מזהה השיחה ב-WhatsApp, שבשיחות פרטיות כולל את מספר הטלפון של איש הקשר, ושמות אנשי הקשר. את המידע הזה Chrome מגדיר כ"פרטים אישיים מזהים".</li>
-    <li>ממדיה (תמונות, קבצים, הודעות קוליות) נקראת רק תווית טקסט, למשל "[image]" או שם הקובץ. הקבצים עצמם לא נקראים.</li>
+    <li>ממדיה (תמונות, קבצים, הודעות קוליות, סרטונים) נקראים בדרך כלל רק תווית טקסט, למשל "[image]" או שם הקובץ, הגודל והאורך.</li>
+    <li><b>קבצים והקלטות:</b> הקובץ עצמו נקרא רק כש-Claude מבקש את הקובץ של הודעה אחת מסוימת (עד 20MB). תמונה מוצגת ל-Claude. כל קובץ אחר (מסמך, הודעה קולית, אודיו, וידאו) נשמר במחשב שלך, ו-Claude מקבל את המיקום שלו. מדיה לצפייה חד-פעמית לא נמסרת.</li>
     <li>התוסף קורא רק אחרי שאישרת במסך ההפעלה, רק כש-Claude Desktop מבקש מידע, ורק כשטאב של web.whatsapp.com פתוח.</li>
   </ul>
 
@@ -41,13 +42,14 @@
   <ul>
     <li><b>רק בתוך המחשב שלך.</b> ההרחבה של WA Reader ב-Claude Desktop מפעילה שרת קטן שמאזין רק על 127.0.0.1 (המחשב עצמו). התוסף בכרום מתחבר אליו, מקבל בקשה, קורא את התשובה מ-WhatsApp Web ומחזיר אותה.</li>
     <li>השרת המקומי מקבל חיבור רק מהתוסף WA Reader עצמו. דפי אינטרנט, תוספים אחרים ומחשבים אחרים ברשת נחסמים.</li>
-    <li><b>Anthropic:</b> Claude Desktop שולח את מה שהתקבל ל-Claude, כלומר לשרתים של Anthropic, כחלק מהשיחה שלך, ו-Anthropic מעבדת אותו לפי מדיניות הפרטיות שלה. זה המקום היחיד שבו מידע יוצא מהמחשב, ורק המידע ש-Claude ביקש.</li>
+    <li><b>Anthropic:</b> Claude Desktop שולח את מה שהתקבל ל-Claude, כלומר לשרתים של Anthropic, כחלק מהשיחה שלך, ו-Anthropic מעבדת אותו לפי מדיניות הפרטיות שלה. זה המקום היחיד שבו מידע יוצא מהמחשב, ורק המידע ש-Claude ביקש. תמונה ש-Claude ביקש, וקובץ טקסט קטן, נשלחים אליו כך. מסמכים, הקלטות וסרטונים רק נשמרים במחשב, ולא נשלחים ל-Anthropic על ידי WA Reader.</li>
     <li>לא התוסף ולא ההרחבה ל-Claude Desktop מתחברים לשום שרת אחר. אין שרת של WA Reader, ואין אנליטיקס, טלמטריה או מעקב.</li>
   </ul>
 
   <h2>שמירה</h2>
   <ul>
     <li>ההודעות לא נשמרות בשום מקום: לא בדיסק, לא באחסון של כרום ולא בשרת. כל בקשה נקראת ישירות מ-WhatsApp Web, נשמרת בזיכרון רק עד שהתשובה נמסרת, ונשכחת.</li>
+    <li><b>קבצים ש-Claude ביקש</b> נשמרים על ידי ההרחבה ל-Claude Desktop בתיקייה <b>Downloads/WA Reader</b> במחשב שלך (הורדות ← WA Reader), ונשארים שם עד שתמחק אותם. WA Reader לא מוחק אותם ולא שולח אותם לשום מקום. התוסף בכרום עצמו לא שומר קבצים.</li>
     <li>באחסון המקומי של התוסף נשמרים רק אם הסכמת ורשימת השיחות המוחרגות.</li>
   </ul>
 
@@ -59,7 +61,7 @@
 
   <h2>הרשאות</h2>
   <ul>
-    <li><b>web.whatsapp.com:</b> כדי לקרוא את ההודעות. זו ההרשאה היחידה לאתר.</li>
+    <li><b>web.whatsapp.com:</b> כדי לקרוא את ההודעות והקבצים שביקשת. זו ההרשאה היחידה לאתר.</li>
     <li><b>scripting:</b> כדי להתחבר ל-WhatsApp Web רק אחרי שאישרת, ולהתנתק כשאתה מכבה את התוסף.</li>
     <li><b>storage:</b> כדי לשמור את ההסכמה ואת רשימת השיחות המוחרגות.</li>
     <li><b>alarms:</b> כדי לחדש את החיבור ל-Claude Desktop במחשב כשהוא נקטע.</li>
@@ -88,15 +90,16 @@
 
 <section lang="en" id="en">
   <h1>WA Reader – Privacy Policy</h1>
-  <div class="muted">Effective November 5, 2026 (version 4, WA Reader 2.0)</div>
+  <div class="muted">Effective November 10, 2026 (version 5, WA Reader 2.4)</div>
 
-  <div class="box"><b>In short:</b> WA Reader is a local bridge between WhatsApp Web in Chrome and Claude Desktop on your computer. <b>Your messages never leave your computer</b>, except what Claude asks for, which Claude Desktop sends to Anthropic as part of your conversation. There is no WA Reader server, nothing is stored, and the extension cannot send messages.</div>
+  <div class="box"><b>In short:</b> WA Reader is a local bridge between WhatsApp Web in Chrome and Claude Desktop on your computer. <b>Your messages never leave your computer</b>, except what Claude asks for, which Claude Desktop sends to Anthropic as part of your conversation. There is no WA Reader server, messages are not stored, and the extension cannot send messages. A file or a recording is handed over only when Claude asks for the file of one specific message, and it is saved in a folder on your computer.</div>
 
   <h2>What the extension reads</h2>
   <ul>
     <li>Message content (text and captions), chat name, sender name, time, and flags such as group, muted, forwarded and unread count ("personal communications").</li>
     <li>WhatsApp chat IDs, which for direct chats contain the contact's phone number, and contact names ("personally identifiable information").</li>
-    <li>For media (images, files, voice notes) only a text label such as "[image]" or the file name. The files themselves are never read.</li>
+    <li>For media (images, files, voice notes, videos) normally only a text label such as "[image]" or the file name, size and length.</li>
+    <li><b>Files and recordings:</b> the file itself is read only when Claude asks for the file of one specific message (up to 20 MB). An image is shown to Claude. Any other file (document, voice message, audio, video) is saved on your computer and Claude receives its location. View-once media is never handed over.</li>
     <li>Only after you agree on the activation screen, only when Claude Desktop asks, and only while a web.whatsapp.com tab is open.</li>
   </ul>
 
@@ -104,13 +107,14 @@
   <ul>
     <li><b>Only inside your computer.</b> The WA Reader extension for Claude Desktop runs a small server that listens on 127.0.0.1 only. The Chrome extension connects to it, receives a request, reads the answer from WhatsApp Web and returns it.</li>
     <li>The local server accepts connections only from the WA Reader Chrome extension itself. Web pages, other extensions and other computers are refused.</li>
-    <li><b>Anthropic:</b> Claude Desktop sends what it received to Claude (Anthropic's servers) as part of your conversation, and Anthropic processes it under its own privacy policy. That is the only way data leaves your computer, and only the data Claude asked for.</li>
+    <li><b>Anthropic:</b> Claude Desktop sends what it received to Claude (Anthropic's servers) as part of your conversation, and Anthropic processes it under its own privacy policy. That is the only way data leaves your computer, and only the data Claude asked for. An image Claude asked for, and a small text file, are sent this way. Documents, recordings and videos are only saved on your computer; WA Reader does not send them to Anthropic.</li>
     <li>Neither the Chrome extension nor the Claude Desktop extension connects to any other server. There is no WA Reader server, no analytics, no telemetry and no tracking.</li>
   </ul>
 
   <h2>Retention</h2>
   <ul>
     <li>Messages are never stored: not on disk, not in Chrome storage, not on a server. Each request is read live from WhatsApp Web, kept in memory only until the answer is delivered, and then forgotten.</li>
+    <li><b>Files Claude asked for</b> are saved by the Claude Desktop extension in the <b>Downloads/WA Reader</b> folder on your computer and stay there until you delete them. WA Reader does not delete them or send them anywhere. The Chrome extension itself does not save files.</li>
     <li>The extension's local storage holds only your consent and your list of excluded chats.</li>
   </ul>
 
@@ -122,7 +126,7 @@
 
   <h2>Permissions</h2>
   <ul>
-    <li><b>web.whatsapp.com:</b> to read messages. This is the only site permission.</li>
+    <li><b>web.whatsapp.com:</b> to read messages and the files you asked for. This is the only site permission.</li>
     <li><b>scripting:</b> to attach to WhatsApp Web only after you agree, and detach when you turn it off.</li>
     <li><b>storage:</b> to keep your consent and excluded chats.</li>
     <li><b>alarms:</b> to reconnect to Claude Desktop on your computer when the connection drops.</li>
