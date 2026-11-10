@@ -129,11 +129,8 @@ assert.ok(!r.text.includes('BASE64THUMBNAIL'), 'thumbnails are never used as tex
 
 r = await call('get_media', { media_id: `false_${DANA}_4` });
 assert.ok(!r.error, r.text);
-let saved = fs.readdirSync(mediaDir);
-assert.equal(saved.length, 1);
-assert.match(saved[0], /Dana Cohen voice message\.ogg$/);
-assert.equal(fs.readFileSync(path.join(mediaDir, saved[0]), 'utf8'), 'OggS fake voice message');
-assert.ok(r.text.includes(path.join(mediaDir, saved[0])), r.text);
+assert.ok(!fs.existsSync(mediaDir), 'a recording is not written to disk');
+let saved;
 const rec = r.content.find((c) => c.type === 'audio');
 assert.ok(rec && rec.mimeType === 'audio/ogg' && Buffer.from(rec.data, 'base64').toString() === 'OggS fake voice message', 'the recording reaches Claude as it is');
 console.log('✓ get_media (voice message):\n' + r.text);
@@ -151,7 +148,7 @@ r = await call('get_media', { media_id: `false_${DANA}_6` });
 assert.ok(!r.error, r.text);
 const img = r.content.find((c) => c.type === 'image');
 assert.ok(img && img.mimeType === 'image/png' && Buffer.from(img.data, 'base64').subarray(1, 4).toString() === 'PNG');
-assert.equal(fs.readdirSync(mediaDir).length, 2, 'an image is shown, not saved');
+assert.equal(fs.readdirSync(mediaDir).length, 1, 'an image is shown, not saved');
 console.log('✓ get_media (image): returned to Claude as an image, not saved');
 
 r = await call('get_media', { media_id: `false_${DANA}_7` });
@@ -168,7 +165,7 @@ await opts.goto(`chrome-extension://${extId}/ui/welcome.html`);
 await opts.evaluate(() => chrome.storage.local.set({ settings: { excludeChats: 'Secret Chat' } }));
 r = await call('get_media', { media_id: 'false_secret@c.us_1' });
 assert.ok(r.error && /No message found/.test(r.text), r.text);
-assert.equal(fs.readdirSync(mediaDir).length, 2);
+assert.equal(fs.readdirSync(mediaDir).length, 1);
 await opts.evaluate(() => chrome.storage.local.remove('settings'));
 await opts.close();
 console.log('✓ get_media: files in excluded chats are not handed over');

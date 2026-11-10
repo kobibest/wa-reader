@@ -76,29 +76,32 @@ test('get_media: an image is shown to Claude and not saved; save: true also save
   fs.rmSync(dir, { recursive: true, force: true });
 });
 
-test('get_media: a voice message is saved and Claude gets the path; a small text file is also returned as text', async () => {
+test('get_media: a voice message goes to Claude as it is and is not saved; a small text file is also returned as text', async () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'wa-media-'));
   process.env.WA_READER_MEDIA_DIR = dir;
   let answer = { chat: { name: 'Dana' }, message: msg({ type: 'ptt', text: '[voice message 0:12]', media: { mime: 'audio/ogg; codecs=opus', size: 5, duration: 12 } }), mime: 'audio/ogg; codecs=opus', base64: Buffer.from('OggS!').toString('base64'), tz: 'UTC' };
   const t = tools(async () => answer);
   let r = await t.get_media.fn({ media_id: 'false_1@c.us_AB' });
-  const [file] = fs.readdirSync(dir);
-  assert.match(file, /Dana voice message\.ogg$/);
-  assert.equal(fs.readFileSync(path.join(dir, file), 'utf8'), 'OggS!');
-  // the recording itself goes to Claude as it is, and is also saved
+  assert.equal(fs.readdirSync(dir).length, 0, 'nothing is written to disk');
   assert.deepEqual(r.content[1], { type: 'audio', data: Buffer.from('OggS!').toString('base64'), mimeType: 'audio/ogg' });
-  assert.ok(r.content[0].text.includes(path.join(dir, file)) && r.content[0].text.includes('0:12') && /transcription tool connected to Claude/.test(r.content[0].text));
-  // a long recording is only saved
+  assert.ok(/not saved to disk/.test(r.content[0].text) && r.content[0].text.includes('0:12') && /transcription tool connected to Claude/.test(r.content[0].text));
+  // a long recording is neither attached nor saved, unless save is asked for
   const big = Buffer.alloc(800 * 1024, 1).toString('base64');
   r = await tools(async () => ({ ...answer, base64: big })).get_media.fn({ media_id: 'false_1@c.us_AB' });
   assert.equal(r.content.length, 1);
   assert.match(r.content[0].text, /too long to attach/);
-  fs.rmSync(path.join(dir, fs.readdirSync(dir).find((f) => f.includes('(2)'))));
+  assert.equal(fs.readdirSync(dir).length, 0);
+  r = await t.get_media.fn({ media_id: 'false_1@c.us_AB', save: true });
+  const [file] = fs.readdirSync(dir);
+  assert.match(file, /Dana voice message\.ogg$/);
+  assert.equal(fs.readFileSync(path.join(dir, file), 'utf8'), 'OggS!');
+  assert.ok(r.content[0].text.includes(path.join(dir, file)) && r.content[1].type === 'audio');
+  fs.rmSync(path.join(dir, file));
 
   answer = { chat: { name: 'Dana' }, message: msg({ type: 'document', text: '[document: list.csv]', media: { mime: 'text/csv', size: 7, filename: 'list.csv' } }), mime: 'text/csv', base64: Buffer.from('a,b\n1,2').toString('base64'), tz: 'UTC' };
   r = await t.get_media.fn({ media_id: 'false_1@c.us_AB' });
   assert.match(r.content[1].text, /a,b\n1,2/);
-  assert.equal(fs.readdirSync(dir).length, 2);
+  assert.equal(fs.readdirSync(dir).length, 1);
 
   answer = { message: null };
   r = await t.get_media.fn({ media_id: 'false_1@c.us_ZZ' });
