@@ -1,7 +1,7 @@
-# Chrome Web Store – טקסטים להעתקה (גרסה 2.3.0)
+# Chrome Web Store – טקסטים להעתקה (גרסה 2.3.1)
 
 ## Package
-מעלים את `wa-reader-2.3.0.zip` מדף ה-Release ב-GitHub, **כעדכון לפריט הקיים** (Package ← Upload new package), לא כפריט חדש: רק כך המזהה `pihiihgmfgefkneahjhmeamnmlfapmfp` נשמר, וההרחבה ל-Claude Desktop מקבלת אותו. הקובץ בנוי בלי השדה `key`. את `wa-reader-test-2.3.0.zip` לא מעלים, הוא לבדיקה בלבד.
+מעלים את `wa-reader-2.3.1.zip` מדף ה-Release ב-GitHub, **כעדכון לפריט הקיים** (Package ← Upload new package), לא כפריט חדש: רק כך המזהה `pihiihgmfgefkneahjhmeamnmlfapmfp` נשמר, וההרחבה ל-Claude Desktop מקבלת אותו. הקובץ בנוי בלי השדה `key`. את `wa-reader-test-2.3.1.zip` לא מעלים, הוא לבדיקה בלבד.
 
 ## Store listing
 
@@ -71,7 +71,7 @@ Works only with Claude Desktop (Windows and Mac). It does not work with claude.a
 Built by Eitan | Organizational Digitization (digital.m-eitan.co.il). WA Reader is an independent project, not affiliated with WhatsApp, Meta or Anthropic.
 ```
 
-**התמונות:** `store/icon-128.png`, `store/screenshot-*.png`, `store/promo-tile-440x280.png` (1280×800, עודכנו ל-2.3.0: איך זה עובד, התקנה בשני צעדים, פרטיות)
+**התמונות:** `store/icon-128.png`, `store/screenshot-*.png`, `store/promo-tile-440x280.png` (1280×800, עודכנו ל-2.3.1: איך זה עובד, התקנה בשני צעדים, פרטיות)
 **Homepage URL:** `https://github.com/kobibest/wa-reader`
 **Support URL:** `https://github.com/kobibest/wa-reader/issues`
 
