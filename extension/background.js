@@ -56,6 +56,27 @@ async function revokeConsent() {
   await reloadWaTabs();
 }
 
+// ---------- breakage: WhatsApp Web changed and this WA-JS build no longer fits ----------
+// Stored in chrome.storage.local so it survives the service worker going to sleep. Shown as a red "!" badge and a banner in the popup.
+const BREAK_MSG = 'WhatsApp Web שינה את הממשק, ו-WA Reader לא תואם לו יותר. צריך עדכון של התוסף: ראו הודעה בתוסף WA Reader בכרום.';
+
+async function getBreakage() {
+  const { breakage } = await chrome.storage.local.get('breakage');
+  return breakage || null;
+}
+
+async function setBreakage(info) {
+  if (info) {
+    const prev = await getBreakage();
+    await chrome.storage.local.set({ breakage: { error: String(info.error || '').slice(0, 300), waVersion: info.version || '', at: prev?.at || Date.now() } });
+    await chrome.action.setBadgeBackgroundColor({ color: '#c62828' }).catch(() => {});
+    await chrome.action.setBadgeText({ text: '!' }).catch(() => {});
+  } else if (await getBreakage()) {
+    await chrome.storage.local.remove('breakage');
+    await chrome.action.setBadgeText({ text: '' }).catch(() => {});
+  }
+}
+
 // ---------- WhatsApp tab ----------
 async function findWaTab() {
   const tabs = await chrome.tabs.query({ url: WA_URL });
@@ -70,6 +91,10 @@ async function excludeList() {
 async function queryWhatsApp(method, params) {
   if (!METHODS.has(method)) throw new Error('unknown method');
   if (!(await hasConsent())) throw new Error('התוסף WA Reader מותקן אבל לא הופעל. פתח את התוסף בכרום ולחץ "הפעל".');
+  if (await getBreakage()) {
+    if (method === 'status') return { whatsappReady: false, breakage: BREAK_MSG };
+    throw new Error(BREAK_MSG);
+  }
   const tab = await findWaTab();
   if (!tab) {
     if (method === 'status') return { whatsappReady: false };
@@ -180,8 +205,8 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     const allowed = msg?.kind?.startsWith('wa_') ? fromWa : fromUi;
     if (!allowed) return { ok: false, error: 'forbidden' };
     switch (msg?.kind) {
-      case 'wa_ready': status.waReady = true; return { ok: true };
-      case 'wa_error': status.waReady = false; return { ok: true };
+      case 'wa_ready': status.waReady = true; await setBreakage(null); return { ok: true };
+      case 'wa_error': status.waReady = false; await setBreakage(msg.payload || {}); return { ok: true };
       case 'consent': await grantConsent(); return { ok: true };
       case 'revoke': await revokeConsent(); return { ok: true };
       case 'state': {
@@ -196,7 +221,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         }
         status.waReady = !!wa.whatsappReady;
         if (consent && status.bridge === 'disconnected') { backoff = 1000; connect(); }
-        return { ok: true, consent, status: { ...status, waOpen: !!tab, chats: wa.chats || 0 } };
+        return { ok: true, consent, breakage: await getBreakage(), status: { ...status, waOpen: !!tab, chats: wa.chats || 0 } };
       }
       default:
         return { ok: false, error: 'unknown' };

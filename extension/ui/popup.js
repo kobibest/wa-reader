@@ -9,6 +9,7 @@ async function refresh() {
   $('setup').style.display = r.consent ? 'none' : 'block';
   $('main').style.display = r.consent ? 'block' : 'none';
   if (!r.consent) return;
+  $('broken').style.display = r.breakage ? 'block' : 'none';
   const s = r.status;
   const wa = s.waOpen && s.waReady;
   const bridge = s.bridge === 'connected';

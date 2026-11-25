@@ -20,6 +20,11 @@
   // ---------- 1. Lockdown ----------
   let R = null;
   const MUTATING = /^(send|mark|delete|edit|forward|archive|unarchive|pin|unpin|mute|unmute|clear|star|keep|set|open|close|create|add|remove|leave|join|promote|demote|report|save|subscribe|unsubscribe|update|block|unblock|post|reject|accept|revoke|approve|logout|refresh|change|gen|follow|unfollow|react|vote|request)/i;
+
+  // The functions we read. If WhatsApp Web changes its internals, WA-JS may no longer find them.
+  const REQUIRED_APIS = [['chat', 'list'], ['chat', 'get'], ['chat', 'getMessages'], ['contact', 'get'], ['conn', 'getMyUserId']];
+  const missingApis = (W) => REQUIRED_APIS.filter(([ns, k]) => typeof W?.[ns]?.[k] !== 'function').map(([ns, k]) => `${ns}.${k}`);
+
   function lockdown() {
     const W = window.WPP;
     R = Object.freeze({
@@ -269,13 +274,28 @@
     catch (e) { post('query_result', { reqId, ok: false, error: String(e?.message || e) }); }
   });
 
+  // code 'wa_changed' = WhatsApp Web no longer matches this WA-JS build; the extension must be updated.
+  function fail(error, extra = {}) {
+    post('error', { code: 'wa_changed', error, version: window.WPP?.version || '', ...extra });
+  }
+
   function start() {
-    const lock = lockdown();
-    post('ready', { lock, me: widStr(R.myId()).split('@')[0], version: R.version });
+    try {
+      const missing = missingApis(window.WPP);
+      if (missing.length) return fail(`WA-JS cannot find: ${missing.join(', ')}`, { missing });
+      const lock = lockdown();
+      post('ready', { lock, me: widStr(R.myId()).split('@')[0], version: R.version });
+    } catch (e) {
+      fail(`WA-JS failed to start: ${String(e?.message || e)}`);
+    }
   }
 
   const W = window.WPP;
-  if (!W) { post('error', { error: 'WA-JS did not load' }); return; }
-  if (W.isFullReady) start();
-  else W.loader.onFullReady(start);
+  if (!W) { fail('WA-JS did not load (WhatsApp Web internals not found)'); return; }
+  try {
+    if (W.isFullReady) start();
+    else W.loader.onFullReady(start);
+  } catch (e) {
+    fail(`WA-JS loader failed: ${String(e?.message || e)}`);
+  }
 })();
