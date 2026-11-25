@@ -48,6 +48,7 @@ export function registerTools(server, call) {
     annotations: readOnly
   }, wrap(async () => {
     const s = await call('status', {});
+    if (s?.breakage) return fail(s.breakage);
     if (!s?.whatsappReady) return text('התוסף מחובר, אבל WhatsApp Web לא פתוח או עוד לא נטען. פתח את https://web.whatsapp.com בכרום וחכה שהשיחות יופיעו.');
     return text(`Connected. WhatsApp account: ${s.me || 'unknown'} · ${s.chats} chats loaded · extension ${s.version || ''} · timezone ${s.tz || '?'}.`);
   }));

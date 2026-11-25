@@ -70,6 +70,16 @@ node test/e2e.mjs             # בדיקת קצה לקצה: לקוח MCP → ה-
 
 **Release.** מריצים את ה-workflow ‏Release (או דוחפים תגית `v*`). הוא מריץ את הבדיקות, בונה את ה-`.mcpb` ואת שני קובצי ה-ZIP, ומפרסם אותם ב-GitHub Releases.
 
+## כש-WhatsApp משנה את הממשק
+
+לפעמים WhatsApp Web משנה משהו פנימי, והתוסף מפסיק לעבוד עד שמעדכנים אותו. כשזה קורה:
+
+- נורה אדומה **!** מופיעה על אייקון התוסף בכרום, והתוסף מציג הודעה: "צריך לעדכן את WA Reader".
+- Claude מקבל הודעת שגיאה ברורה במקום תשובה שגויה או ריקה.
+- מעדכנים: התוסף מהחנות של Chrome, וה-`.mcpb` מ-[Releases](https://github.com/kobibest/wa-reader/releases/latest) (ב-Claude Desktop לא מתעדכן לבד). אחר כך מרעננים את לשונית WhatsApp Web.
+
+בצד הפיתוח, workflow יומי ([`wa-js-watch.yml`](.github/workflows/wa-js-watch.yml)) בודק אם יצאה גרסה חדשה של WA-JS, ופותח Pull Request טיוטה עם הספרייה המעודכנת. לפני מיזוג בודקים ידנית מול WhatsApp Web אמיתי.
+
 ## חשוב לדעת
 
 התוסף לא קשור ל-WhatsApp, ל-Meta או ל-Anthropic ולא מאושר על ידן. הוא קורא נתונים מתוך WhatsApp Web בדרך לא רשמית, ועדכונים של WhatsApp עלולים לשבור אותו זמנית. השימוש באחריותכם. משתמש בספרייה [WA-JS](https://github.com/wppconnect-team/wa-js) (Apache 2.0). הקוד ברישיון MIT.

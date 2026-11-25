@@ -14,6 +14,9 @@
   .light .k { font-size: 12px; color: var(--muted); margin-inline-start: auto; }
   .actions { display: grid; gap: 6px; margin-top: 10px; }
   .actions button { width: 100%; }
+  .alert { background: #fdecea; color: #611a15; border: 1px solid #c62828; border-radius: 10px; padding: 8px 12px; margin-bottom: 8px; }
+  .alert p { margin: 4px 0; }
+  .alert a { color: #611a15; font-weight: 600; }
 </style>
 </head>
 <body>
@@ -28,6 +31,12 @@
   </div>
 
   <div id="main" style="display:none">
+    <div id="broken" class="alert" style="display:none">
+      <strong>צריך לעדכן את WA Reader</strong>
+      <p class="small">WhatsApp Web שינה את הממשק והתוסף לא תואם לו יותר, אז Claude לא יכול לקרוא עכשיו.</p>
+      <p class="small">התקן את הגרסה האחרונה: <a href="https://chromewebstore.google.com/detail/pihiihgmfgefkneahjhmeamnmlfapmfp" target="_blank">חנות Chrome</a> · <a href="https://github.com/kobibest/wa-reader/releases/latest" target="_blank">wa-reader.mcpb ל-Claude Desktop</a></p>
+      <p class="small">אחרי העדכון, רענן את לשונית WhatsApp Web (F5).</p>
+    </div>
     <div class="lights">
       <div class="light"><span class="dot" id="d1"></span><span class="v">WhatsApp Web פתוח</span><span class="k" id="k1"></span></div>
       <div class="light"><span class="dot" id="d2"></span><span class="v">מחובר ל-Claude Desktop</span><span class="k" id="k2"></span></div>
